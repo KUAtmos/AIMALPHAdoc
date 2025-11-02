@@ -1,0 +1,247 @@
+% !TeX root = ../ALPHA_doc.tex
+This section describes the variables and parameters used in the model.
+
+\subsection{Indices}
+Table~\ref{tab:indices} lists the indices used in the model.
+
+\begin{xltabular}{\linewidth}{l X l X}
+  \caption{List of indices}\label{tab:indices}\\
+  \toprule
+  \textbf{Index} & \textbf{Description} & \textbf{Dimension} & \textbf{Notes} \\
+  \midrule
+  \endfirsthead
+
+  \caption[]{List of indices (continued)}\\
+  \toprule
+  \textbf{Index} & \textbf{Description} & \textbf{Dimension} & \textbf{Notes} \\
+  \midrule
+  \endhead
+
+  \midrule
+  \multicolumn{4}{r}{\footnotesize Continued on next page}
+  \endfoot
+
+  \bottomrule
+  \endlastfoot
+
+  \texttt{cty}    & Country / region & 166 & \\
+  \texttt{bas}    & River basin      & 400 & \\
+  \texttt{region} & Macro region     & 17  & Same as the regional classification in AIM-Hub \\
+  \texttt{c(a)}   & Food commodities (production activities) & 23 & See Table~\ref{tab:commodities} \\
+  \texttt{acro}   & Primary crops    & 13  & \\
+  \texttt{aliv}   & Livestock products & 6 & \\
+  \texttt{apro}   & Processed products & 4 & \\
+  \texttt{cfeed}  & Feed inputs      & 10  & \\
+  \texttt{cint}   & Intermediate inputs & 8 & \\
+  \texttt{cbio}   & Biofuel crops    & 3   & \\
+  \texttt{water}  & Crop production technology & 2 & Irrigated / rainfed \\
+  \texttt{cz}     & Climate zone     & 4 & Tropical, temperate, arid, hyper-arid \\
+  \texttt{sys}    & Livestock production system & 2 & Pasture-based, mixed farming \\
+  \texttt{src}    & GHG emission sources & 13 &
+    Enteric fermentation, manure management, rice cultivation, synthetic fertilizer application, 
+    organic fertilizer application, manure on pasture, cultivation of organic soils, crop residues, 
+    crop residue burning, grassland burning, forests, natural wildfires, deforestation \\
+  \texttt{gas}    & Gas species      & 3 & CO\textsubscript{2}, CH\textsubscript{4}, N\textsubscript{2}O \\
+\end{xltabular}
+
+
+
+
+\subsection{Endogenous Variables}
+Table~\ref{tab:endovars} lists the endogenous variables used in the model.
+
+\begin{xltabular}{\linewidth}{l X l}
+  \caption{List of endogenous variables}\label{tab:endovars}\\
+  \toprule
+  \textbf{Variable} & \textbf{Description} & \textbf{Unit} \\
+  \midrule
+  \endfirsthead
+
+  \caption[]{List of endogenous variables (continued)}\\
+  \toprule
+  \textbf{Variable} & \textbf{Description} & \textbf{Unit} \\
+  \midrule
+  \endhead
+
+  \midrule
+  \multicolumn{3}{r}{\footnotesize Continued on next page} \\
+  \endfoot
+
+  \bottomrule
+  \endlastfoot
+
+  \texttt{QDEM} & Domestic demand & 1000t \\
+  \texttt{QH} & Household consumption demand & 1000t \\
+  \texttt{QF} & Feed demand & 1000t \\
+  \texttt{QI} & Intermediate input demand for processed goods & 1000t \\
+  \texttt{QBIO} & Biofuel demand & 1000t \\
+  \texttt{QSEED} & Seed demand & 1000t \\
+  \texttt{QTOUR} & Tourist consumption demand & 1000t \\
+  \texttt{QLOSS} & Food loss amount & 1000t \\
+  \texttt{QWASTE} & Food waste amount & 1000t \\
+  \texttt{QOTH} & Other demand & 1000t \\
+  \texttt{QFEED} & Feed input & 1000t \\
+  \texttt{QINT} & Raw material input & 1000t \\
+  \texttt{QSUP} & Domestic production & 1000t \\
+  \texttt{QS} & Production by river basin & 1000t \\
+  \texttt{QSWAT} & Crop production by technology & 1000t \\
+  \texttt{QSSYS} & Livestock production by system & 1000t \\
+  \texttt{QM} & Imports & 1000t \\
+  \texttt{QE} & Exports & 1000t \\
+  \texttt{NT} & Net trade & 1000t \\
+  \texttt{PP} & Producer price & \$/t \\
+  \texttt{PC} & Consumer price & \$/t \\
+  \texttt{PB} & Border price & \$/t \\
+  \texttt{PM} & Import price & \$/t \\
+  \texttt{PE} & Export price & \$/t \\
+  \texttt{PW} & World price & \$/t \\
+  \texttt{YLD} & Crop yield & t/ha \\
+  \texttt{SYSSHARE} & Livestock system share & - \\
+  \texttt{QGRASS} & Grass utilization & 1000t \\
+  \texttt{ANIMALYLD} & Livestock yield per hectare & t/ha \\
+  \texttt{ICL} & Feed input coefficient & t/t \\
+  \texttt{ANIMAL} & Number of livestock & 1000 head \\
+  \texttt{PO} & Price of other production factors & \$/t \\
+  \texttt{QLVEG} & Vegetation area & 1000ha \\
+  \texttt{QLPAS} & Pasture area & 1000ha \\
+  \texttt{QLPASN} & Non-pasture grassland area & 1000ha \\
+  \texttt{QLCRO} & Cropland area & 1000ha \\
+  \texttt{QLFRS} & Forest area & 1000ha \\
+  \texttt{QLGRA} & Other natural land area & 1000ha \\
+  \texttt{QLCROCLT} & Harvested cropland area & 1000ha \\
+  \texttt{QLCROFAL} & Fallow cropland area & 1000ha \\
+  \texttt{QL} & Total production area & 1000ha \\
+  \texttt{PLPAS} & Pasture land price & \$/ha \\
+  \texttt{PLPASN} & Non-pasture land price & \$/ha \\
+  \texttt{PLCRO} & Cropland price & \$/ha \\
+  \texttt{PLCROCLT} & Harvested cropland price & \$/ha \\
+  \texttt{PL} & Land price & \$/ha \\
+  \texttt{PENE} & Energy crop land price & \$/ha \\
+  \texttt{GHG} & GHG emissions from agriculture sector & ktCO\textsubscript{2}-eq/yr \\
+  \texttt{GHGLU} & GHG emissions from land-use sector & ktCO\textsubscript{2}-eq/yr \\
+  \texttt{RR} & Emission reduction rate & - \\
+  \texttt{AC} & Abatement cost & \$/t \\
+  \texttt{PCB} & Carbon price on residual emissions & \$/t \\
+  \texttt{PPCOMP} & Complementary variable for production & - \\
+  \texttt{TMCOMP} & Complementary variable for imports & - \\
+  \texttt{PLCOMP} & Complementary variable for land price & - \\
+\end{xltabular}
+
+
+\subsection{Exogenous Variables}
+Table~\ref{tab:exovars} lists the exogenous variables used in the model.
+
+\begin{xltabular}{\linewidth}{l X l}
+  \caption{List of exogenous variables}\label{tab:exovars}\\
+  \toprule
+  \textbf{Variable} & \textbf{Description} & \textbf{Data Source} \\
+  \midrule
+  \endfirsthead
+
+  \caption[]{List of exogenous variables (continued)}\\
+  \toprule
+  \textbf{Variable} & \textbf{Description} & \textbf{Data Source} \\
+  \midrule
+  \endhead
+
+  \midrule
+  \multicolumn{3}{r}{\footnotesize Continued on next page} \\
+  \endfoot
+
+  \bottomrule
+  \endlastfoot
+
+  \texttt{QHBASE} & Household consumption demand in the base year & FAOSTAT \\
+  \texttt{QBIOBASE} & Biofuel demand in the base year & FAOSTAT \\
+  \texttt{QSEEDBASE} & Seed demand in the base year & FAOSTAT \\
+  \texttt{QTOURBASE} & Tourist consumption demand in the base year & FAOSTAT \\
+  \texttt{QLOSSBASE} & Food loss in the base year & FAOSTAT \\
+  \texttt{QOTHBASE} & Other demand in the base year & FAOSTAT \\
+  \texttt{QSUPPRE} & Domestic production in the previous year & FAOSTAT \\
+  \texttt{QSPRE} & Production by river basin in the previous year & GAEZ v4 \\
+  \texttt{QENE} & Demand for dedicated energy crops & AIM-Hub \\
+  \texttt{QST} & Change in stock & FAOSTAT \\
+  \texttt{QRES} & Residual of international trade balance & FAOSTAT \\
+  \texttt{LOSSRATE} & Food loss rate & FAOSTAT \\
+  \texttt{WASTERATE} & Food waste rate & FAO (2011) \\
+  \texttt{GDPPC} & GDP per capita & SSP~3.0 \\
+  \texttt{GDPPCBASE} & GDP per capita in the base year & World Bank \\
+  \texttt{POP} & Population & SSP~3.0 \\
+  \texttt{POPBASE} & Population in the base year & World Bank \\
+  \texttt{MMJ} & Market margin & GTAP~10 \\
+  \texttt{PSE} & Producer Support Estimate (PSE) & GTAP~10 \\
+  \texttt{CSE} & Consumer Support Estimate (CSE) & GTAP~10 \\
+  \texttt{CSEBASE} & CSE in the base year & GTAP~10 \\
+  \texttt{TM} & Import tariff rate & GTAP~10 \\
+  \texttt{MMM} & Import margin rate & GTAP~10 \\
+  \texttt{TE} & Export tariff rate & GTAP~10 \\
+  \texttt{MME} & Export margin rate & GTAP~10 \\
+  \texttt{YLDBASE} & Crop yield in the base year & FAOSTAT, GAEZ~v4 \\
+  \texttt{YLDGR} & Yield change rate due to technological progress & IMPACT \\
+  \texttt{YLDCHAN} & Yield change rate due to climate change impacts & GAEZ~v4 \\
+  \texttt{CROPINTENSITY} & Cropping intensity & MAPSPAM \\
+  \texttt{GRASSYLD} & Grass yield & GAEZ~v4 \\
+  \texttt{ANIMALPRODRATE} & Slaughtering / milking rate & FAOSTAT \\
+  \texttt{FEEDEFFICIENCY} & Feed conversion efficiency & Herrero \& Acosta et~al.~(2018) \\
+  \texttt{FEEDSHARE} & Share of concentrate feed & Herrero \& Acosta et~al.~(2018) \\
+  \texttt{GRAINSHARE} & Share of grain feed & FAOSTAT \\
+  \texttt{ANIMALWEIGHT} & Livestock body weight & FAOSTAT \\
+  \texttt{ANIMALRES} & Number of non-productive livestock & FAOSTAT \\
+  \texttt{QLRES} & Pasture area not used for livestock production & FAOSTAT, LUH2 \\
+  \texttt{POBASE} & Price of other production factors in the base year & FAOSTAT, GTAP~10 \\
+  \texttt{QLTOT} & Total land area & LUH2 \\
+  \texttt{QLVEGN} & Non-vegetated land area & LUH2 \\
+  \texttt{QLAFR} & Afforested area & AIM-PLUM \\
+  \texttt{PLFRS} & Forest land price & LUH2, GTAP~10 \\
+  \texttt{PLGRA} & Price of other natural land & LUH2, GTAP~10 \\
+  \texttt{PLCROFAL} & Fallow land price & LUH2, GTAP~10 \\
+  \texttt{EF} & GHG emission factor in agriculture sector & FAOSTAT \\
+  \texttt{EFLU} & GHG emission factor in land-use sector & FAOSTAT \\
+  \texttt{PRCCAR} & Carbon price & AIM-Hub \\
+  \texttt{MRP} & Maximum reduction potential of abatement technologies & Harmsen et~al.~(2019) \\
+\end{xltabular}
+
+
+
+
+\subsection{Parameters}
+Table~\ref{tab:params} lists the parameters used in the model.
+
+\begin{xltabular}{\linewidth}{l X X}
+  \caption{List of parameters}\label{tab:params}\\
+  \toprule
+  \textbf{Parameter} & \textbf{Description} & \textbf{Notes} \\
+  \midrule
+  \endfirsthead
+
+  \caption[]{List of parameters (continued)}\\
+  \toprule
+  \textbf{Parameter} & \textbf{Description} & \textbf{Notes} \\
+  \midrule
+  \endhead
+
+  \midrule
+  \multicolumn{3}{r}{\footnotesize Continued on next page} \\
+  \endfoot
+
+  \bottomrule
+  \endlastfoot
+
+  \texttt{elhg} & Income elasticity of consumption & Estimated from the food demand model \\
+  \texttt{elhp} & Price elasticity of consumption & Estimated by regression based on Muhammad et~al.~(2011) \\
+  \texttt{ica} & Intermediate input coefficient & \\
+  \texttt{elop} & Elasticity of other production factors & \\
+  $\delta$ & Coefficient parameter of the logit function & \\
+  $\rho$ & Exponent parameter of the logit function & For land use, adopted from GCAM; for production systems, estimated by regression based on Herrero Acosta et~al.~(2018) \\
+  \texttt{res} & Residual parameter & \\
+  \texttt{watshare} & Share of primary-crop production technologies & \\
+  \texttt{czshare} & Climate zone share & \\
+  \texttt{grassusagerate} & Grass (pasture) utilization rate & \\
+  \texttt{pintcoef} & Price coefficient for intermediate inputs & \\
+  \texttt{pfeedcoef} & Price coefficient for feed inputs & \\
+  \texttt{pbres} & Residual between consumer price and border price & \\
+  \texttt{pmres} & Residual between import price and world price & \\
+  \texttt{peres} & Residual between export price and world price & \\
+  \texttt{exr} & Exchange rate & \\
+  $\sigma$ & Elasticity of adoption of abatement technologies & Estimated by regression based on Harmsen et~al.~(2019) \\
+\end{xltabular}

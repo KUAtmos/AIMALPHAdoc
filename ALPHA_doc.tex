@@ -1,0 +1,397 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper,headings=small,parskip=half]{scrartcl}
+
+%-------------------- Fonts & Micro-typography --------------------
+\usepackage[T1]{fontenc}
+\usepackage[scaled=.95]{helvet}
+\usepackage{newtxtext,newtxmath}  % Times 系の本文＋数式（定番）
+\usepackage{microtype}
+
+%-------------------- Geometry & Layout --------------------
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\emergencystretch}{2em}
+
+%-------------------- Colors & Links --------------------
+\usepackage[dvipsnames]{xcolor}
+\definecolor{Primary}{HTML}{1F3A5F} % deep blue-gray
+\definecolor{Accent}{HTML}{2F6B5C}  % green-teal
+\definecolor{Link}{HTML}{1A73E8}
+
+% ======================================================================
+%-------------------- Document variables (metadata) --------------------
+\input{inc_sections/metadata.tex}
+
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  colorlinks=true,linkcolor=Primary,citecolor=Accent,urlcolor=Link,
+  pdftitle={\doctitle},
+  pdfauthor={\docauthor}
+}
+% ======================================================================
+
+%-------------------- Headings (KOMA) --------------------
+\addtokomafont{sectioning}{\color{Primary}\bfseries}
+\RedeclareSectionCommand[beforeskip=1.1\baselineskip,afterskip=.4\baselineskip]{section}
+\RedeclareSectionCommand[beforeskip=.9\baselineskip,afterskip=.3\baselineskip]{subsection}
+\RedeclareSectionCommand[beforeskip=.7\baselineskip,afterskip=.2\baselineskip]{subsubsection}
+
+%-------------------- Headers & Footers --------------------
+\usepackage{scrlayer-scrpage}
+\clearpairofpagestyles
+\automark{section} 
+\ihead{\footnotesize \doctitle\ Ver.\docversion}
+\ohead{\footnotesize \headmark}
+\cfoot{\footnotesize\color{Accent}\thepage}
+\setheadsepline{.4pt}
+\pagestyle{scrheadings}
+
+%-------------------- Math & Notation --------------------
+\usepackage{amsmath,mathtools}
+\usepackage{bm}
+\numberwithin{equation}{section}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%-------------------- Cross-references --------------------
+\usepackage[nameinlink,capitalise]{cleveref}
+
+%-------------------- Figures, Tables, Captions --------------------
+\usepackage{graphicx}
+\graphicspath{{figs/}}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\sisetup{detect-all,table-auto-round=true,separate-uncertainty=true}
+\usepackage[labelfont=bf]{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont=bf}
+\usepackage{csvsimple}
+\usepackage{enumitem}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{xurl}
+\usepackage[section]{placeins} 
+
+%-------------------- Theorems in subtle boxes --------------------
+\usepackage[most]{tcolorbox}
+\tcbset{enhanced,boxrule=.3pt,arc=2mm,colframe=Accent!60,colback=Accent!3}
+\newtcbtheorem[number within=section]{theobox}{Theorem}{colback=Accent!2!white}{th}
+\newtcbtheorem[number within=section,use counter from=theobox]{lemabox}{Lemma}{colback=Accent!2!white}{lem}
+\newtcbtheorem[number within=section]{defbox}{Definition}{colback=Accent!2!white}{def}
+
+%-------------------- Algorithms (pseudocode) --------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+%-------------------- Code listings (optional) --------------------
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,frame=single,rulecolor=\color{Accent!50},
+  keywordstyle=\color{Primary}\bfseries,commentstyle=\itshape\color{Accent!80},
+  showstringspaces=false}
+
+%-------------------- Section --------------------
+\RedeclareSectionCommand[beforeskip=1.0ex plus 1ex minus .2ex, afterskip=.8ex]{section}
+\RedeclareSectionCommand[beforeskip=2.2ex plus 1ex minus .2ex, afterskip=.8ex]{subsection}
+\usepackage{etoolbox}
+\newcommand\SectionTopSpace{0.5ex} % ← ここでお好み調整（例: 5–8ex）
+\makeatletter
+\pretocmd{\section}{%
+  \clearpage
+  \ifdim\pagetotal=0pt\relax
+    \vspace*{\SectionTopSpace}
+  \fi
+}{}{}
+\makeatother
+
+\usepackage{float}
+% Section size and color
+\setkomafont{section}{\Huge\bfseries\color{Primary}}
+\setkomafont{subsection}{\Large\bfseries\color{Primary}}
+\setkomafont{subsubsection}{\large\bfseries\color{Primary}}
+
+% Underbar for Section Title
+\newcommand\SecRuleWidth{1.0\linewidth}   % 線の長さ（.25〜.45あたり好みで）
+\newcommand\SecRuleThickness{1.1pt}       % 太さ（0.8〜1.6pt）
+\newcommand\SecRuleVSkip{.20ex}           % タイトルと線の間隔
+\makeatletter
+\let\orig@sectionlinesformat\sectionlinesformat
+\renewcommand*\sectionlinesformat[4]{%
+  % #1=level name, #2=indent box, #3=number, #4=title
+  \ifnum\pdfstrcmp{#1}{section}=0
+    \par\noindent
+    {\usekomafont{#1}\raggedright #3\enskip #4\par
+     \vspace{\SecRuleVSkip}%
+     {\color{Accent}\rule{\SecRuleWidth}{\SecRuleThickness}}\par}%
+  \else
+    \orig@sectionlinesformat{#1}{#2}{#3}{#4}%
+  \fi
+}
+\makeatother
+
+% Update History
+\newtcolorbox{changelogentry}[3]{% {date}{author}{version}
+  enhanced, breakable,
+  colback=white,            % 本体は白
+  colframe=Accent!70,       % 枠色（やや濃い）
+  boxrule=.9pt,             % 枠の太さ（重め）
+  borderline west={2.4pt}{0pt}{Accent}, % 左サイドバー
+  sharp corners,
+  left=8pt, right=8pt, top=8pt, bottom=8pt,
+  title={\textbf{#1} \quad|\quad #2 \quad v#3}, % 上帯のタイトル
+  fonttitle=\bfseries\small,
+  coltitle=Primary,
+  colbacktitle=Accent!10,   % タイトル帯の背景（控えめ）
+  boxed title style={
+    sharp corners,
+    colframe=Accent!70,
+    boxrule=.9pt
+  }
+}
+
+% Reference
+\usepackage[backend=biber,style=numeric,sorting=nyt,maxbibnames=6]{biblatex}
+\addbibresource{refs.bib}
+
+% ----------------------------------------------------------------
+
+
+
+
+% =====================
+%        body
+% =====================
+%============================================================
+\title{\doctitle\\\large \docsubtitle}
+\author{\docauthor}
+\date{\today}
+%============================================================
+
+\begin{document}
+
+% ---- Title Page ----
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+
+{\Huge\bfseries \doctitle\\[0.5em]
+\textcolor{Accent}{Agricultural Land-use\\Partial Equilibrium Model}}
+% {\Huge\bfseries \doctitle\par}
+% \vspace{0.4em}
+% {\huge\color{Accent}\docsubtitle\par} 
+
+\vspace{2cm}
+{\Large \docauthor\\[0.5em]
+\docorg}
+
+\vfill
+{\large  Version \docversion{} -- \docdate}
+\end{titlepage}
+% ---- Imprint / Abstract page (front matter) ----
+\clearpage
+\thispagestyle{empty} % Without page number and header
+
+{\Large\bfseries \doctitle\par}
+{\normalsize \docsubtitle\par}
+\vspace{1.2em}
+
+\textbf{Abstract}\par
+\noindent
+This document describes the model structure and system of equations for
+AIM-ALPHA. AIM-ALPHA is a one-year step
+sequential dynamic partial equilibrium model targeting agricultural
+markets and land use. It performs future projections considering 166
+countries on the demand side, 400 production units on the supply side,
+23 food commodities, and 5 land use categories. This model is
+anticipated to be applicable to research including analyses of food
+security issues, climate change impacts, evaluations of climate change
+mitigation measures, and assessments of biodiversity impacts related to
+land use.
+
+\medskip
+\textbf{Keywords:} Integrated assessment model, partial equilibrium, agricultural markets,
+land use, climate change mitigation
+
+\vfill
+
+{\color{Accent}\rule{0.22\linewidth}{0.8pt}\par}\vspace{0.8ex}
+
+{\small
+\textbf{Authors:} \docauthor\par
+\textbf{Affiliation:} \docorg\par
+\textbf{Contact:} \href{mailto:totake.ryo.85s@st.kyoto-u.ac.jp}{totake.ryo.85s@st.kyoto-u.ac.jp}\par
+\textbf{Version:} \docversion\par 
+\textbf{Date:} \docdate\par
+\textbf{License:} **\par %\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}\par
+\textcopyright~
+\the\year\ \docauthor. All rights reserved.
+}
+
+\clearpage
+% -------------- Table of Contents -----------------
+
+\clearpage
+\tableofcontents
+\clearpage
+
+% ------------------- Contents ---------------------
+\section{Introduction}\label{sec:intro}
+\input{inc_sections/1_introduction}
+
+\section{Model Structure}\label{sec:structure}
+\input{inc_sections/2_model_structure}
+
+\section{Variables and Parameters}\label{sec:variables}
+\input{inc_sections/3_variables}
+
+\section{System of Equations}\label{sec:equations}
+\input{inc_sections/4_equations}
+
+\section{Data and Preprocessing}\label{sec:data}
+\input{inc_sections/5_data_processing}
+
+\section{Parameter Estimation}\label{sec:param}
+\input{inc_sections/6_parameter_estimation}
+
+\section[Model Calculation Flow and Execution]{\huge Model Calculation Flow and Execution}\label{sec:calc}
+\input{inc_sections/7_model_flow}
+
+\section{Update History}
+\input{inc_sections/8_update_history}
+
+\printbibliography
+
+
+
+% -------------------------------------------------------------------------------------------
+
+% \section{Overview}
+% \begin{refsection}
+% This document specifies the mathematics and implementation details of a numerical model. Use \Cref{sec:gov,sec:num} for governing equations and numerics; \cref{sec:val} for verification/validation.
+% This document specifies the mathematics and implementation details of a numerical model. Use \Cref{sec:gov,sec:num} for governing equations and numerics; \cref{sec:val} for verification/validation.
+% According to \cite{smith2020model}, the model performs well under uncertainty.
+% ... as shown in previous work \parencite{hasegawa2022climate}.
+
+
+% \printbibliography[heading=subbibliography]
+% \end{refsection}
+
+% \section{Notation}
+% Vectors $\vect{x}$ (bold lowercase), matrices $\mat{A}$ (bold uppercase), domain $\Omega\subset\R^d$, time $t\in\R_{\ge0}$. Norms $\norm{\cdot}$ and absolute values $\abs{\cdot}$ use auto-sized delimiters.
+
+% \section{Governing Equations and BCs}\label{sec:gov}
+% Example diffusion model (replace as needed):
+% \begin{equation}\label{eq:pde}
+% \frac{\partial u}{\partial t} - \nabla\!\cdot\!\bigl(D\nabla u\bigr) = f \quad \text{in } \Omega\times(0,T].
+% \end{equation}
+% Boundary and initial conditions:
+% \begin{align}\label{eq:bc}
+% \begin{cases}
+%  u = g_D & \text{on } \Gamma_D, \\
+%  -D\,\nabla u\cdot\vect{n} = g_N & \text{on } \Gamma_N,
+% \end{cases}\qquad
+% u: u(\vect{x},0)=u_0(\vect{x}).
+% \end{align}
+% Weak form for test function $v$:
+% \begin{align}
+% \int_\Omega \frac{\partial u}{\partial t}\,v\,\dd\vect{x}
+% +\int_\Omega D\,\nabla u\cdot\nabla v\,\dd\vect{x}
+% = \int_\Omega f v\,\dd\vect{x} + \int_{\Gamma_N} g_N v\,\dd s.
+% \end{align}
+
+% \section{Numerical Methods}\label{sec:num}
+% \subsection{Time Discretization (\texorpdfstring{$\theta$}{theta}-scheme)}
+% \begin{equation}\label{eq:theta}
+% \frac{u^{n+1}-u^{n}}{\Delta t} - \nabla\!\cdot\!\Bigl(D\,[\theta\nabla u^{n+1} + (1-\theta)\nabla u^{n}]\Bigr) = f^{n+\theta},\qquad \theta\in[0,1].
+% \end{equation}
+% \subsection{Linear System}
+% After spatial discretization (FEM/FDM/FVM):
+% \begin{equation}
+% \mat{A}(\theta)\,\vect{u}^{n+1} = \vect{b}(\vect{u}^{n}).
+% \end{equation}
+% \begin{algorithm}[H]
+% \caption{Time Marching (\texorpdfstring{$\theta$}{theta}-scheme)}\label{alg:time}
+% \begin{algorithmic}[1]
+% \Require $\vect{u}^0$, $\Delta t$, steps $N$ \Ensure $\vect{u}^N$
+% \For{$n=0,1,\dots,N-1$}
+%   \State assemble $\vect{b}(\vect{u}^n)$ and $\mat{A}(\theta)$
+%   \State solve $\mat{A}\,\vect{u}^{n+1}=\vect{b}$ with preconditioning
+% \EndFor
+% \end{algorithmic}
+% \end{algorithm}
+
+% \section{Parameters and Units}
+% \begin{table}[H]
+%   \centering
+%   \caption{Key parameters}
+%   \sisetup{table-number-alignment = center}
+%   \begin{tabular}{@{} l S[table-format=1.2] l l @{} }
+%     \toprule
+%     Symbol & {Value} & Unit & Description \\
+%     \midrule
+%     $D$ & 1.25 & \si{\meter\squared\per\second} & Diffusion coefficient \\
+%     $\Delta t$ & 0.01 & \si{\second} & Time step \\
+%     $T$ & 10 & \si{\second} & Final time \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \section{Results (Figure Example)}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=.75\linewidth]{fig1}
+%   \caption{Snapshot of numerical result (example).}
+%   \label{fig:snapshot}
+% \end{figure}
+
+% \section{Verification and Validation}\label{sec:val}
+% If an analytic solution $u_\text{ana}$ is known,
+% \begin{equation}\label{eq:error}
+% E_{L^2}=\Bigl(\int_\Omega \abs{u_\text{num}-u_\text{ana}}^2\,\dd\vect{x}\Bigr)^{1/2},\qquad
+% E_\infty=\max_{\vect{x}\in\Omega}\abs{u_\text{num}-u_\text{ana}}.
+% \end{equation}
+% Report observed order by varying mesh size $h$ and time step $\Delta t$.
+
+% \appendix
+% \section{Boxed Statements and Extras}
+% \begin{theobox}{Maximum Principle}{th:max}
+% Under suitable conditions on $D$ and $f$, the solution $u$ satisfies ...
+% \end{theobox}
+
+% \begin{lemabox}{Stability}{lem:stab}
+% The scheme \eqref{eq:theta} is unconditionally stable for $\theta\ge 1/2$.
+% \end{lemabox}
+
+% \begin{defbox}{Weighted Norm}{def:wn}
+% For $w>0$, define $\norm{v}_{w}^2=\int_\Omega w\,v^2\,\dd\vect{x}$.
+% \end{defbox}
+
+% % \begin{table}[h]
+% %   \centering
+% %   \caption{Parameters from CSV}
+% %   \csvautotabular{data/params.csv}
+% % \end{table}
+
+% \paragraph{Listing example}
+% \begin{lstlisting}[language=C++]
+% for (int n = 0; n < N; ++n) {
+%   assemble_rhs(u);
+%   assemble_matrix(theta);
+%   solve(A, u);
+% }
+% \end{lstlisting}
+
+% \bigskip
+% \noindent\textbf{Cross-ref:} Equations~\cref{eq:pde,eq:theta}, Table, Figure~\cref{fig:snapshot}, Algorithm~\cref{alg:time}.
+
+\end{document}

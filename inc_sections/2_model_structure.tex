@@ -1,0 +1,74 @@
+% !TeX root = ../ALPHA_doc.tex
+This section provides an overview of the AIM-ALPHA model. AIM-ALPHA is a recursive-dynamic partial equilibrium model 
+focusing on agricultural markets and land use, operating with an annual time step. The model uses 2015 as the base year 
+and projects up to 2100. It is formulated as a nonlinear complementarity problem (NCP) and handles approximately 200,000 variables. 
+
+On the spatial dimension, the demand side covers 166 countries and regions globally, while the production side consists of 
+400 production units. These production units are defined by overlaying the 166 demand regions with FAO’s 230 major river basin boundaries. 
+Figure~\ref{fig:regions} illustrates the geographical coverage of the demand regions and production units.
+
+The basic model structure is shown in Figure~\ref{fig:model_structure}. Food production is categorized into 13 primary crops, 
+6 livestock products, and 4 processed goods. Table~\ref{tab:commodities} lists the food commodity classifications used in the model. 
+The production functions are represented by Leontief-type functions, where each good is produced by combining cropland, feed and pasture, 
+and raw materials as inputs. Other factors such as labor, capital, and energy are aggregated into a single production factor. 
+
+Primary crops and livestock products that require land are differentiated by production unit, whereas processed goods, which do not require 
+land inputs, are modeled at the level of the 166 demand regions. Land use within each production unit is allocated according to a hierarchical 
+logit function that balances total land area, and land shares are determined by relative land prices.
+
+Food demand is driven by population and GDP, with income elasticity considered for future changes. Food prices are determined endogenously 
+so that supply and demand are balanced in the domestic market. Within each country, the balance between production, domestic demand, and net trade 
+(imports minus exports) is maintained. In the global market, total world imports and exports are also balanced. Furthermore, commodities 
+that were not produced or traded in the base year are assumed to remain inactive in that country or production unit throughout the projection period.
+
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth,height=0.78\textheight,keepaspectratio]{fig1}
+  \caption{Overview of AIM-ALPHA}
+  \label{fig:model_structure}
+\end{figure}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth,height=0.78\textheight,keepaspectratio]{fig2}
+  \caption{Geographical coverage of demand regions (166) and production units (400).}
+  \label{fig:regions}
+\end{figure}
+
+\FloatBarrier
+
+\begin{center}
+\begin{xltabular}{\linewidth}{l l l}
+  \caption{Classification of food commodities}\label{tab:commodities}\\
+    \toprule
+    \textbf{Category} & \textbf{Commodity} & \textbf{Model code} \\
+    \midrule
+    \textbf{Primary crops} & Wheat & \texttt{wht} \\
+                           & Rice & \texttt{rce} \\
+                           & Maize & \texttt{mze} \\
+                           & Other cereals & \texttt{crl} \\
+                           & Roots and tubers & \texttt{str} \\
+                           & Sugar crops & \texttt{sgr} \\
+                           & Pulses & \texttt{pls} \\
+                           & Nuts & \texttt{nut} \\
+                           & Oil crops & \texttt{ocr} \\
+                           & Vegetables & \texttt{vgt} \\
+                           & Fruits & \texttt{frt} \\
+                           & Stimulant crops & \texttt{stm} \\
+                           & Spices & \texttt{spc} \\
+    \addlinespace[4pt]
+    \textbf{Livestock products} & Beef & \texttt{cmt} \\
+                                & Sheep and goat meat & \texttt{rmt} \\
+                                & Poultry meat & \texttt{pmt} \\
+                                & Other meat & \texttt{omt} \\
+                                & Eggs & \texttt{egg} \\
+                                & Milk & \texttt{mlk} \\
+    \addlinespace[4pt]
+    \textbf{Processed products} & Sugar products & \texttt{swt} \\
+                                & Vegetable oils & \texttt{vol} \\
+                                & Alcoholic beverages & \texttt{alc} \\
+                                & Dairy products & \texttt{dai} \\
+    \bottomrule
+\end{xltabular}
+\end{center}

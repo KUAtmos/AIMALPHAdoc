@@ -1,0 +1,826 @@
+% !TeX root = ../ALPHA_doc.tex
+This section presents the mathematical formulation of the model and its explanation.  
+In the following, \textbf{endogenous variables} are denoted by uppercase letters,  
+\textbf{exogenous variables} by uppercase letters with an overline, and  
+\textbf{parameters} by lowercase or Greek letters.
+
+\subsection{Demand Block}
+This block describes the equations related to demand determination.  
+In the demand block, food demand is determined by factors such as prices, population, and GDP.
+
+\paragraph{Total Demand}
+% The total domestic demand (\( QDEM_{c,cty} \)) is the sum of all types of demand, including household consumption, feed, processing, biofuel, seed, tourism, food loss, food waste, and other demand.
+\begin{align}
+  QDEM_{c,cty}
+  &= QH_{c,cty} + QF_{c,cty} + QI_{c,cty} + QBIO_{c,cty} \nonumber\\
+  &\quad + QSEED_{c,cty} + QTOUR_{c,cty} + QLOSS_{c,cty}
+    + QWASTE_{c,cty} + QOTH_{c,cty}
+  \tag{QDEMEQ}\label{eq:QDEMEQ}
+\end{align}
+
+\paragraph{Household Consumption Demand}
+\begin{align}
+  QH_{c,cty}
+  &= \overline{QHBASE}_{c,cty}
+     \cdot
+     \left(\frac{\overline{GDPPC}_{cty}}{\overline{GDPPCBASE}_{cty}}\right)^{elhg_{c,cty}}
+     \nonumber\\
+  &\quad \cdot
+     \prod_{cc}\!
+     \left(
+       \frac{\bigl(1-\overline{CSE}_{cc,cty}\bigr)\cdot PC_{cc,cty}}
+            {\bigl(1-\overline{CSEBASE}_{cc,cty}\bigr)\cdot \overline{PCBASE}_{cc,cty}}
+     \right)^{elhp_{c,cc,cty}}
+     \cdot
+     \frac{\overline{POP}_{cty}}{\overline{POPBASE}_{cty}}
+  \tag{QHEQ}\label{eq:QHEQ}
+\end{align}
+
+\paragraph{Feed Demand}
+\begin{align}
+  QF_{cfeed,cty}
+  &= \sum_{bas}\sum_{aliv} QFEED_{aliv,cfeed,cty}
+  \tag{QFEEDEQ}\label{eq:QFEEDEQ}
+\end{align}
+
+\paragraph{Intermediate Input Demand for Processing}
+\begin{align}
+  QI_{cint,cty}
+  &= \sum_{apro} QINT_{apro,cint,bas,cty}
+  \tag{QINTEQ}\label{eq:QINTEQ}
+\end{align}
+
+\paragraph{Biofuel Demand}
+\begin{align}
+  QBIO_{c,cty}
+  &= \overline{QBIOBASE}_{c,cty}
+     \cdot
+     \prod_{cc}\!
+     \left(
+       \frac{\bigl(1-\overline{CSE}_{cc,cty}\bigr)\cdot PC_{cc,cty}}
+            {\bigl(1-\overline{CSEBASE}_{cc,cty}\bigr)\cdot \overline{PCBASE}_{cc,cty}}
+     \right)^{elhp_{c,cc,cty}}
+  \tag{QBIOEQ}\label{eq:QBIOEQ}
+\end{align}
+
+\paragraph{Seed Demand}
+\begin{align}
+  QSEED_{c,cty}
+  &= \overline{QSEEDBASE}_{c,cty}
+     \cdot
+     \frac{\overline{POP}_{cty}}{\overline{POPBASE}_{cty}}
+     \nonumber\\
+  &\quad \cdot
+     \prod_{cc}\!
+     \left(
+       \frac{\bigl(1-\overline{CSE}_{cc,cty}\bigr)\cdot PC_{cc,cty}}
+            {\bigl(1-\overline{CSEBASE}_{cc,cty}\bigr)\cdot \overline{PCBASE}_{cc,cty}}
+     \right)^{elhp_{c,cc,cty}}
+  \tag{QSEEDEQ}\label{eq:QSEEDEQ}
+\end{align}
+
+\paragraph{Tourist Consumption Demand}
+\begin{align}
+  QTOUR_{c,cty}
+  &= \overline{QTOURBASE}_{c,cty}
+     \cdot
+     \prod_{cc}\!
+     \left(
+       \frac{\bigl(1-\overline{CSE}_{cc,cty}\bigr)\cdot PC_{cc,cty}}
+            {\bigl(1-\overline{CSEBASE}_{cc,cty}\bigr)\cdot \overline{PCBASE}_{cc,cty}}
+     \right)^{elhp_{c,cc,cty}}
+  \tag{QTOUREQ}\label{eq:QTOUREQ}
+\end{align}
+
+\paragraph{Loss and Waste}
+\begin{align}
+  QLOSS_{c,cty}
+  &= QDEM_{c,cty} \cdot \overline{LOSSRATE}_{c,cty}
+  \tag{QLOSSEQ}\label{eq:QLOSSEQ}\\[.3em]
+  QWASTE_{c,cty}
+  &= QH_{c,cty} \cdot \overline{WASTERATE}_{c,cty}
+  \tag{QWASTEEQ}\label{eq:QWASTEEQ}
+\end{align}
+
+\paragraph{Other Demand}
+\begin{align}
+  QOTH_{c,cty}
+  &= \overline{QOTHBASE}_{c,cty}
+     \cdot
+     \prod_{cc}\!
+     \left(
+       \frac{\bigl(1-\overline{CSE}_{cc,cty}\bigr)\cdot PC_{cc,cty}}
+            {\bigl(1-\overline{CSEBASE}_{cc,cty}\bigr)\cdot \overline{PCBASE}_{cc,cty}}
+     \right)^{elhp_{c,cc,cty}}
+  \tag{QOTHEQ}\label{eq:QOTHEQ}
+\end{align}
+
+
+\subsection{Production Block}
+
+The production block describes the equations determining the production quantities of each food commodity, the input of intermediate goods and production factors, and the producer prices.  
+Primary crops are differentiated by production technologies (irrigated and rainfed), while livestock products are distinguished by climate zones and production systems (pasture-based or mixed).  
+Yield improvements due to technological progress and climate impacts are considered for crops, and productivity changes in livestock are captured through feed requirements and feed share.  
+For energy crops, production quantities by year and macro-region are given exogenously from AIM-Hub, and allocated to production units according to price and yield.
+
+\subsubsection{Crop Production}
+
+The livestock production block describes equations for determining livestock output, production systems, feed requirements, and associated prices.  
+Livestock products are distinguished by climate zones and production systems (pasture-based or mixed).  
+Feed use and production efficiency depend on feed composition, feed efficiency, and animal productivity.
+
+
+\paragraph{Domestic Production}
+\begin{align}
+  QSUP_{a,cty}
+  &= \sum_{bas} QS_{a,bas,cty}
+  \tag{QSUPEQ}\label{eq:QSUPEQ}
+\end{align}
+
+\paragraph{Crop Production by Technology}
+\begin{align}
+  QSWAT_{acro,bas,cty,water}
+  &= QS_{acro,bas,cty} \cdot watshare_{acro,bas,cty,water}
+  \tag{CROWATEREQ}\label{eq:CROWATEREQ}
+\end{align}
+
+\paragraph{Producer Price of Crops}
+\begin{align}
+  PP_{acro,cty}
+  &= \Bigl(
+      PL_{acro,bas,cty}
+      \cdot
+      \sum_{water}
+      \frac{
+        watshare_{acro,bas,cty,water}
+      }{
+        YLD_{acro,bas,cty,water}
+        \cdot
+        \overline{CROPINTENSITY}_{acro,bas,cty,water}
+      }
+      \nonumber\\[-0.3em]
+  &\quad
+      +\; PO_{acro,bas,cty}
+     \Bigl)
+     \,/\, (1 + PPCOMP_{acro,bas,cty})
+  \tag{PPCROEQ}\label{eq:PPCROEQ}
+\end{align}
+
+\paragraph{Land Input for Crop Production}
+\begin{align}
+  QL_{acro,bas,cty}
+  &= QS_{acro,bas,cty}
+     \cdot
+     \sum_{water}
+     \frac{
+       watshare_{acro,bas,cty,water}
+     }{
+       YLD_{acro,bas,cty,water}
+       \cdot
+       \overline{CROPINTENSITY}_{acro,bas,cty,water}
+     }
+  \tag{QLCROINPUTEQ}\label{eq:QLCROINPUTEQ}
+\end{align}
+
+\paragraph{Crop Yield}
+\begin{align}
+  YLD_{acro,bas,cty,water}
+  &= \overline{YLDBASE}_{acro,bas,cty,water}
+     \cdot
+     \overline{YLDGR}_{acro,bas,cty,water}
+     \nonumber\\
+  &\quad
+     \cdot
+     \overline{YLDCHAN}_{acro,bas,cty,water}
+  \tag{YLDEQ}\label{eq:YLDEQ}
+\end{align}
+
+\paragraph{Other Production Factor Price}
+\begin{align}
+  PO_{acro,bas,cty}
+  &= \overline{POBASE}_{acro,bas,cty}
+     \cdot
+     \left(
+       \frac{QS_{acro,bas,cty}}
+            {\overline{QSPRE}_{acro,bas,cty}}
+     \right)^{elop_{acro,cty}}
+  \tag{POCROEQ}\label{eq:POCROEQ}
+\end{align}
+
+
+\subsubsection{Livestock Production}
+
+The livestock production block describes equations for determining livestock output, production systems, feed requirements, and associated prices.  
+Livestock products are distinguished by climate zones and production systems (pasture-based or mixed).  
+Feed use and production efficiency depend on feed composition, feed efficiency, and animal productivity.
+
+\paragraph{Livestock Production by System}
+\begin{align}
+  QSSYS_{aliv,bas,cty,cz,sys}
+  &= QS_{aliv,bas,cty}
+     \cdot czshare_{aliv,bas,cty,cz}
+     \cdot SYSSHARE_{aliv,bas,cty,cz,sys}
+  \tag{LIVSYSEQ}\label{eq:LIVSYSEQ}
+\end{align}
+
+\paragraph{Livestock System Share Function}
+\begin{align}
+  SYSSHARE_{aliv,bas,cty,cz,sys}
+  &= \frac{1}{
+       1 + \delta^{sys}_{aliv,cz,sys}
+       \cdot
+       \overline{GDPPC}_{cty}^{\,\rho^{sys}_{aliv,sys}}
+     }
+     + res_{aliv,bas,cty,cz,sys}
+  \tag{SYSSHAREEQ}\label{eq:SYSSHAREEQ}
+\end{align}
+
+\paragraph{Producer Price of Livestock}
+\begin{align}
+  PP_{aliv,cty}
+  &= \Bigl(
+       PL_{aliv,bas,cty}
+       / ANIMALYLD_{aliv,bas,cty}
+       \nonumber\\[-0.3em]
+  &\quad
+       + pfeedcoef_{aliv,cty}
+         \cdot
+         \sum_{cfeed}
+         (1 - \overline{CSE}_{cfeed,cty})
+         \cdot
+         PC_{cfeed,cty}
+         \nonumber\\[-0.3em]
+  &\quad
+         \cdot
+         \sum_{cz,sys}
+         \Bigl(
+           czshare_{aliv,bas,cty,cz}
+           \cdot
+           SYSSHARE_{aliv,bas,cty,cz,sys}
+           \cdot
+           ICL_{aliv,cfeed,bas,cty,cz,sys}
+         \Bigr)
+         \nonumber\\[-0.3em]
+  &\quad
+       + PO_{aliv,bas,cty}
+     \Bigr)
+     / (1 + PPCOMP_{aliv,bas,cty})
+  \tag{PPLIVEQ}\label{eq:PPLIVEQ}
+\end{align}
+
+\paragraph{Grass Input Calculation}
+\begin{align}
+  Qgrass_{aliv,bas,cty}
+  &= 
+     \frac{
+       QS_{aliv,bas,cty}
+     }{
+       \overline{ANIMALPRODRATE}_{aliv,cty}
+     }
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \sum_{cz,sys}
+     \Bigl(
+       czshare_{aliv,bas,cty,cz}
+       \cdot
+       SYSSHARE_{aliv,bas,cty,cz,sys}
+       \nonumber\\[-0.3em]
+  &\quad
+       \cdot
+       \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}
+       \cdot
+       (1 - \overline{FEEDSHARE}_{aliv,bas,cty,cz,sys})
+     \Bigr)
+  \tag{QGRASSINPUTEQ}\label{eq:QGRASSINPUTEQ}
+\end{align}
+
+\paragraph{Available Grassland Area}
+\begin{align}
+  Qgrass_{aliv,bas,cty}
+  &= 
+     \Bigl(
+       QL_{aliv,bas,cty}
+       - 
+       \overline{QLRES}_{aliv,bas,cty}
+     \Bigr)
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \overline{GRASSYLD}_{bas,cty}
+     \cdot
+     grassusagerate_{bas,cty}
+  \tag{QLLIVINPUTEQ}\label{eq:QLLIVINPUTEQ}
+\end{align}
+
+
+\paragraph{Livestock Yield}
+\begin{align}
+  ANIMALYLD_{aliv,bas,cty}
+  &= \frac{
+       QS_{aliv,bas,cty}
+     }{
+       QL_{aliv,bas,cty}
+       - \overline{QLRES}_{aliv,bas,cty}
+     }
+  \tag{ANIMALYLDEQ}\label{eq:ANIMALYLDEQ}
+\end{align}
+
+\paragraph{Feed Input Calculation}
+\begin{align}
+  QFEED_{aliv,cfeed,bas,cty}
+  &= \frac{
+       QS_{aliv,bas,cty}
+     }{
+       \overline{ANIMALPRODRATE}_{aliv,cty}
+     }
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \sum_{cz,sys}
+     \bigl(
+       czshare_{aliv,bas,cty,cz}
+       \cdot SYSSHARE_{aliv,bas,cty,cz,sys}
+       \nonumber\\[-0.3em]
+  &\quad
+       \cdot ICL_{aliv,cfeed,bas,cty,cz,sys}
+     \bigr)
+  \tag{QFEEDINPUTEQ}\label{eq:QFEEDINPUTEQ}
+\end{align}
+
+\paragraph{Feed Input Coefficient}
+\begin{align}
+  ICL_{aliv,cfeed,bas,cty,cz,sys}
+  &= \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \overline{FEEDSHARE}_{aliv,bas,cty,cz,sys}
+     \cdot
+     \overline{GRAINSHARE}_{aliv,cfeed,bas,cty,cz,sys}
+  \tag{ICLEQ}\label{eq:ICLEQ}
+\end{align}
+
+\paragraph{Other Production Factor Price (Livestock)}
+\begin{align}
+  PO_{aliv,bas,cty}
+  &= \overline{POBASE}_{aliv,bas,cty}
+     \cdot
+     \left(
+       \frac{
+         QS_{aliv,bas,cty}
+       }{
+         \overline{QSPRE}_{aliv,bas,cty}
+       }
+     \right)^{elop_{aliv,cty}}
+  \tag{POLIVEQ}\label{eq:POLIVEQ}
+\end{align}
+
+\paragraph{Livestock Production Quantity}
+\begin{align}
+  QS_{aliv,bas,cty}
+  &= \overline{ANIMALWEIGHT}_{aliv,cty}
+     \cdot
+     (
+       ANIMAL_{aliv,bas,cty}
+       - \overline{ANIMALRES}_{aliv,bas,cty}
+     )
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \overline{ANIMALPRODRATE}_{aliv,cty}
+  \tag{ANIMALEQ}\label{eq:ANIMALEQ}
+\end{align}
+
+\subsubsection{Processed Goods produciton}
+
+This section describes the production equations for processed agricultural products.  
+Processed products are produced using intermediate inputs and other production factors.
+
+\paragraph{Producer Price of Processed Products}
+\begin{align}
+  PP_{apro,cty}
+  &= pintcoef_{apro,cty}
+     \cdot
+     \sum_{cint}
+     \Bigl(
+       (1 - \overline{CSE}_{cint,cty})
+       \cdot
+       PC_{cint,cty}
+       \cdot
+       ica_{apro,cint,cty}
+     \Bigr)
+     \nonumber\\[-0.3em]
+  &\quad
+     + PO_{apro,cty}
+  \tag{PPPROEQ}\label{eq:PPPROEQ}
+\end{align}
+
+\paragraph{Intermediate Input Demand for Processed Products}
+\begin{align}
+  QINT_{apro,cint,cty}
+  &= QSUP_{apro,cty}
+     \cdot
+     ica_{apro,cint,cty}
+  \tag{QINTINPUTEQ}\label{eq:QINTINPUTEQ}
+\end{align}
+
+\paragraph{Other Production Factor Price (Processed Products)}
+\begin{align}
+  PO_{apro,cty}
+  &= \overline{POBASE}_{apro,cty}
+     \cdot
+     \left(
+       \frac{
+         QSUP_{apro,cty}
+       }{
+         \overline{QSUPRE}_{apro,cty}
+       }
+     \right)^{elop_{apro,cty}}
+  \tag{POPROEQ}\label{eq:POPROEQ}
+\end{align}
+
+\subsubsection{Energy Crop Production}
+Energy crop production is determined from regional totals provided exogenously by the AIM-Hub model.
+
+
+\paragraph{Regional Energy Crop Supply Balance}
+\begin{align}
+  \overline{QENE}_{region}
+  &= \sum_{bas,cty \in region}
+     QS_{\mathrm{ecr},bas,cty}
+  \tag{QSENEEQ}\label{eq:QSENEEQ}
+\end{align}
+
+\paragraph{Land Input for Energy Crops}
+\begin{align}
+  QL_{\mathrm{ecr},bas,cty}
+  &= \frac{
+       QS_{\mathrm{ecr},bas,cty}
+     }{
+       YLD_{\mathrm{ecr},bas,cty}
+     }
+  \tag{QLENEINPUTEQ}\label{eq:QLENEINPUTEQ}
+\end{align}
+
+\paragraph{Land Price for Energy Crops}
+\begin{align}
+  PL_{\mathrm{ecr},bas,cty}
+  &= PENE_{region}
+  \tag{PLENEEQ}\label{eq:PLENEEQ}
+\end{align}
+
+
+
+\subsection{Land Use Block}
+
+The land-use block allocates available land among different uses through a Logit function.  
+Prices for non-human-used land (forest, other natural land, and fallow land) are fixed at their baseline values.  
+A constraint is imposed to ensure that total agricultural land does not exceed the physically available land area due to slope and soil limitations.  
+Afforestation areas are given exogenously from AIM-PLUM results.
+
+\paragraph{Vegetation Area}
+\begin{align}
+  QLVEG_{bas,cty}
+  &= 
+     \overline{QLTOT}_{bas,cty}
+     - 
+     \overline{QLVEGN}_{bas,cty}
+     -
+     \overline{QLAFR}_{bas,cty}
+  \tag{QLVEGEQ}\label{eq:QLVEGEQ}
+\end{align}
+
+\paragraph{Pasture Area Allocation}
+\begin{align}
+  QLPAS_{bas,cty}
+  &= 
+     QLVEG_{bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \frac{
+       \delta_{pas,bas,cty}
+       \cdot
+       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
+     }{
+       \delta_{pas,bas,cty}
+       \cdot
+       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
+       +
+       \delta_{pasn,bas,cty}
+       \cdot
+       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
+     }
+  \tag{QLPASEQ}\label{eq:QLPASEQ}
+\end{align}
+
+\paragraph{Non-pasture Grassland Area}
+\begin{align}
+  QLPASN_{bas,cty}
+  &=
+     QLVEG_{bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot
+     \frac{
+       \delta_{pasn,bas,cty}
+       \cdot
+       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
+     }{
+       \delta_{pas,bas,cty}
+       \cdot
+       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
+       +
+       \delta_{pasn,bas,cty}
+       \cdot
+       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
+     }
+  \tag{QLPASNEQ}\label{eq:QLPASNEQ}
+\end{align}
+
+\paragraph{Cropland Area}
+\begin{multline}
+  QLCRO_{bas,cty} = QLPASN_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
+  }{
+    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
+    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
+    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
+  }
+  \tag{QLCROEQ}\label{eq:QLCROEQ}
+\end{multline}
+
+\paragraph{Forest Area}
+\begin{multline}
+  QLFRS_{bas,cty} = QLPASN_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta_{frs,bas,cty}\cdot PLFRS_{bas,cty}^{\,\rho_{frs,bas,cty}}
+  }{
+    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
+    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
+    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
+  }
+  \tag{QLFRSEQ}\label{eq:QLFRSEQ}
+\end{multline}
+
+\paragraph{Other Natural Land}
+\begin{multline}
+  QLGRA_{bas,cty} = QLPASN_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta_{gra,bas,cty}\cdot PLGRA_{bas,cty}^{\,\rho_{gra,bas,cty}}
+  }{
+    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
+    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
+    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
+  }
+  \tag{QLGRAEQ}\label{eq:QLGRAEQ}
+\end{multline}
+
+\paragraph{Harvested Cropland Area}
+\begin{multline}
+  QLCROCLT_{bas,cty} = QLCRO_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
+  }{
+    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
+    + \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+  }
+  \tag{QLCROCLTEQ}\label{eq:QLCROCLTEQ}
+\end{multline}
+
+\paragraph{Fallow Cropland Area}
+\begin{multline}
+  QLCROFAL_{bas,cty} = QLCRO_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+  }{
+    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
+    + \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+  }
+  \tag{QLCROFALEQ}\label{eq:QLCROFALEQ}
+\end{multline}
+
+\paragraph{Cropland Allocation}
+\begin{align}
+  QL_{acro,bas,cty}
+  &= QLCROCLT_{bas,cty}
+     \cdot
+     \frac{
+       \delta_{acro,bas,cty}\cdot PL_{acro,bas,cty}^{\,\rho_{acro,bas,cty}}
+     }{
+       \sum_{acro}\delta_{acro,bas,cty}\cdot PL_{acro,bas,cty}^{\,\rho_{acro,bas,cty}}
+     }
+  \tag{QLCRODISTEQ}\label{eq:QLCRODISTEQ}
+\end{align}
+
+\paragraph{Pasture Allocation}
+\begin{align}
+  QL_{aliv,bas,cty}
+  &= QLPAS_{bas,cty}
+     \cdot
+     \frac{
+       \delta_{aliv,bas,cty}\cdot PL_{aliv,bas,cty}^{\,\rho_{aliv,bas,cty}}
+     }{
+       \sum_{aliv}\delta_{aliv,bas,cty}\cdot PL_{aliv,bas,cty}^{\,\rho_{aliv,bas,cty}}
+     }
+  \tag{QLLIVDISTEQ}\label{eq:QLLIVDISTEQ}
+\end{align}
+
+\paragraph{Land Prices}
+\begin{align}
+  PLCROCLT_{bas,cty}\cdot QLCROCLT_{bas,cty}
+  &= \sum_{acro} PL_{acro,bas,cty}\cdot QL_{acro,bas,cty}
+  \tag{PLCROCLTEQ}\label{eq:PLCROCLTEQ}
+  \shortintertext{\vspace{0.6\baselineskip}}
+  PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
+  &= \bigl(
+       PLCROCLT_{bas,cty}\cdot QLCROCLT_{bas,cty}
+       \nonumber\\[-0.3em]
+  &\quad
+       + \overline{PLCROFAL}_{bas,cty}\cdot QLCROFAL_{bas,cty}
+     \bigr)
+     \nonumber\\[-0.3em]
+  &\quad / (1 + PLCOMP_{bas,cty})
+  \tag{PLCROEQ}\label{eq:PLCROEQ}
+  \shortintertext{\vspace{0.6\baselineskip}}
+  PLPASN_{bas,cty}\cdot QLPASN_{bas,cty}
+  &= PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad + \overline{PLFRS}_{bas,cty}\cdot QLFRS_{bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad + \overline{PLGRA}_{bas,cty}\cdot QLGRA_{bas,cty}
+  \tag{PLPASNEQ}\label{eq:PLPASNEQ}
+  \shortintertext{\vspace{0.6\baselineskip}}
+  PLPAS_{bas,cty}\cdot QLPAS_{bas,cty}
+  &= \frac{\sum_{aliv} PL_{aliv,bas,cty}\cdot QL_{aliv,bas,cty}}
+          {1 + PLCOMP_{bas,cty}}
+  \tag{PLPASEQ}\label{eq:PLPASEQ}
+\end{align}
+
+\paragraph{Agricultural Land Constraint}
+\begin{align}
+  \overline{QLLIM}_{cty}
+  &\ge
+  QLCRO_{bas,cty} + QLPAS_{bas,cty}
+  \;\perp\;
+  PLCOMP_{bas,cty} \ge 0
+  \tag{QLLIMEQ}\label{eq:QLLIMEQ}
+\end{align}
+
+
+\subsection{Market Block}
+
+This subsection describes the equations in the market block, where consistency between food demand and supply is ensured.  
+Trade of food commodities is represented as a complementarity problem.  
+When the import price is higher than the border price, the import quantity becomes zero.  
+Once the import price decreases to equal the border price, imports begin.  
+Similarly, when the border price is higher than the export price, exports become zero, and once the export price rises to match the border price, exports take place.
+
+\paragraph{Domestic Trade Balance}
+\begin{align}
+  NT_{c,cty}
+  &= QSUP_{c,cty} - QDEM_{c,cty} - \overline{QST}_{c,cty}
+  \tag{NTEQ}\label{eq:NTEQ}\\[0.6em]
+  NT_{c,cty}
+  &= QE_{c,cty} - QM_{c,cty}
+  \tag{QEQMEQ}\label{eq:QEQMEQ}
+\end{align}
+
+\paragraph{International Trade Balance}
+\begin{align}
+  \sum_{cty} NT_{c,cty} - \overline{QRES}_{c} = 0
+  \tag{NT0EQ}\label{eq:NT0EQ}
+\end{align}
+
+\paragraph{Import and Export Conditions}
+\begin{align}
+  PM_{c,cty} &\ge PB_{c,cty}
+  \quad \perp \quad
+  QM_{c,cty} \ge 0
+  \tag{PBPMEQ}\label{eq:PBPMEQ}\\[0.4em]
+  PB_{c,cty} &\ge PE_{c,cty}
+  \quad \perp \quad
+  QE_{c,cty} \ge 0
+  \tag{PBPEEQ}\label{eq:PBPEEQ}
+\end{align}
+
+
+
+\subsection{GHG Emission Block}
+
+This subsection describes the equations in the GHG emission block.  
+GHG emissions are calculated based on the production quantities of each food commodity.  
+When carbon prices are considered, the amount of mitigation technology adoption and its cost are computed from the MAC (Marginal Abatement Cost) curve.  
+Emissions from the land-use sector are calculated according to each land area.
+
+\paragraph{GHG Emissions}
+\begin{align}
+  GHG_{a,src,gas,cty}
+  &= QSUP_{a,cty}
+     \cdot
+     \overline{EF}_{a,src,gas,cty}
+     \cdot
+     (1 - RR_{a,src,gas,cty})
+  \tag{GHGEQ}\label{eq:GHGEQ}
+\end{align}
+
+\paragraph{Land-Use Emissions}
+\begin{align}
+  GHGLU_{src,gas,bas,cty}
+  &= \overline{EF\_LU}_{src,gas,cty}
+     \cdot QLFRS_{bas,cty}
+     + \overline{EF\_LU}_{src,gas,cty}
+       \cdot QLGRA_{bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad
+     + \overline{EF\_LU}_{src,gas,cty}
+       \cdot QLCRO_{bas,cty}
+     + \overline{EF\_LU}_{src,gas,cty}
+       \cdot QLPAS_{bas,cty}
+  \tag{GHGLUEQ}\label{eq:GHGLUEQ}
+\end{align}
+
+\paragraph{Emission Reduction Rate}
+\begin{align}
+  RR_{a,src,gas,cty}
+  &= \overline{MRP}_{src,gas,cty}
+     \cdot
+     \Bigl(
+       1 -
+       \bigl[
+         1 / (1 + \overline{PRCCAR}_{cty})
+       \bigr]^{\sigma_{src,gas,cty}}
+     \Bigr)
+  \tag{RREQ}\label{eq:RREQ}
+\end{align}
+
+\paragraph{Abatement Cost}
+\begin{align}
+  AC_{a,cty}
+  &= \sum_{src,gas}
+     \overline{EF}_{a,src,gas,cty}
+     \cdot
+     \Biggl[
+       \frac{\sigma_{src,gas,cty}}
+            {(\sigma_{src,gas,cty}-1)}
+       \cdot
+       \overline{MRP}_{src,gas,cty}
+       \nonumber\\[-0.3em]
+  &\quad
+       \cdot
+       \Bigl(
+         1 -
+         \bigl(
+           1 -
+           RR_{a,src,gas,cty} /
+           \overline{MRP}_{src,gas,cty}
+         \bigr)^{(1 - 1/\sigma_{src,gas,cty})}
+       \Bigr)
+       - RR_{a,src,gas,cty}
+     \Biggr]
+  \tag{ACEQ}\label{eq:ACEQ}
+\end{align}
+
+\paragraph{Carbon Cost on Remaining Emissions}
+\begin{align}
+  PCB_{a,cty}
+  &= \sum_{src,gas}
+     \overline{PRCCAR}_{cty}
+     \cdot
+     \overline{EF}_{a,src,gas,cty}
+     \cdot
+     (1 - RR_{a,src,gas,cty})
+  \tag{PCBEQ}\label{eq:PCBEQ}
+\end{align}
+
+
+\subsection{Complementarity Conditions}
+
+This subsection describes the complementarity conditions introduced to avoid numerical errors in the Logit function when production quantities in specific production units become zero.  
+If the production of a unit becomes zero, its land-use area would also become zero, leading to instability.  
+Therefore, a minimum positive value is imposed to ensure that production quantities do not fall to zero.
+
+\paragraph{Minimum Production Share for Trade}
+\begin{align}
+  \frac{QSUP_{c,cty}}{QM_{c,cty}}
+  &\ge 0.01
+  \quad \perp \quad
+  TMCOMP_{c,cty} \ge 0
+  \tag{DEPQMEQ}\label{eq:DEPQMEQ}
+\end{align}
+
+\paragraph{Minimum Production Share for Supply}
+\begin{align}
+  \frac{QS_{a,bas,cty}}{QSUP_{a,cty}}
+  &\ge 0.01
+  \quad \perp \quad
+  PPCOMP_{a,bas,cty} \ge 0
+  \tag{QSBOUEQ}\label{eq:QSBOUEQ}
+\end{align}
