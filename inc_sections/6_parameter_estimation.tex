@@ -1,2 +1,292 @@
 % !TeX root = ../ALPHA_doc.tex
-Parameter estimation
+\subsection{Parameter estimation through regression analysis}
+
+This section presents the results of regression analyses used to estimate the parameters of the model.  
+In the following equations, variables with an overline represent the dependent and independent variables used in the regressions.
+
+\bigskip
+
+Since price elasticities in the model were assumed to vary with per-capita GDP, 
+the following regression equation was estimated:
+
+\begin{equation}
+\overline{elhp}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+\bigskip
+
+For livestock products, it was assumed that production systems change with economic development.  
+Thus, the parameters determining the production share were estimated using logistic regression analysis.  
+In this estimation, dummy variables were introduced to represent climatic zones.
+
+\begin{equation}
+\log \left(
+\frac{
+\overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}
+}{
+1 - \overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}
+}
+\right)
+= 
+\delta^{sys}_{(aliv,cz,sys)} + \rho^{sys}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+\bigskip
+
+It was further assumed that feed requirements and the share of concentrate feed 
+also change with the level of economic development.  
+Regression analyses were conducted using the following equations:
+
+\begin{align}
+\log \left( \overline{FEEDEFFICIENCY}_{(aliv,bas,cty,cz,sys)} \right)
+&= 
+\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,cz,sys)} \cdot \log(\overline{GDPPC}_{cty}) \\[6pt]
+\log \left(
+\frac{
+\overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+}{
+1 - \overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+}
+\right)
+&=
+\delta^{fs}_{(aliv,cz,sys)} + \rho^{fs}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\end{align}
+
+\bigskip
+
+Following Harmsen et al.\ (2019), the elasticity parameter 
+\(\sigma\) related to the adoption of emission-reduction technologies 
+was estimated using the following regression equation:
+
+\begin{equation}
+\log \left(
+1 - 
+\frac{
+\overline{RR}_{(src,gas,cty)}
+}{
+\overline{MRP}_{(src,gas,cty)}
+}
+\right)
+=
+\sigma_{(src,gas,cty)} \cdot \log(\overline{PRCCAR}_{cty} + 1)
+\end{equation}
+
+\bigskip
+
+\subsection{Results of parameter estimation}
+
+This section presents the results of the regression analyses conducted to estimate the model parameters.  
+Variables with an overline in the equations represent the data used in the regressions.
+
+\subsubsection{Relationship between price elasticity and per-capita GDP}
+
+Figure~\ref{fig:gdp_elasticity} illustrates the relationship between per-capita GDP and price elasticity.  
+Table~\ref{tab:price_elasticity} shows the estimated parameters and the coefficient of determination ($R^2$).  
+
+Since the model assumes that price elasticity varies with per-capita GDP, 
+the following regression equation was estimated:
+
+\begin{equation}
+\overline{elhp}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+For all commodities, the estimated elasticities increased with higher levels of per-capita GDP.  
+For most commodities, high coefficients of determination ($R^2 \approx 0.8$) were obtained.  
+However, for commodities such as sugars, eggs, and spices, $R^2$ values were lower, around 0.5 or 0.3.  
+The $p$-values for all regressions were below 0.001, indicating statistically significant relationships 
+between the variables.  
+Furthermore, the 95\% confidence intervals for $\beta^{pe}$ did not include zero, 
+confirming the statistical significance of the estimated coefficients.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{figs/figure3_1_gdp_elasticity.png}
+%     \caption{Relationship between per-capita GDP and price elasticity}
+%     \label{fig:gdp_elasticity}
+% \end{figure}
+
+\bigskip
+
+\begin{table}[H]
+    \centering
+    \caption{Estimated parameters of price elasticity from regression analysis 
+    (values in parentheses denote 95\% confidence intervals)}
+    \label{tab:price_elasticity}
+
+    \csvreader[
+        tabular={l r r r r r l},
+        table head=\toprule
+            Commodity & $\alpha_{pe}$ & $\beta_{pe}$ & \multicolumn{2}{c}{$\beta_{pe}$ (95\% CI)} & $R^2$ & $p$-value \\
+            \cmidrule(lr){4-5}
+            & & & lower & upper & & \\
+        \midrule,
+        late after line=\\,
+        table foot=\bottomrule
+    ]{data/reg_table1.csv}%
+    {commodity=\commodity, alphaPe=\alpha, betaPe=\beta, betaLow=\betalow, betaHigh=\betahigh, R2=\Rtwo, pValue=\pvalue}%
+    {%
+        \commodity &
+        \alpha &
+        \beta &
+        \betalow &
+        \betahigh &
+        \Rtwo &
+        \pvalue
+    }
+\end{table}
+
+
+\bigskip
+
+\subsubsection{Relationship between livestock production system share and per-capita GDP}
+
+Figure~\ref{fig:sys_share_gdp} illustrates the relationship between per-capita GDP and 
+the proportion of pasture-based production by livestock type and climatic zone.  
+Table~\ref{tab:sys_share_gdp} presents the estimated parameters.
+
+The following regression model was estimated:
+
+\begin{equation}
+\log\left(
+\frac{\overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}}{1 - \overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}}
+\right)
+=
+\delta^{sys}_{(aliv,cz,sys)} + \rho^{sys}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+As per-capita GDP increases, the share of pasture-based production decreases for all livestock products.  
+Adjusted coefficients of determination were moderate (0.2–0.3), and all $p$-values were below 0.001,  
+indicating statistically significant relationships.  
+The 95\% confidence intervals for $\rho^{sys}$ did not include zero,  
+confirming the significance of the coefficients.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{figure3_2_sys_share_gdp.png}
+%     \caption{Relationship between per-capita GDP and share of pasture-based production}
+%     \label{fig:sys_share_gdp}
+% \end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Estimated parameters for pasture-based production share (95\% confidence intervals in parentheses)}
+\label{tab:sys_share_gdp}
+\csvreader[
+    tabular={l l r r r r r l},
+    table head=\toprule
+        Commodity & $\rho_{sys}$ & \multicolumn{4}{c}{$\delta_{sys}$ by climate zone} & $R^2$ & $p$-value \\
+        \cmidrule(lr){3-6}
+        & & Arid & Temperate & Humid & HyperArid & & \\
+    \midrule,
+    late after line=\\,
+    table foot=\bottomrule
+]{data/reg_table2.csv}%
+{commodity=\commodity,rhoSys=\rho,deltaArid=\arid,deltaTemp=\temp,deltaHumid=\humid,deltaHyperArid=\hyper,R2=\Rtwo,pValue=\pval}%
+{\commodity & \rho & \arid & \temp & \humid & \hyper & \Rtwo & \pval}
+\end{table}
+
+
+\subsubsection{Relationship between feed efficiency and per-capita GDP}
+
+Figure~\ref{fig:feed_eff_gdp} shows the relationship between per-capita GDP and feed efficiency 
+by livestock type, climate zone, and production system.  
+Table~\ref{tab:feed_eff_gdp} presents the estimated regression parameters.
+
+The regression model used is expressed as:
+
+\begin{equation}
+\log(\overline{FEEDEFFICIENCY}_{(aliv,bas,cty,cz,sys)}) =
+\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+Higher per-capita GDP is associated with lower feed requirements.  
+For ruminants, the adjusted $R^2$ ranged from 0.66 to 0.97, indicating high explanatory power,  
+while for poultry and other livestock it was relatively low (0.22 and 0.05, respectively).  
+The coefficients $\beta^{fe}$ were smaller for ruminants, suggesting stronger efficiency improvements 
+with economic development.  
+All $p$-values were below 0.001, and the 95\% confidence intervals for $\alpha^{fe}$ 
+did not include zero, confirming statistical significance.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{figure3_3_feed_efficiency.png}
+%     \caption{Relationship between per-capita GDP and feed efficiency}
+%     \label{fig:feed_eff_gdp}
+% \end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Estimated parameters of feed efficiency (95\% confidence intervals in parentheses)}
+\label{tab:feed_eff_gdp}
+\csvreader[
+    tabular={l l l r r r r r r l},
+    table head=\toprule
+        Commodity & System & $\beta_{fe}$ & \multicolumn{5}{c}{$\alpha_{fe}$ by climate zone} & $R^2$ & $p$-value \\
+        \cmidrule(lr){4-8}
+        & & & Arid & Temperate & Humid & HyperArid & Total & & \\
+    \midrule,
+    late after line=\\,
+    table foot=\bottomrule
+]{data/reg_table3.csv}%
+{commodity=\commodity,system=\system,betaFe=\beta,alphaArid=\arid,alphaTemp=\temp,alphaHumid=\humid,alphaHyperArid=\hyper,alphaTotal=\total,R2=\Rtwo,pValue=\pval}%
+{\commodity & \system & \beta & \arid & \temp & \humid & \hyper & \total & \Rtwo & \pval}
+\end{table}
+
+\subsubsection{Relationship between concentrate feed share and per-capita GDP}
+
+Figure~\ref{fig:feedshare_gdp} shows the relationship between per-capita GDP and 
+the share of concentrate feed by livestock type, climatic zone, and production system.  
+Table~\ref{tab:feedshare_gdp} reports the estimated regression parameters.  
+Poultry and other livestock are excluded from the analysis because they do not consume pasture.
+
+The following regression model was estimated:
+
+\begin{equation}
+\log \left(
+\frac{
+\overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+}{
+1 - \overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+}
+\right)
+=
+\delta^{fs}_{(aliv,cz,sys)} + \rho^{fs}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\end{equation}
+
+The results indicate that higher per-capita GDP is associated with 
+a higher share of concentrate feed and a lower share of pasture.  
+Adjusted coefficients of determination range from 0.74 to 0.90, 
+indicating a relatively high explanatory power.  
+All $p$-values are below 0.001, suggesting statistically significant relationships 
+between the variables.  
+Furthermore, the 95\% confidence intervals for $\rho^{fs}$ do not include zero, 
+which confirms the statistical significance of the estimated coefficients.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{figure3_4_feedshare_gdp.png}
+%     \caption{Relationship between per-capita GDP and concentrate feed share}
+%     \label{fig:feedshare_gdp}
+% \end{figure}
+
+
+\begin{table}[H]
+\centering
+\caption{Estimated parameters of concentrate feed share 
+(95\% confidence intervals in parentheses)}
+\label{tab:feedshare_gdp}
+
+\csvreader[
+    tabular={l l l r r r r r l},
+    table head=\toprule
+        Commodity & System & $\rho_{fs}$ & \multicolumn{4}{c}{$\delta_{fs}$ by climate zone} & $R^2$ & $p$-value \\
+        \cmidrule(lr){4-7}
+        & & & Arid & Temperate & Humid & HyperArid & & \\
+    \midrule,
+    late after line=\\,
+    table foot=\bottomrule
+]{data/reg_table4.csv}%
+{commodity=\commodity,system=\system,rhoFs=\rho,deltaArid=\arid,deltaTemp=\temp,deltaHumid=\humid,deltaHyperArid=\hyper,R2=\Rtwo,pValue=\pval}%
+{\commodity & \system & \rho & \arid & \temp & \humid & \hyper & \Rtwo & \pval}
+\end{table}
+

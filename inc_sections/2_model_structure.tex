@@ -1,7 +1,7 @@
 % !TeX root = ../ALPHA_doc.tex
 This section provides an overview of the AIM-ALPHA model. AIM-ALPHA is a recursive-dynamic partial equilibrium model 
 focusing on agricultural markets and land use, operating with an annual time step. The model uses 2015 as the base year 
-and projects up to 2100. It is formulated as a nonlinear complementarity problem (NCP) and handles approximately 200,000 variables. 
+and projects up to 2100. It is formulated as a mixed complementarity problem (MCP) and handles approximately 200,000 variables. 
 
 On the spatial dimension, the demand side covers 166 countries and regions globally, while the production side consists of 
 400 production units. These production units are defined by overlaying the 166 demand regions with FAO’s 230 major river basin boundaries. 
@@ -32,7 +32,7 @@ that were not produced or traded in the base year are assumed to remain inactive
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth,height=0.78\textheight,keepaspectratio]{fig2}
-  \caption{Geographical coverage of demand regions (166) and production units (400).}
+  \caption{Geographical coverage of countries (166) and production units (400).}
   \label{fig:regions}
 \end{figure}
 

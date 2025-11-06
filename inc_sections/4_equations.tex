@@ -349,17 +349,14 @@ Feed use and production efficiency depend on feed composition, feed efficiency, 
 \end{align}
 
 \paragraph{Feed Input Coefficient}
-\begin{align}
-  ICL_{aliv,cfeed,bas,cty,cz,sys}
-  &= \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}
-     \nonumber\\[-0.3em]
-  &\quad
+\begin{multline}
+  ICL_{aliv,cfeed,bas,cty,cz,sys} = \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}\\
      \cdot
      \overline{FEEDSHARE}_{aliv,bas,cty,cz,sys}
      \cdot
      \overline{GRAINSHARE}_{aliv,cfeed,bas,cty,cz,sys}
   \tag{ICLEQ}\label{eq:ICLEQ}
-\end{align}
+\end{multline}
 
 \paragraph{Other Production Factor Price (Livestock)}
 \begin{align}
@@ -549,7 +546,7 @@ Afforestation areas are given exogenously from AIM-PLUM results.
     \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
     + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
     + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }
+  }\\
   \tag{QLCROEQ}\label{eq:QLCROEQ}
 \end{multline}
 
@@ -563,7 +560,7 @@ Afforestation areas are given exogenously from AIM-PLUM results.
     \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
     + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
     + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }
+  }\\
   \tag{QLFRSEQ}\label{eq:QLFRSEQ}
 \end{multline}
 
@@ -577,7 +574,7 @@ Afforestation areas are given exogenously from AIM-PLUM results.
     \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
     + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
     + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }
+  }\\
   \tag{QLGRAEQ}\label{eq:QLGRAEQ}
 \end{multline}
 

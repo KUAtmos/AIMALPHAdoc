@@ -1,1 +1,181 @@
 % !TeX root = ../ALPHA_doc.tex
+\subsection{Model Calculation Flow}
+
+Figure~\ref{fig:model_flow} shows the processing flow of the AgLU model.  
+The model begins with the processing of the original data sources, 
+including extraction of necessary information, aggregation of gridded datasets, 
+and conversion of data formats.  
+Next, the processed data are adjusted through parameter estimation via regression analysis, 
+data calibration to ensure equilibrium in the base year, 
+and coefficient calibration for model consistency.  
+
+Using these prepared data, the model then performs future scenario calculations.  
+For each year, equilibrium solutions are iteratively computed based on 
+the base-year data, the results of the previous year, and the scenario assumptions.  
+The aggregated annual results provide the final outputs for each scenario.  
+Additionally, model results are converted into the submission templates 
+of AgMIP (Agricultural Model Intercomparison and Improvement Project) 
+and IAMC (Integrated Assessment Modeling Consortium) 
+to facilitate data exchange and comparison.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.85\textwidth]{figure4_1_model_flow.png}
+%     \caption{Processing flow of the AgLU model}
+%     \label{fig:model_flow}
+% \end{figure}
+
+\bigskip
+
+\subsection{Programs within the Model}
+
+This section provides an overview of the major programs used in the AgLU model.  
+Each component plays a specific role in data processing, parameter calibration, and scenario simulation.
+
+\medskip
+
+% Refined tcolorbox style for a more formal academic tone
+\newtcolorbox{programbox}[2][]{
+  enhanced,
+  sharp corners,
+  colback=Accent!3!white,          
+  colframe=Accent!70!black,        
+  boxrule=0.5pt,                   
+  left=7pt, right=7pt, top=5pt, bottom=5pt,
+  title=\texttt{#2},
+  coltitle=Primary!85!black,       
+  fonttitle=\ttfamily\bfseries\small,
+  attach boxed title to top left={xshift=0pt,yshift*=-1mm},
+  boxed title style={
+    colback=Accent!12!white,       
+    colframe=Accent!60!black,
+    boxrule=0pt,
+    sharp corners,
+    top=1pt, bottom=1pt,
+  },
+  before skip=8pt, after skip=8pt,
+  #1
+}
+
+
+\begin{programbox}{0\_csv\_to\_gdx.R}
+Converts datasets in \texttt{csv} or \texttt{xlsx} format into \texttt{gdx} format.  
+This script processes raw datasets such as FAOSTAT and MAC Curve sources.
+\end{programbox}
+
+\begin{programbox}{0\_grid\_data.R}
+Aggregates gridded datasets by country and production unit, and exports the results in \texttt{gdx} format.  
+It processes geospatial data from sources such as GAEZ, Livestock System, and LUH2.
+\end{programbox}
+
+\begin{programbox}{1\_data\_import.gms}
+Integrates and reformats the \texttt{gdx}-formatted datasets into structures compatible with the model’s computation framework.  
+It performs country code conversions, consolidates data into AgLU’s food and land-use classifications,  
+and includes submodules that output historical data in AgMIP and IAMC template formats.
+\end{programbox}
+
+\begin{programbox}{1-5\_regression.gms}
+Performs parameter regression analyses based on the original datasets to estimate elasticities and adjustment coefficients.
+\end{programbox}
+
+\begin{programbox}{2\_basetear.gms}
+Adjusts baseline datasets to ensure equilibrium consistency in the base year.
+\end{programbox}
+
+\begin{programbox}{3\_equilibrium.gms}
+Solves for annual equilibrium states for future years, using base-year data and previous results as inputs.
+\end{programbox}
+
+\begin{programbox}{4\_combine\_gdx.gms}
+Aggregates annual simulation outputs and compiles them into scenario-level result files.
+\end{programbox}
+
+\begin{programbox}{5\_scenario\_combine.gms}
+Combines outputs from all scenarios to produce the comprehensive simulation dataset.
+\end{programbox}
+
+\begin{programbox}{Visualization.R}
+Generates graphical outputs and visualization figures from the simulation results.
+\end{programbox}
+
+
+\bigskip
+
+\subsection{Execution Method}
+
+The AgLU model can be executed by running the shell script 
+\texttt{AgLU/shell/execution.sh} on either Cygwin or Ubuntu environments.  
+Model configurations are defined in \texttt{AgLU/shell/model\_setting.sh}.  
+As summarized in Table~\ref{tab:model_setting}, the configurable items include 
+the selection of executable programs, scenario settings, and computational environment settings.
+
+\begin{table}[H]
+\centering
+\caption{Model configuration parameters in \texttt{model\_setting.sh}}
+\label{tab:model_setting}
+\scriptsize
+\begin{xltabular}{\textwidth}{@{} l X l @{}}
+\toprule
+\textbf{Setting item} & \textbf{Description} & \textbf{Default} \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Model switches}} \\[2pt]
+\midrule
+\texttt{data\_download} & Executes a script to download data from submodules when the repository is first cloned.  
+Once downloaded, this can be turned off. & on \\
+\texttt{data\_import} & Executes \texttt{1\_data\_import.gms} and \texttt{1-5\_regression.gms}. & on \\
+\texttt{baseyear\_run} & Executes \texttt{2\_baseyear.gms}. & on \\
+\texttt{model\_run} & Executes \texttt{3\_equilibirium.gms}. & on \\
+\texttt{combine\_gdx} & Executes \texttt{4\_combine\_gdx.gms}. & on \\
+\texttt{scenario\_combine} & Executes \texttt{5\_scenario\_combine.gms}. & on \\
+\texttt{Visualization} & Executes \texttt{Visualization.R}. & on \\
+\texttt{data\_update} & Executes \texttt{0\_csv\_to\_gdx.R}.  
+If no data update is needed, this may be turned off. & off \\
+\texttt{grid\_data} & Executes \texttt{0\_grid\_data.R}.  
+If no data update is needed, this may be turned off.  
+If executed, the folder \texttt{L/ModelData/AgLU/grid} must be copied to \texttt{AgLU/data}. & off \\
+\texttt{Scenario\_compare} & Enables comparison across scenarios in plots. & off \\
+\texttt{Model\_compare} & Enables comparison across models in plots. & off \\
+\texttt{historical\_check} & Compares simulated and historical data in plots. & off \\
+\texttt{aggregate} & Performs aggregation of results into 17-region, 10-region, and 5-region groupings. & on \\
+\texttt{AGMIP} & Outputs results in AGMIP and IAMC\_Template formats. & on \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Scenario settings}} \\[2pt]
+\midrule
+\texttt{socioeconomic\_setting} & Specifies the socioeconomic scenario.  
+A file with the scenario name should exist in \texttt{AgLU/setting/socioeconomic}. & SSP2\_BaU \\
+\texttt{climate\_setting} & Specifies the climate scenario.  
+A file with the scenario name should exist in \texttt{AgLU/setting/climate}. & NoCC \\
+\texttt{runlist} & Allows individual scenario specification without using the socioeconomic–climate matrix.  
+Scenario names are defined as combined strings (e.g., \texttt{SSP2\_BaU-NoCC}).  
+If this item is specified, the two settings above are ignored. & -- \\
+\texttt{start\_year} & Starting year of simulation. & 2015 \\
+\texttt{target\_year} & Ending year of simulation. & 2100 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{Execution environment}} \\[2pt]
+\midrule
+\texttt{run\_single} & Runs the model for one scenario at a time. & on \\
+\texttt{run\_paralell} & Runs scenarios in parallel. & off \\
+\texttt{iteration\_number} & Number of iterations per year.  
+Larger values improve convergence but increase computation time. & 0 \\
+\texttt{NCPU} & Maximum number of CPUs used for parallel computation. & 8 \\
+\texttt{mem\_check} & Performs memory usage checks (Windows only). & off \\
+\texttt{mem\_threshold} & Memory usage threshold (\%) at which parallel computation pauses when \texttt{mem\_check} is enabled. & 80 \\
+\bottomrule
+\end{xltabular}
+\end{table}
+
+\subsection{Execution Environment Requirements}
+
+The model can be executed under either Cygwin or Ubuntu with the following dependencies installed:
+
+\begin{itemize}[leftmargin=2.5em]
+  \item \textbf{Cygwin} (required packages: \texttt{zip}, \texttt{unzip})
+  \item \textbf{Ubuntu}
+  \item \textbf{R 4.3.2} (required libraries: 
+  \texttt{tidyverse}, \texttt{gdxrrw}, \texttt{openxlsx}, \texttt{readxl}, 
+  \texttt{ggplot2}, \texttt{furrr}, \texttt{ggpmisc}, \texttt{patchwork}, 
+  \texttt{sf}, \texttt{raster}, \texttt{ncdf4}, \texttt{exactextractr}, 
+  \texttt{rmapshaper}, \texttt{grDevices})
+  \item \textbf{GAMS 38}
+  \item \textbf{GitHub}
+\end{itemize}
