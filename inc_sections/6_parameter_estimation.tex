@@ -98,19 +98,18 @@ between the variables.
 Furthermore, the 95\% confidence intervals for $\beta^{pe}$ did not include zero, 
 confirming the statistical significance of the estimated coefficients.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{figs/figure3_1_gdp_elasticity.png}
-%     \caption{Relationship between per-capita GDP and price elasticity}
-%     \label{fig:gdp_elasticity}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig6_1}
+    \caption{Relationship between per-capita GDP and price elasticity}
+    \label{fig:gdp_elasticity}
+\end{figure}
 
 \bigskip
 
 \begin{table}[H]
     \centering
-    \caption{Estimated parameters of price elasticity from regression analysis 
-    (values in parentheses denote 95\% confidence intervals)}
+    \caption{Estimated parameters of price elasticity from regression analysis}
     \label{tab:price_elasticity}
 
     \csvreader[
@@ -122,18 +121,28 @@ confirming the statistical significance of the estimated coefficients.
         \midrule,
         late after line=\\,
         table foot=\bottomrule
-    ]{data/reg_table1.csv}%
-    {commodity=\commodity, alphaPe=\alpha, betaPe=\beta, betaLow=\betalow, betaHigh=\betahigh, R2=\Rtwo, pValue=\pvalue}%
+    ]{data/table6_1.csv}%
+    {%
+      c_list=\commodity,
+      alpha=\alphaval,
+      beta=\betaval,
+      lower=\betalow,
+      upper=\betahigh,
+      r2=\Rtwo,
+      p=\pvalue
+    }%
     {%
         \commodity &
-        \alpha &
-        \beta &
-        \betalow &
-        \betahigh &
-        \Rtwo &
-        \pvalue
+        \num[round-mode=places,round-precision=2]{\alphaval} &
+        \num[round-mode=places,round-precision=2]{\betaval} &
+        \num[round-mode=places,round-precision=2]{\betalow} &
+        \num[round-mode=places,round-precision=2]{\betahigh} &
+        \num[round-mode=places,round-precision=2]{\Rtwo} &
+        $<0.001$%
     }
 \end{table}
+
+
 
 
 \bigskip
@@ -160,12 +169,12 @@ indicating statistically significant relationships.
 The 95\% confidence intervals for $\rho^{sys}$ did not include zero,  
 confirming the significance of the coefficients.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{figure3_2_sys_share_gdp.png}
-%     \caption{Relationship between per-capita GDP and share of pasture-based production}
-%     \label{fig:sys_share_gdp}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig6_2}
+    \caption{Relationship between per-capita GDP and share of pasture-based production}
+    \label{fig:sys_share_gdp}
+\end{figure}
 
 \begin{table}[H]
 \centering
@@ -180,11 +189,36 @@ confirming the significance of the coefficients.
     \midrule,
     late after line=\\,
     table foot=\bottomrule
-]{data/reg_table2.csv}%
-{commodity=\commodity,rhoSys=\rho,deltaArid=\arid,deltaTemp=\temp,deltaHumid=\humid,deltaHyperArid=\hyper,R2=\Rtwo,pValue=\pval}%
-{\commodity & \rho & \arid & \temp & \humid & \hyper & \Rtwo & \pval}
+]{data/table6_2.csv}%
+{%
+  c_list=\commodity,
+  ro=\rhoval,
+  delta_A=\arid,
+  delta_T=\temp,
+  delta_H=\humid,
+  delta_Y=\hyper,
+  r2=\Rtwo,
+  lower=\lowerci,
+  upper=\upperci,
+  p=\pval
+}%
+{%
+    \commodity &
+    % rho_sys with 95% CI, rounded
+    $\num[round-mode=places,round-precision=2]{\rhoval}$%
+    \,($\num[round-mode=places,round-precision=2]{\lowerci}$--$\num[round-mode=places,round-precision=2]{\upperci}$) &
+    \num[round-mode=places,round-precision=2]{\arid} &
+    \num[round-mode=places,round-precision=2]{\temp} &
+    \num[round-mode=places,round-precision=2]{\humid} &
+    \num[round-mode=places,round-precision=2]{\hyper} &
+    \num[round-mode=places,round-precision=2]{\Rtwo} &
+    $<0.001$%
+}
 \end{table}
 
+
+
+\bigskip
 
 \subsubsection{Relationship between feed efficiency and per-capita GDP}
 
@@ -207,19 +241,22 @@ with economic development.
 All $p$-values were below 0.001, and the 95\% confidence intervals for $\alpha^{fe}$ 
 did not include zero, confirming statistical significance.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{figure3_3_feed_efficiency.png}
-%     \caption{Relationship between per-capita GDP and feed efficiency}
-%     \label{fig:feed_eff_gdp}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig6_3}
+    \caption{Relationship between per-capita GDP and feed efficiency}
+    \label{fig:feed_eff_gdp}
+\end{figure}
 
 \begin{table}[H]
 \centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
 \caption{Estimated parameters of feed efficiency (95\% confidence intervals in parentheses)}
 \label{tab:feed_eff_gdp}
+\resizebox{\textwidth}{!}{%
 \csvreader[
-    tabular={l l l r r r r r r l},
+    tabular={@{} l l l r r r r r r l @{}},
     table head=\toprule
         Commodity & System & $\beta_{fe}$ & \multicolumn{5}{c}{$\alpha_{fe}$ by climate zone} & $R^2$ & $p$-value \\
         \cmidrule(lr){4-8}
@@ -227,10 +264,45 @@ did not include zero, confirming statistical significance.
     \midrule,
     late after line=\\,
     table foot=\bottomrule
-]{data/reg_table3.csv}%
-{commodity=\commodity,system=\system,betaFe=\beta,alphaArid=\arid,alphaTemp=\temp,alphaHumid=\humid,alphaHyperArid=\hyper,alphaTotal=\total,R2=\Rtwo,pValue=\pval}%
-{\commodity & \system & \beta & \arid & \temp & \humid & \hyper & \total & \Rtwo & \pval}
+]{data/table6_3.csv}% 
+{%
+  c_list   = \commodity,
+  beta     = \betaval,
+  alpha_A  = \alphaA,
+  alpha_T  = \alphaT,
+  alpha_H  = \alphaH,
+  alpha_Y  = \alphaY,
+  alpha_tot= \alphaTot,
+  r2       = \Rtwo,
+  lower    = \lowerci,
+  upper    = \upperci,
+  p        = \pval,
+  sys      = \system
+}% 
+{%
+    \commodity &
+    \system &
+    % beta_fe with 95% CI
+    $\num[round-mode=places,round-precision=2]{\betaval}$%
+    \,($\num[round-mode=places,round-precision=2]{\lowerci}$--$\num[round-mode=places,round-precision=2]{\upperci}$) &
+    % alpha_fe by climate zone 
+    \IfStrEq{\alphaA}{NA}{}{%
+      \num[round-mode=places,round-precision=2]{\alphaA}} &
+    \IfStrEq{\alphaT}{NA}{}{%
+      \num[round-mode=places,round-precision=2]{\alphaT}} &
+    \IfStrEq{\alphaH}{NA}{}{%
+      \num[round-mode=places,round-precision=2]{\alphaH}} &
+    \IfStrEq{\alphaY}{NA}{}{%
+      \num[round-mode=places,round-precision=2]{\alphaY}} &
+    \IfStrEq{\alphaTot}{NA}{}{%
+      \num[round-mode=places,round-precision=2]{\alphaTot}} &
+    \num[round-mode=places,round-precision=2]{\Rtwo} &
+    $<0.001$%
+}
+}% end resizebox
 \end{table}
+
+\bigskip
 
 \subsubsection{Relationship between concentrate feed share and per-capita GDP}
 
@@ -262,12 +334,12 @@ between the variables.
 Furthermore, the 95\% confidence intervals for $\rho^{fs}$ do not include zero, 
 which confirms the statistical significance of the estimated coefficients.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{figure3_4_feedshare_gdp.png}
-%     \caption{Relationship between per-capita GDP and concentrate feed share}
-%     \label{fig:feedshare_gdp}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig6_4}
+    \caption{Relationship between per-capita GDP and concentrate feed share}
+    \label{fig:feedshare_gdp}
+\end{figure}
 
 
 \begin{table}[H]
@@ -285,8 +357,32 @@ which confirms the statistical significance of the estimated coefficients.
     \midrule,
     late after line=\\,
     table foot=\bottomrule
-]{data/reg_table4.csv}%
-{commodity=\commodity,system=\system,rhoFs=\rho,deltaArid=\arid,deltaTemp=\temp,deltaHumid=\humid,deltaHyperArid=\hyper,R2=\Rtwo,pValue=\pval}%
-{\commodity & \system & \rho & \arid & \temp & \humid & \hyper & \Rtwo & \pval}
+]{data/table6_4.csv}%
+{%
+  c_list  = \commodity,
+  sys     = \system,
+  beta    = \rhoval, 
+  alpha_A = \deltaA,
+  alpha_T = \deltaT,
+  alpha_H = \deltaH,
+  alpha_Y = \deltaY,
+  r2      = \Rtwo,
+  lower   = \lowerci,
+  upper   = \upperci,
+  p       = \pval
+}%
+{%
+    \commodity &
+    \system &
+    % rho_fs with 95% CI
+    $\num[round-mode=places,round-precision=2]{\rhoval}$%
+    \,($\num[round-mode=places,round-precision=2]{\lowerci}$--$\num[round-mode=places,round-precision=2]{\upperci}$) &
+    \num[round-mode=places,round-precision=2]{\deltaA} &
+    \num[round-mode=places,round-precision=2]{\deltaT} &
+    \num[round-mode=places,round-precision=2]{\deltaH} &
+    \num[round-mode=places,round-precision=2]{\deltaY} &
+    \num[round-mode=places,round-precision=2]{\Rtwo} &
+    $<0.001$%
+}
 \end{table}
 

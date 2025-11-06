@@ -8,3 +8,5 @@
 *.xml
 *.gz
 *.toc
+data.gdx
+baseyear.gdx

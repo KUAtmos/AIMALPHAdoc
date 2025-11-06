@@ -1,9 +1,14 @@
 % !TeX root = ../ALPHA_doc.tex
 This section explains the calibration and processing of data used in the model.  
 Exogenous variables and parameters were estimated using multiple datasets, adjusted to 
-obtain equilibrium in the base year, and parameters were estimated by regression analysis.  
+obtain equilibrium in the base year, and parameters were estimated by regression analysis.
+
+\bigskip
+
 \subsection{Data Sources}
 Table~\ref{tab:data_sources} lists the datasets used in the model.
+
+\clearpage
 
 \begin{xltabular}{\linewidth}{l X X}
   \caption{List of data sources}\label{tab:data_sources}\\
@@ -65,8 +70,8 @@ To distinguish this, waste rates by seven commodities and seven regions were obt
 Using these coefficients, household consumption and food waste were estimated as follows:
 
 \begin{align}
-QWASTE_{(c,cty)} &= QH^{FAO}_{(c,cty)} \times WASTERATE_{(c,cty)} \\
-QH_{(c,cty)} &= QH^{FAO}_{(c,cty)} \times (1 - WASTERATE_{(c,cty)})
+QWASTE_{(c,cty)} &= QH^{FAO}_{(c,cty)} \cdot WASTERATE_{(c,cty)} \\
+QH_{(c,cty)} &= QH^{FAO}_{(c,cty)} \cdot (1 - WASTERATE_{(c,cty)})
 \end{align}
 
 For model simplification, the commodities used as livestock feed, processing materials, and biofuel inputs were limited. 
@@ -103,7 +108,7 @@ These were disaggregated into production units and production technologies using
 
 \begin{equation}
 QSWAT_{(acro,bas,cty,water)} = 
-QSUP^{FAO}_{(acro,cty)} \times 
+QSUP^{FAO}_{(acro,cty)} \cdot 
 \frac{QS^{GAEZ}_{(acro,bas,cty,water)}}{\sum_{(bas,water)} QS^{GAEZ}_{(acro,bas,cty,water)}}
 \end{equation}
 
@@ -115,10 +120,10 @@ Using the FAOSTAT data on national land use, these cultivated lands were divided
 
 \begin{align}
 QLCROCLT_{(bas,cty)} &= 
-QLCRO^{LUH2}_{(bas,cty)} \times 
+QLCRO^{LUH2}_{(bas,cty)} \cdot 
 \frac{QLCROCLT^{FAO}_{cty}}{QLCROCLT^{FAO}_{cty} + QLCROFAL^{FAO}_{cty}} \\
 QLCROFAL_{(bas,cty)} &= 
-QLCRO^{LUH2}_{(bas,cty)} \times 
+QLCRO^{LUH2}_{(bas,cty)} \cdot 
 \frac{QLCROFAL^{FAO}_{cty}}{QLCROCLT^{FAO}_{cty} + QLCROFAL^{FAO}_{cty}}
 \end{align}
 
@@ -131,7 +136,7 @@ using GAEZ data as follows:
 
 \begin{equation}
 QLWAT_{(acro,bas,cty,water)} = 
-QLCROCLT_{(bas,cty)} \times 
+QLCROCLT_{(bas,cty)} \cdot 
 \frac{QL^{GAEZ}_{(acro,bas,cty,water)}}{\sum_{(acro,water)} QL^{GAEZ}_{(acro,bas,cty,water)}}
 \end{equation}
 
@@ -147,15 +152,15 @@ CROPINTESNSITY_{(acro,bas,cty,water)} =
 \frac{QLHARVESTED^{MAPSPAM}_{(acro,bas,cty,water)}}{QLPHYSICAL^{MAPSPAM}_{(acro,bas,cty,water)}}
 \end{equation}
 
-where \( QLHARVESTED^{MAPSPAM} \) is the harvested area data from MAPSPAM, 
-and \( QLPHYSICAL^{MAPSPAM} \) is the physical area data from MAPSPAM.
+where \( QLHARVESTED^{MAPSPAM} \) is the harvested area data from MAPSPAM, and \\
+\( QLPHYSICAL^{MAPSPAM} \) is the physical area data from MAPSPAM.
 
 Crop yields were calculated using the obtained production quantities, harvested areas, 
 and cropping intensities as follows:
 
 \begin{equation}
 YLD_{(acro,bas,cty,water)} = 
-\frac{QSWAT_{(acro,bas,cty,water)}}{QLWAT_{(acro,bas,cty,water)} \times CROPINTSNSITY_{(acro,bas,cty,water)}}
+\frac{QSWAT_{(acro,bas,cty,water)}}{QLWAT_{(acro,bas,cty,water)} \cdot CROPINTSNSITY_{(acro,bas,cty,water)}}
 \end{equation}
 
 
@@ -173,7 +178,9 @@ ANIMALPRODRATE_{(aliv,cty)} &=
 ANIMALRES_{(aliv,cty)} &= 
 ANIMALSTOCK^{FAO}_{(aliv,cty)} - 
 \frac{ANIMAL^{FAO}_{(aliv,cty)}}{0.3} 
-\quad (\text{if } ANIMALPRODRATE_{(aliv,cty)} < 0.3)
+\nonumber\\[-0.3em]
+&\quad
+\quad (\text{if } ANIMALPRODRATE_{(aliv,cty)} < 0.3) 
 \end{align}
 
 where \( ANIMAL^{FAO} \) is the number of slaughtered (or milked) animals from FAO, 
@@ -183,7 +190,7 @@ When non-productive livestock exist, the corresponding unused pasture area was e
 
 \begin{equation}
 QLPASRES_{(aliv,cty)} = 
-QLPAS^{LUH2}_{(aliv,cty)} \times 
+QLPAS^{LUH2}_{(aliv,cty)} \cdot 
 \frac{ANIMALRES_{(aliv,cty)}}{ANIMALSTOCK^{FAO}_{(aliv,cty)}}
 \end{equation}
 
@@ -198,12 +205,14 @@ climate zone, and production system.
 
 \begin{align}
 QSSYS_{(aliv,bas,cty,cz,sys)} &= 
-QSUP^{FAO}_{(aliv,cty)} \times 
+QSUP^{FAO}_{(aliv,cty)} \cdot 
 \frac{QS^{HERRERO}_{(aliv,bas,cty,cz,sys)}}
 {\sum_{(bas,cz,sys)} QS^{HERRERO}_{(aliv,bas,cty,cz,sys)}} \\
 QLSYS_{(aliv,bas,cty,cz,sys)} &= 
 \big(QLPAS^{LUH2}_{(cty,bas)} - QLPASRES_{(aliv,cty)}\big) 
-\times 
+\nonumber\\[-0.3em]
+  &\quad
+\cdot 
 \frac{QGRASS^{HERRERO}_{(aliv,bas,cty,cz,sys)}}
 {\sum_{(aliv,cz,sys)} QGRASS^{HERRERO}_{(aliv,bas,cty,cz,sys)}}
 \end{align}
@@ -233,32 +242,53 @@ Consequently, the feed efficiency and concentrate feed share were also adjusted.
 If the estimated pasture use exceeded the available supply, 
 it was replaced with the available amount.
 
-\begin{align}
-QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)} &= 
-\frac{QSSYS_{(aliv,bas,cty,cz,sys)}}{ANIMALPRODRATE_{(aliv,cty)}} 
-\times FEEDEFFICIENCY_{(aliv,bas,cty,cz,sys)} 
-\times FEEDSHARE_{(aliv,bas,cty,cz,sys)} 
-\times \frac{QF^{FAO}_{(cfeed,cty)}}{\sum_{cfeed} QF^{FAO}_{(cfeed,cty)}} \\
-qfcoef_{(cfeed,cty)} &= 
-\frac{QF^{FAO}_{(cfeed,cty)}}{\sum_{(aliv,bas,cz,sys)} QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)}} \\
-QFEEDSYS_{(aliv,cfeed,bas,cty,cz,sys)} &= 
-QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)} \times qfcoef_{(cfeed,cty)} \\
-QGRASSSYS_{(aliv,bas,cty,cz,sys)} &= 
-\frac{QSSYS_{(aliv,bas,cty,cz,sys)}}{ANIMALPRODRATE_{(aliv,cty)}} 
-\times FEEDEFFICIENCY_{(aliv,bas,cty,cz,sys)} 
-\times (1 - FEEDSHARE_{(aliv,bas,cty,cz,sys)})
-\end{align}
+\begin{multline}
+QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)} =
+\frac{QSSYS_{(aliv,bas,cty,cz,sys)}}
+     {ANIMALPRODRATE_{(aliv,cty)}} \\
+     \cdot
+FEEDEFFICIENCY_{(aliv,bas,cty,cz,sys)} \cdot
+FEEDSHARE_{(aliv,bas,cty,cz,sys)} \\
+\cdot
+\frac{QF^{FAO}_{(cfeed,cty)}}
+     {\sum_{cfeed} QF^{FAO}_{(cfeed,cty)}}
+\end{multline}
+
+\begin{multline}
+qfcoef_{(cfeed,cty)} =
+\frac{QF^{FAO}_{(cfeed,cty)}}
+     {\displaystyle
+      \sum_{(aliv,bas,cz,sys)}
+      QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)}}
+\end{multline}
+
+\begin{multline}
+QFEEDSYS_{(aliv,cfeed,bas,cty,cz,sys)} =
+QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)} \cdot
+qfcoef_{(cfeed,cty)}
+\end{multline}
+
+\begin{multline}
+QGRASSSYS_{(aliv,bas,cty,cz,sys)} =
+\frac{QSSYS_{(aliv,bas,cty,cz,sys)}}
+     {ANIMALPRODRATE_{(aliv,cty)}} \\
+     \cdot 
+FEEDEFFICIENCY_{(aliv,bas,cty,cz,sys)} 
+\cdot \bigl(1 - FEEDSHARE_{(aliv,bas,cty,cz,sys)}\bigr)
+\end{multline}
+
 
 If the estimated pasture demand exceeded the available supply, 
 it was replaced with the available amount:
 
-\begin{equation}
-QGRASSSYS_{(aliv,bas,cty,cz,sys)} = 
-QLSYS_{(aliv,bas,cty,cz,sys)} \times GRASSYLD_{(bas,cty)}
-\quad \text{if } 
-QLSYS_{(aliv,bas,cty,cz,sys)} \times GRASSYLD_{(bas,cty)} 
+\begin{multline}
+QGRASSSYS_{(aliv,bas,cty,cz,sys)} =
+QLSYS_{(aliv,bas,cty,cz,sys)} \cdot GRASSYLD_{(bas,cty)} \\
+\text{if }
+QLSYS_{(aliv,bas,cty,cz,sys)} \cdot GRASSYLD_{(bas,cty)}
 < QGRASSSYS_{(aliv,bas,cty,cz,sys)}
-\end{equation}
+\end{multline}
+
 
 where:
 \begin{itemize}
@@ -311,7 +341,7 @@ The area of such constrained land was calculated as follows:
 
 \begin{equation}
 QLLIM_{(bas,cty)} = 
-QLTOT^{LUH2}_{(bas,cty)} \times 
+QLTOT^{LUH2}_{(bas,cty)} \cdot 
 \frac{\sum_{aezlim} QL^{GAEZ}_{(aezlim,bas,cty)}}
 {\sum_{aez} QL^{GAEZ}_{(aez,bas,cty)}}
 \end{equation}
@@ -333,14 +363,14 @@ Since the price data contained many outliers and missing values,
 appropriate preprocessing was conducted.  
 
 First, outlier values were treated as missing when the producer price 
-was greater than ten times or less than one-tenth of the country-level median.
+was greater than ten cdot or less than one-tenth of the country-level median.
 
 \begin{equation}
 PP_{(c,cty)} \leftarrow \text{NA} 
 \quad \text{if } 
-\big( PP_{(c,cty)} > 10 \times \text{median}_{cty}(PP_{(c,cty)}) 
+\big( PP_{(c,cty)} > 10 \cdot \text{median}_{cty}(PP_{(c,cty)}) 
 \ \cup \ 
-PP_{(c,cty)} < 0.1 \times \text{median}_{cty}(PP_{(c,cty)}) \big)
+PP_{(c,cty)} < 0.1 \cdot \text{median}_{cty}(PP_{(c,cty)}) \big)
 \end{equation}
 
 Next, missing values were complemented.  
@@ -352,12 +382,12 @@ This coefficient was used to impute the missing prices.
 The same procedure was applied for import and export prices.
 
 \begin{align}
-PP_{ave,c} &= 
-\frac{\sum_{cty} PP_{(c,cty)} \times QSUP_{(c,cty)}}{\sum_{cty} QSUP_{(c,cty)}} \\
-PP_{coef,cty} &= 
+&PP_{ave,c} = 
+\frac{\sum_{cty} PP_{(c,cty)} \cdot QSUP_{(c,cty)}}{\sum_{cty} QSUP_{(c,cty)}} \\
+&PP_{coef,cty} = 
 \frac{\sum_{c} PP_{(c,cty)}}{PP_{ave,c}} \\
-PP_{(c,cty)} &= 
-PP_{ave,c} \times PP_{coef,cty}
+&PP_{(c,cty)} = 
+PP_{ave,c} \cdot PP_{coef,cty}
 \end{align}
 
 where \( PP_{ave} \) denotes the global average producer price,  
@@ -409,29 +439,48 @@ Similarly, trade-related costs \( MMM \) and \( MME \) were estimated from GTAP 
 using the difference between import values at CIF prices and export values at FOB prices.
 
 \begin{align}
-MMJ_{(i,cty)} &= 
+MMJ_{(i,cty)}
+&=
 \frac{
-\sum_{immj} VDFA^{GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
+  \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
+  + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
+  + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
 }{
-\Big(
-\sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} 
-- 
-(\sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)})
-\Big)
-} \\
-MMM_{(i,ccty)} &= 
-\frac{\sum_{cty} VIWS^{GTAP}_{(i,cty,ccty)} - \sum_{cty} VXWD^{GTAP}_{(i,cty,ccty)}}
-{\sum_{cty} VXWD^{GTAP}_{(i,cty,ccty)}} \\
-MME_{(i,cty)} &= 
-\frac{\sum_{ccty} VIWS^{GTAP}_{(i,cty,ccty)} - \sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}}
-{\sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}}
+  \left(
+  \begin{array}{@{}l@{}}
+    \displaystyle
+    \sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} \\[0.2em]
+    \displaystyle
+    - \Bigl(
+        \sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)}
+      \Bigr)
+  \end{array}
+  \right)
+}
+\\[0.5em]
+MMM_{(i,ccty)}
+&=
+\frac{
+  \sum_{cty} VIWS^{GTAP}_{(i,cty,ccty)}
+  - \sum_{cty} VXWD^{GTAP}_{(i,cty,ccty)}
+}{
+  \sum_{cty} VXWD^{GTAP}_{(i,cty,ccty)}
+}
+\\[0.5em]
+MME_{(i,cty)}
+&=
+\frac{
+  \sum_{ccty} VIWS^{GTAP}_{(i,cty,ccty)}
+  - \sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}
+}{
+  \sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}
+}
 \end{align}
+
 
 where:
 \begin{itemize}
@@ -449,9 +498,9 @@ and the export tariff rate as the ratio of export value at international prices
 to that at domestic prices.
 
 \begin{align}
-TM_{(i,ccty)} &= 
+&TM_{(i,ccty)} = 
 \frac{\sum_{cty} VIMS^{GTAP}_{(i,cty,ccty)}}{\sum_{cty} VIWS^{GTAP}_{(i,cty,ccty)}} \\
-TE_{(i,cty)} &= 
+&TE_{(i,cty)} = 
 \frac{\sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}}{\sum_{ccty} VXMD^{GTAP}_{(i,cty,ccty)}}
 \end{align}
 
@@ -473,57 +522,80 @@ By multiplying the producer price by these shares,
 the base-year prices of each factor were obtained.
 
 \begin{align}
-LND_{(i,cty)} &= 
+LND_{(i,cty)}
+&=
 \frac{
-\sum_{ilnd} VDF^{A,GTAP}_{(i,ilnd,cty)} 
-+ \sum_{ilnd} VIF^{A,GTAP}_{(i,ilnd,cty)} 
-+ \sum_{ilnd} EVF^{A,GTAP}_{(i,ilnd,cty)}
+  \sum_{ilnd} VDF^{A,GTAP}_{(i,ilnd,cty)}
+  + \sum_{ilnd} VIF^{A,GTAP}_{(i,ilnd,cty)}
+  + \sum_{ilnd} EVF^{A,GTAP}_{(i,ilnd,cty)}
 }{
-\Big(
-\sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} 
--
-(\sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)})
-\Big)
-} \\[6pt]
-FED_{(i,cty)} &= 
+  \left(
+  \begin{array}{@{}l@{}}
+    \displaystyle
+    \sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} \\[0.2em]
+    \displaystyle
+    - \Bigl(
+        \sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)}
+      \Bigr)
+  \end{array}
+  \right)
+}
+\\[0.6em]
+FED_{(i,cty)}
+&=
 \frac{
-\sum_{ifed} VDF^{A,GTAP}_{(i,ifed,cty)} 
-+ \sum_{ifed} VIF^{A,GTAP}_{(i,ifed,cty)} 
-+ \sum_{ifed} EVF^{A,GTAP}_{(i,ifed,cty)}
+  \sum_{ifed} VDF^{A,GTAP}_{(i,ifed,cty)}
+  + \sum_{ifed} VIF^{A,GTAP}_{(i,ifed,cty)}
+  + \sum_{ifed} EVF^{A,GTAP}_{(i,ifed,cty)}
 }{
-\Big(
-\sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} 
--
-(\sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)})
-\Big)
-} \\[6pt]
-IMD_{(i,cty)} &= 
+  \left(
+  \begin{array}{@{}l@{}}
+    \displaystyle
+    \sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} \\[0.2em]
+    \displaystyle
+    - \Bigl(
+        \sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)}
+      \Bigr)
+  \end{array}
+  \right)
+}
+\\[0.6em]
+IMD_{(i,cty)}
+&=
 \frac{
-\sum_{iimd} VDF^{A,GTAP}_{(i,iimd,cty)} 
-+ \sum_{iimd} VIF^{A,GTAP}_{(i,iimd,cty)} 
-+ \sum_{iimd} EVF^{A,GTAP}_{(i,iimd,cty)}
+  \sum_{iimd} VDF^{A,GTAP}_{(i,iimd,cty)}
+  + \sum_{iimd} VIF^{A,GTAP}_{(i,iimd,cty)}
+  + \sum_{iimd} EVF^{A,GTAP}_{(i,iimd,cty)}
 }{
-\Big(
-\sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)} 
-+ \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} 
--
-(\sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)} 
-+ \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)})
-\Big)
-} \\[6pt]
-OFC_{(i,cty)} &= 
-1 - (LND_{(i,cty)} + FED_{(i,cty)} + IMD_{(i,cty)})
+  \left(
+  \begin{array}{@{}l@{}}
+    \displaystyle
+    \sum_{ii} VDF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{ii} VIF^{A,GTAP}_{(i,ii,cty)}
+    + \sum_{endw} EVF^{A,GTAP}_{(i,endw,cty)} \\[0.2em]
+    \displaystyle
+    - \Bigl(
+        \sum_{immj} VDF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} VIF^{A,GTAP}_{(i,immj,cty)}
+      + \sum_{immj} EVF^{A,GTAP}_{(i,immj,cty)}
+      \Bigr)
+  \end{array}
+  \right)
+}
+\\[0.6em]
+OFC_{(i,cty)}
+&=
+1 - \bigl(LND_{(i,cty)} + FED_{(i,cty)} + IMD_{(i,cty)}\bigr)
 \end{align}
+
 
 where:
 \begin{itemize}
