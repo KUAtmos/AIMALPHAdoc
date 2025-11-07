@@ -1,25 +1,24 @@
 % !TeX root = ../ALPHA_doc.tex
 This section provides an overview of the AIM-ALPHA model. AIM-ALPHA is a recursive-dynamic partial equilibrium model 
-focusing on agricultural markets and land use, operating with an annual time step. The model uses 2015 as the base year 
-and projects up to 2100. It is formulated as a mixed complementarity problem (MCP) and handles approximately 200,000 variables. 
+focusing on agricultural markets and land use, operating with an annual time step for the time horizon from 2015 to 2100.
+The model is formulated as a mixed complementarity problem (MCP) and handles approximately 200,000 variables. 
+The basic model structure is shown in Fig.~\ref{fig:model_structure}.
 
-On the spatial dimension, the demand side covers 166 countries and regions globally, while the production side consists of 
-400 production units. These production units are defined by overlaying the 166 demand regions with FAO’s 230 major river basin boundaries. 
+For the spacial resolution, the demand side covers 166 countries and regions globally, while the production side consists of 400 production units. 
+These production units are defined by overlaying the 166 demand regions~\cite{worldbankWorldBankOfficial2025} with FAO’s 230 major river basin boundaries~\cite{faolandandwaterdivisionMajorHydrologicalBasins2011}. 
 Figure~\ref{fig:regions} illustrates the geographical coverage of the demand regions and production units.
 
-The basic model structure is shown in Figure~\ref{fig:model_structure}. Food production is categorized into 13 primary crops, 
-6 livestock products, and 4 processed goods. Table~\ref{tab:commodities} lists the food commodity classifications used in the model. 
+Food production is categorized into 13 primary crops, 6 livestock products, and 4 processed goods. Table~\ref{tab:commodities} lists the food commodity classifications used in the model. 
 The production functions are represented by Leontief-type functions, where each good is produced by combining cropland, feed and pasture, 
 and raw materials as inputs. Other factors such as labor, capital, and energy are aggregated into a single production factor. 
 
 Primary crops and livestock products that require land are differentiated by production unit, whereas processed goods, which do not require 
-land inputs, are modeled at the level of the 166 demand regions. Land use within each production unit is allocated according to a hierarchical 
+land inputs, are modeled at the level of the 166 demand regions. Land use within each production unit is allocated according to a multi-nested 
 logit function that balances total land area, and land shares are determined by relative land prices.
 
 Food demand is driven by population and GDP, with income elasticity considered for future changes. Food prices are determined endogenously 
 so that supply and demand are balanced in the domestic market. Within each country, the balance between production, domestic demand, and net trade 
-(imports minus exports) is maintained. In the global market, total world imports and exports are also balanced. Furthermore, commodities 
-that were not produced or traded in the base year are assumed to remain inactive in that country or production unit throughout the projection period.
+(imports minus exports) is maintained. In the global market, total world imports and exports are also balanced. 
 
 
 \begin{figure}[tbp]

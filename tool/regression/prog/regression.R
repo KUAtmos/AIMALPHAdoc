@@ -11,12 +11,16 @@ theme_1 <- theme_bw() +
     strip.clip = "off"
   )
 
+
+# Put data.gdx and baseyear.gdx in tool/regression/data/.
+
 # data --------------------------------------------------------------------
 GDPPC <- rgdx.param("../data/baseyear.gdx", "GDPpc")
 feed_efficiency <- rgdx.param("../data/data.gdx", "feed_efficiency")
 feed_share <- rgdx.param("../data/data.gdx", "feed_share")
 elhp <- rgdx.param("../data/data.gdx", "elhp")
 SYSSHARE <- rgdx.param("../data/data.gdx", "Liv")
+elhg <- rgdx.param("../data/baseyear.gdx", "elhg2")
 
 # 6-1 ---------------------------------------------------------------------
 GDPPC_2005 <- GDPPC %>%
@@ -173,7 +177,6 @@ data6_4 <- left_join(feed_share, GDPPC_2005) %>%
   )) %>%
   filter(!c %in% c("omt", "pmt")) %>%
   mutate(logit_feed_share = log(feed_share / (1 - feed_share)))
-
 g6_4 <- data6_4 %>% ggplot() +
   geom_point(aes(x = log(GDPpc), y = logit_feed_share, color = cz)) +
   facet_wrap(vars(cz, sys, c), scales = "free_y", ncol = 6) +
@@ -207,3 +210,41 @@ for (j in c("LG", "MX")) {
   }
 }
 write.csv(regresult_agg, file = "../../../data/table6_4.csv", quote = FALSE, row.names = FALSE)
+
+# Appendix C ------------------------------------------
+representative_countries <- c(
+  "USA", "DEU", "JPN", "AUS",
+  "RUS", "IDN", "IND", "BRA",
+  "EGY", "NGA", "ZAF", "NPL",
+  "CHN", "MEX", "TUR", "VNM"
+)
+data_elhg <- elhg %>%
+  select(c, cty, sc, yr, elhg2) %>%
+  filter(c %in% c("wht", "rce", "crl", "sgr", "swt",
+                  "pls", "vol", "vgt", "frt",
+                  "cmt", "pmt", "omt", "mlk"),
+         cty %in% representative_countries) %>%
+  mutate(
+    c = dplyr::recode(
+      c,
+      "wht" = "wht",
+      "rce" = "rce",
+      "crl" = "crl_mze_str",
+      "sgr" = "sgr",
+      "swt" = "swt_stm_alc",
+      "pls" = "pls_nut_ocr_spc",
+      "frt" = "frt",
+      "vgt" = "vgt",
+      "pmt" = "pmt",
+      "cmt" = "cmt_rmt_omt",
+      "vol" = "vol",
+      "mlk" = "mlk_dai_egg"
+    ),
+    elhg2 = round(elhg2, 3)
+  ) %>%
+  filter(yr %in% c(2015, 2050, 2100)) %>%
+  pivot_wider(
+    names_from  = c,
+    values_from = elhg2
+  )
+write.csv(data_elhg, file = "../../../data/tableC_1.csv", quote = FALSE, row.names = FALSE)

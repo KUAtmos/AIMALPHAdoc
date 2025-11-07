@@ -1,4 +1,4 @@
-% !TeX program = lualatex
+% !TeX program = pdflatex
 \documentclass[11pt,a4paper,headings=small,parskip=half]{scrartcl}
 
 %-------------------- Fonts & Micro-typography --------------------
@@ -157,8 +157,31 @@
 }
 
 % Reference
-\usepackage[backend=biber,style=numeric,sorting=nyt,maxbibnames=6]{biblatex}
+\usepackage[
+  backend=biber,
+  style=numeric, 
+  sorting=none,
+  maxbibnames=6,
+  giveninits=true,
+  url=true,     
+  doi=true,      
+  isbn=false
+]{biblatex}
 \addbibresource{refs.bib}
+
+\renewbibmacro*{url+urldate}{%
+  \ifentrytype{misc}
+    {%
+      \printfield{url}%
+      % \setunit*{\addspace}%
+      % \printurldate
+    }%
+    {%
+    }%
+}
+
+\DeclareNameAlias{author}{last-first}
+\DeclareNameAlias{editor}{last-first}
 
 % --- Authors/Affiliations helpers ---
 \newcommand{\affilmark}[1]{\textsuperscript{#1}}
@@ -278,7 +301,10 @@ Shinichiro Fujimori\affilmark{1}\par
 \section{Update History}
 \input{inc_sections/8_update_history}
 
-\printbibliography
+\printbibliography[
+  title={References},
+  heading=bibintoc
+]
 
 % ------------------- Appendix ---------------------
 \appendix
@@ -289,10 +315,16 @@ Shinichiro Fujimori\affilmark{1}\par
 \addsec{Appendix A: Production Units}\label{sec:appendix_a}
 \input{inc_sections/9_appendix_A}
 
-\setcounter{table}{0}
-\renewcommand{\thetable}{B\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B\arabic{figure}}
 
-\addsec{Appendix B: Income Elasticities}\label{sec:appendix_b}
+\addsec{Appendix B: Regional Aggregation}\label{sec:appendix_b}
 \input{inc_sections/10_appendix_B}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{C\arabic{table}}
+
+\addsec{Appendix C: Income Elasticities}\label{sec:appendix_c}
+\input{inc_sections/11_appendix_C}
 
 \end{document}

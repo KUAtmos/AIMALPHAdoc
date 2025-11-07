@@ -119,15 +119,12 @@ In the demand block, food demand is determined by factors such as prices, popula
 \subsection{Production Block}
 
 The production block describes the equations determining the production quantities of each food commodity, the input of intermediate goods and production factors, and the producer prices.  
-Primary crops are differentiated by production technologies (irrigated and rainfed), while livestock products are distinguished by climate zones and production systems (pasture-based or mixed).  
-Yield improvements due to technological progress and climate impacts are considered for crops, and productivity changes in livestock are captured through feed requirements and feed share.  
-For energy crops, production quantities by year and macro-region are given exogenously from AIM-Hub, and allocated to production units according to price and yield.
+The production functions are represented by Leontief-type functions, where each good is produced through the combination of specific input factors.
 
 \subsubsection{Crop Production}
 
-The livestock production block describes equations for determining livestock output, production systems, feed requirements, and associated prices.  
-Livestock products are distinguished by climate zones and production systems (pasture-based or mixed).  
-Feed use and production efficiency depend on feed composition, feed efficiency, and animal productivity.
+Primary crops are differentiated by production technologies (irrigated and rainfed).
+Yield improvements due to technological progress and climate impacts are considered for crops.
 
 
 \paragraph{Domestic Production}
@@ -438,7 +435,7 @@ Processed products are produced using intermediate inputs and other production f
 \end{align}
 
 \subsubsection{Energy Crop Production}
-Energy crop production is determined from regional totals provided exogenously by the AIM-Hub model.
+Energy crop production is determined from regional totals provided exogenously by the AIM-Hub model~\cite{fujimoriSSP3AIMImplementation2017}.
 
 
 \paragraph{Regional Energy Crop Supply Balance}
@@ -474,7 +471,6 @@ Energy crop production is determined from regional totals provided exogenously b
 The land-use block allocates available land among different uses through a Logit function.  
 Prices for non-human-used land (forest, other natural land, and fallow land) are fixed at their baseline values.  
 A constraint is imposed to ensure that total agricultural land does not exceed the physically available land area due to slope and soil limitations.  
-Afforestation areas are given exogenously from AIM-PLUM results.
 
 \paragraph{Vegetation Area}
 \begin{align}
@@ -483,56 +479,50 @@ Afforestation areas are given exogenously from AIM-PLUM results.
      \overline{QLTOT}_{bas,cty}
      - 
      \overline{QLVEGN}_{bas,cty}
-     -
-     \overline{QLAFR}_{bas,cty}
   \tag{QLVEGEQ}\label{eq:QLVEGEQ}
 \end{align}
 
 \paragraph{Pasture Area Allocation}
 \begin{align}
   QLPAS_{bas,cty}
-  &= 
-     QLVEG_{bas,cty}
-     \nonumber\\[-0.3em]
-  &\quad
-     \cdot
-     \frac{
-       \delta_{pas,bas,cty}
-       \cdot
-       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
-     }{
-       \delta_{pas,bas,cty}
-       \cdot
-       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
-       +
-       \delta_{pasn,bas,cty}
-       \cdot
-       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
-     }
+  &=
+    QLVEG_{bas,cty}
+    \nonumber\\[-0.3em]
+  &\quad\cdot
+    \frac{
+      \delta^{\text{pas}}_{bas,cty}
+      \cdot
+      PLPAS_{bas,cty}^{\,\rho^{\text{pas}}_{bas,cty}}
+    }{
+      \delta^{\text{pas}}_{bas,cty}
+      \cdot
+      PLPAS_{bas,cty}^{\,\rho^{\text{pas}}_{bas,cty}}
+      +
+      \delta^{\text{pasn}}_{bas,cty}
+      \cdot
+      PLPASN_{bas,cty}^{\,\rho^{\text{pasn}}_{bas,cty}}
+    }
   \tag{QLPASEQ}\label{eq:QLPASEQ}
 \end{align}
+
 
 \paragraph{Non-pasture Grassland Area}
 \begin{align}
   QLPASN_{bas,cty}
   &=
-     QLVEG_{bas,cty}
-     \nonumber\\[-0.3em]
-  &\quad
-     \cdot
-     \frac{
-       \delta_{pasn,bas,cty}
-       \cdot
-       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
-     }{
-       \delta_{pas,bas,cty}
-       \cdot
-       PLPAS_{bas,cty}^{\,\rho_{pas,bas,cty}}
-       +
-       \delta_{pasn,bas,cty}
-       \cdot
-       PLPASN_{bas,cty}^{\,\rho_{pasn,bas,cty}}
-     }
+    QLVEG_{bas,cty}
+    \nonumber\\[-0.3em]
+  &\quad\cdot
+    \frac{
+      \delta^{\text{pasn}}_{bas,cty}
+      \, PLPASN_{bas,cty}^{\,\rho^{\text{pasn}}_{bas,cty}}
+    }{
+      \delta^{\text{pas}}_{bas,cty}
+      \, PLPAS_{bas,cty}^{\,\rho^{\text{pas}}_{bas,cty}}
+      +
+      \delta^{\text{pasn}}_{bas,cty}
+      \, PLPASN_{bas,cty}^{\,\rho^{\text{pasn}}_{bas,cty}}
+    }
   \tag{QLPASNEQ}\label{eq:QLPASNEQ}
 \end{align}
 
@@ -541,12 +531,12 @@ Afforestation areas are given exogenously from AIM-PLUM results.
   QLCRO_{bas,cty} = QLPASN_{bas,cty}\\
   \cdot
   \frac{
-    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
+    \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
   }{
-    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
-    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
-    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }\\
+    \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+  }
   \tag{QLCROEQ}\label{eq:QLCROEQ}
 \end{multline}
 
@@ -555,12 +545,12 @@ Afforestation areas are given exogenously from AIM-PLUM results.
   QLFRS_{bas,cty} = QLPASN_{bas,cty}\\
   \cdot
   \frac{
-    \delta_{frs,bas,cty}\cdot PLFRS_{bas,cty}^{\,\rho_{frs,bas,cty}}
+    \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
   }{
-    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
-    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
-    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }\\
+    \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+  }
   \tag{QLFRSEQ}\label{eq:QLFRSEQ}
 \end{multline}
 
@@ -569,12 +559,12 @@ Afforestation areas are given exogenously from AIM-PLUM results.
   QLGRA_{bas,cty} = QLPASN_{bas,cty}\\
   \cdot
   \frac{
-    \delta_{gra,bas,cty}\cdot PLGRA_{bas,cty}^{\,\rho_{gra,bas,cty}}
+    \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
   }{
-    \delta_{cro,bas,cty}\cdot PLCRO_{bas,cty}^{\,\rho_{cro,bas,cty}}
-    + \delta_{frs,bas,cty}\cdot \overline{PLFRS}_{bas,cty}^{\,\rho_{frs,bas,cty}}
-    + \delta_{gra,bas,cty}\cdot \overline{PLGRA}_{bas,cty}^{\,\rho_{gra,bas,cty}}
-  }\\
+    \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+  }
   \tag{QLGRAEQ}\label{eq:QLGRAEQ}
 \end{multline}
 
@@ -583,10 +573,10 @@ Afforestation areas are given exogenously from AIM-PLUM results.
   QLCROCLT_{bas,cty} = QLCRO_{bas,cty}\\
   \cdot
   \frac{
-    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
+    \delta^{\text{croclt}}_{bas,cty}\, PLCROCLT_{bas,cty}^{\,\rho^{\text{croclt}}_{bas,cty}}
   }{
-    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
-    + \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+    \delta^{\text{croclt}}_{bas,cty}\, PLCROCLT_{bas,cty}^{\,\rho^{\text{croclt}}_{bas,cty}}
+    + \delta^{\text{crofal}}_{bas,cty}\, \overline{PLCROFAL}_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }
   \tag{QLCROCLTEQ}\label{eq:QLCROCLTEQ}
 \end{multline}
@@ -596,13 +586,14 @@ Afforestation areas are given exogenously from AIM-PLUM results.
   QLCROFAL_{bas,cty} = QLCRO_{bas,cty}\\
   \cdot
   \frac{
-    \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+    \delta^{\text{crofal}}_{bas,cty}\, \overline{PLCROFAL}_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }{
-    \delta_{croclt,bas,cty}\cdot PLCROCLT_{bas,cty}^{\,\rho_{croclt,bas,cty}}
-    + \delta_{crofal,bas,cty}\cdot \overline{PLCROFAL}_{bas,cty}^{\,\rho_{crofal,bas,cty}}
+    \delta^{\text{croclt}}_{bas,cty}\, PLCROCLT_{bas,cty}^{\,\rho^{\text{croclt}}_{bas,cty}}
+    + \delta^{\text{crofal}}_{bas,cty}\, \overline{PLCROFAL}_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }
   \tag{QLCROFALEQ}\label{eq:QLCROFALEQ}
 \end{multline}
+
 
 \paragraph{Cropland Allocation}
 \begin{align}

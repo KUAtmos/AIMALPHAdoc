@@ -1,79 +1,15 @@
 % !TeX root = ../ALPHA_doc.tex
 
-Table~\ref{tab:tableB_1} summarizes the projected price elasticities for 16 representative countries, 
-selected to cover a wide range of regions and income levels.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figB1.png}
+  \caption{Correspondence between model countries/regions and 17 aggregated regions}
+  \label{fig:B1_app_map17}
+\end{figure}
 
-\clearpage
-
-\begin{scriptsize}
-\setlength{\tabcolsep}{0.75pt}
-\renewcommand{\arraystretch}{0.9}
-
-\begin{xltabular}{\textwidth}{l l r@{\hspace{0.75em}}*{13}{r}}
-    \caption{Projected elasticities by country, scenario, and year}
-    \label{tab:tableB_1} \\
-    \toprule
-    Country & Scenario & Year &
-    wht & rce & crl, mze, str & sgr &
-    swt, stm, alc & pls, nut, ocr, spc &
-    vol & vgt & frt &
-    cmt, rmt, omt & pmt & omt & mlk, dai, egg \\
-    \midrule
-    \endfirsthead
-
-    \caption[]{Projected elasticities by country, scenario, and year (continued)}\\
-    \toprule
-    Country & Scenario & Year &
-    wht & rce & crl, mze, str & sgr &
-    swt, stm, alc & pls, nut, ocr, spc &
-    vol & vgt & frt &
-    cmt, rmt, omt & pmt & omt & mlk, dai, egg \\
-    \midrule
-    \endhead
-
-    \bottomrule
-    \endfoot
-
-    \bottomrule
-    \endlastfoot
-
-    \csvreader[
-        late after line=\\
-    ]{data/tableB_1.csv}%
-    {cty=\cty,
-     sc=\sc,
-     yr=\yr,
-     wht=\wht,
-     rce=\rce,
-     crl_mze_str=\crlmzestr,
-     sgr=\sgr,
-     swt_stm_alc=\swtstmalc,
-     pls_nut_ocr_spc=\plsnutocrspc,
-     vol=\vol,
-     vgt=\vgt,
-     frt=\frt,
-     cmt_rmt_omt=\cmtrmtomt,
-     pmt=\pmt,
-     omt=\omt,
-     mlk_dai_egg=\mlkdaiegg}%
-    {%
-        \cty &
-        \sc &
-        \yr &
-        \wht &
-        \rce &
-        \crlmzestr &
-        \sgr &
-        \swtstmalc &
-        \plsnutocrspc &
-        \vol &
-        \vgt &
-        \frt &
-        \cmtrmtomt &
-        \pmt &
-        \omt &
-        \mlkdaiegg
-    }
-
-\end{xltabular}
-\end{scriptsize}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figB2.png}
+  \caption{Correspondence between model countries/regions and R5 regions}
+  \label{fig:B2_app_mapR5}
+\end{figure}

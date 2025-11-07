@@ -11,6 +11,7 @@ the following regression equation was estimated:
 
 \begin{equation}
 \overline{elhp}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{GDPPC}_{cty})
+\label{eq:pe_reg}
 \end{equation}
 
 \bigskip
@@ -29,6 +30,7 @@ In this estimation, dummy variables were introduced to represent climatic zones.
 \right)
 = 
 \delta^{sys}_{(aliv,cz,sys)} + \rho^{sys}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\label{eq:sys_reg}
 \end{equation}
 
 \bigskip
@@ -40,7 +42,7 @@ Regression analyses were conducted using the following equations:
 \begin{align}
 \log \left( \overline{FEEDEFFICIENCY}_{(aliv,bas,cty,cz,sys)} \right)
 &= 
-\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,cz,sys)} \cdot \log(\overline{GDPPC}_{cty}) \\[6pt]
+\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,cz,sys)} \cdot \log(\overline{GDPPC}_{cty}) \label{eq:fe_reg}\\[6pt]
 \log \left(
 \frac{
 \overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
@@ -50,6 +52,7 @@ Regression analyses were conducted using the following equations:
 \right)
 &=
 \delta^{fs}_{(aliv,cz,sys)} + \rho^{fs}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\label{eq:fs_reg}
 \end{align}
 
 \bigskip
@@ -69,6 +72,7 @@ was estimated using the following regression equation:
 \right)
 =
 \sigma_{(src,gas,cty)} \cdot \log(\overline{PRCCAR}_{cty} + 1)
+\label{eq:sigma_reg}
 \end{equation}
 
 \bigskip
@@ -84,11 +88,8 @@ Figure~\ref{fig:gdp_elasticity} illustrates the relationship between per-capita 
 Table~\ref{tab:price_elasticity} shows the estimated parameters and the coefficient of determination ($R^2$).  
 
 Since the model assumes that price elasticity varies with per-capita GDP, 
-the following regression equation was estimated:
-
-\begin{equation}
-\overline{elhp}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{GDPPC}_{cty})
-\end{equation}
+the parameters $\alpha^{pe}_c$ and $\beta^{pe}_c$ were estimated using the regression model
+given in Eq.~\eqref{eq:pe_reg}.
 
 For all commodities, the estimated elasticities increased with higher levels of per-capita GDP.  
 For most commodities, high coefficients of determination ($R^2 \approx 0.8$) were obtained.  
@@ -153,15 +154,8 @@ Figure~\ref{fig:sys_share_gdp} illustrates the relationship between per-capita G
 the proportion of pasture-based production by livestock type and climatic zone.  
 Table~\ref{tab:sys_share_gdp} presents the estimated parameters.
 
-The following regression model was estimated:
-
-\begin{equation}
-\log\left(
-\frac{\overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}}{1 - \overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}}
-\right)
-=
-\delta^{sys}_{(aliv,cz,sys)} + \rho^{sys}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
-\end{equation}
+The parameters $\delta^{sys}_{(aliv,cz,sys)}$ and $\rho^{sys}_{(aliv,sys)}$ 
+were estimated using the logistic regression model in Eq.~\eqref{eq:sys_reg}.
 
 As per-capita GDP increases, the share of pasture-based production decreases for all livestock products.  
 Adjusted coefficients of determination were moderate (0.2–0.3), and all $p$-values were below 0.001,  
@@ -222,16 +216,12 @@ confirming the significance of the coefficients.
 
 \subsubsection{Relationship between feed efficiency and per-capita GDP}
 
+\subsubsection{Relationship between feed efficiency and per-capita GDP}
+
 Figure~\ref{fig:feed_eff_gdp} shows the relationship between per-capita GDP and feed efficiency 
 by livestock type, climate zone, and production system.  
-Table~\ref{tab:feed_eff_gdp} presents the estimated regression parameters.
-
-The regression model used is expressed as:
-
-\begin{equation}
-\log(\overline{FEEDEFFICIENCY}_{(aliv,bas,cty,cz,sys)}) =
-\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
-\end{equation}
+Table~\ref{tab:feed_eff_gdp} presents the estimated regression parameters,
+obtained using the model in Eq.~\eqref{eq:fe_reg}.
 
 Higher per-capita GDP is associated with lower feed requirements.  
 For ruminants, the adjusted $R^2$ ranged from 0.66 to 0.97, indicating high explanatory power,  
@@ -240,6 +230,7 @@ The coefficients $\beta^{fe}$ were smaller for ruminants, suggesting stronger ef
 with economic development.  
 All $p$-values were below 0.001, and the 95\% confidence intervals for $\alpha^{fe}$ 
 did not include zero, confirming statistical significance.
+
 
 \begin{figure}[H]
     \centering
@@ -308,22 +299,9 @@ did not include zero, confirming statistical significance.
 
 Figure~\ref{fig:feedshare_gdp} shows the relationship between per-capita GDP and 
 the share of concentrate feed by livestock type, climatic zone, and production system.  
-Table~\ref{tab:feedshare_gdp} reports the estimated regression parameters.  
+Table~\ref{tab:feedshare_gdp} reports the estimated regression parameters,
+based on the logistic specification in Eq.~\eqref{eq:fs_reg}.  
 Poultry and other livestock are excluded from the analysis because they do not consume pasture.
-
-The following regression model was estimated:
-
-\begin{equation}
-\log \left(
-\frac{
-\overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
-}{
-1 - \overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
-}
-\right)
-=
-\delta^{fs}_{(aliv,cz,sys)} + \rho^{fs}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
-\end{equation}
 
 The results indicate that higher per-capita GDP is associated with 
 a higher share of concentrate feed and a lower share of pasture.  

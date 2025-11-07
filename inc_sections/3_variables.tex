@@ -26,7 +26,7 @@ Table~\ref{tab:indices} lists the indices used in the model.
 
   \texttt{cty}    & Country / region & 166 & \\
   \texttt{bas}    & River basin      & 400 & \\
-  \texttt{region} & Macro region     & 17  & Same as the regional classification in AIM-Hub \\
+  \texttt{region} & Macro region     & 17  & Same as the regional classification in AIM-Hub~\cite{fujimoriSSP3AIMImplementation2017}. See \cref{sec:appendix_b} \\
   \texttt{c(a)}   & Food commodities (production activities) & 23 & See Table~\ref{tab:commodities} \\
   \texttt{acro}   & Primary crops    & 13  & \\
   \texttt{aliv}   & Livestock products & 6 & \\
@@ -129,7 +129,7 @@ Table~\ref{tab:endovars} lists the endogenous variables used in the model.
 
 
 \subsection{Exogenous Variables}
-Table~\ref{tab:exovars} lists the exogenous variables used in the model.
+Table~\ref{tab:exovars} lists the exogenous variables used in the model. For data sources, see \cref{sec:data}.
 
 \begin{xltabular}{\linewidth}{l X l}
   \caption{List of exogenous variables}\label{tab:exovars}\\
@@ -164,9 +164,9 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model.
   \texttt{QRES} & Residual of international trade balance & FAOSTAT \\
   \texttt{LOSSRATE} & Food loss rate & FAOSTAT \\
   \texttt{WASTERATE} & Food waste rate & FAO (2011) \\
-  \texttt{GDPPC} & GDP per capita & SSP~3.0 \\
+  \texttt{GDPPC} & GDP per capita & SSP~3.0~\cite{crespocuaresmaIncomeProjectionsClimate2017} \\
   \texttt{GDPPCBASE} & GDP per capita in the base year & World Bank \\
-  \texttt{POP} & Population & SSP~3.0 \\
+  \texttt{POP} & Population & SSP~3.0~\cite{kcWittgensteinCenterWIC2024} \\
   \texttt{POPBASE} & Population in the base year & World Bank \\
   \texttt{MMJ} & Market margin & GTAP~10 \\
   \texttt{PSE} & Producer Support Estimate (PSE) & GTAP~10 \\
@@ -182,8 +182,8 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model.
   \texttt{CROPINTENSITY} & Cropping intensity & MAPSPAM \\
   \texttt{GRASSYLD} & Grass yield & GAEZ~v4 \\
   \texttt{ANIMALPRODRATE} & Slaughtering / milking rate & FAOSTAT \\
-  \texttt{FEEDEFFICIENCY} & Feed conversion efficiency & Herrero \& Acosta et~al.~(2018) \\
-  \texttt{FEEDSHARE} & Share of concentrate feed & Herrero \& Acosta et~al.~(2018) \\
+  \texttt{FEEDEFFICIENCY} & Feed conversion efficiency & Herrero et~al.~(2018) \\
+  \texttt{FEEDSHARE} & Share of concentrate feed & Herrero et~al.~(2018) \\
   \texttt{GRAINSHARE} & Share of grain feed & FAOSTAT \\
   \texttt{ANIMALWEIGHT} & Livestock body weight & FAOSTAT \\
   \texttt{ANIMALRES} & Number of non-productive livestock & FAOSTAT \\
@@ -191,7 +191,6 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model.
   \texttt{POBASE} & Price of other production factors in the base year & FAOSTAT, GTAP~10 \\
   \texttt{QLTOT} & Total land area & LUH2 \\
   \texttt{QLVEGN} & Non-vegetated land area & LUH2 \\
-  \texttt{QLAFR} & Afforested area & AIM-PLUM \\
   \texttt{PLFRS} & Forest land price & LUH2, GTAP~10 \\
   \texttt{PLGRA} & Price of other natural land & LUH2, GTAP~10 \\
   \texttt{PLCROFAL} & Fallow land price & LUH2, GTAP~10 \\
@@ -227,12 +226,12 @@ Table~\ref{tab:params} lists the parameters used in the model.
   \bottomrule
   \endlastfoot
 
-  \texttt{elhg} & Income elasticity of consumption & Estimated from the food demand model \\
+  \texttt{elhg} & Income elasticity of consumption & Estimated from the food demand model. See \cref{sec:appendix_c}. \\
   \texttt{elhp} & Price elasticity of consumption & Estimated by regression based on Muhammad et~al.~(2011) \\
   \texttt{ica} & Intermediate input coefficient & \\
   \texttt{elop} & Elasticity of other production factors & \\
   $\delta$ & Coefficient parameter of the logit function & \\
-  $\rho$ & Exponent parameter of the logit function & For land use, adopted from GCAM; for production systems, estimated by regression based on Herrero Acosta et~al.~(2018) \\
+  $\rho$ & Exponent parameter of the logit function & For land use, adopted from GCAM~\cite{calvinGCAMV51Representing2019}; for production systems, estimated by regression based on Herrero et~al.~(2018) \\
   \texttt{res} & Residual parameter & \\
   \texttt{watshare} & Share of primary-crop production technologies & \\
   \texttt{czshare} & Climate zone share & \\

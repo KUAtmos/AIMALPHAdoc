@@ -1,7 +1,7 @@
 % !TeX root = ../ALPHA_doc.tex
 \subsection{Model Calculation Flow}
 
-Figure~\ref{fig:model_flow} shows the processing flow of the AgLU model.  
+Figure~\ref{fig:model_flow} shows the processing flow of the AIM-ALPHA model.  
 The model begins with the processing of the original data sources, 
 including extraction of necessary information, aggregation of gridded datasets, 
 and conversion of data formats.  
@@ -21,7 +21,7 @@ to facilitate data exchange and comparison.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{fig7_1}
-    \caption{Processing flow of the AgLU model}
+    \caption{Processing flow of the AIM-ALPHA model}
     \label{fig:model_flow}
 \end{figure}
 
@@ -29,7 +29,7 @@ to facilitate data exchange and comparison.
 
 \subsection{Programs within the Model}
 
-This section provides an overview of the major programs used in the AgLU model.  
+This section provides an overview of the major programs used in the AIM-ALPHA model.  
 Each component plays a specific role in data processing, parameter calibration, and scenario simulation.
 
 \medskip
@@ -70,7 +70,7 @@ It processes geospatial data from sources such as GAEZ, Livestock System, and LU
 
 \begin{programbox}{1\_data\_import.gms}
 Integrates and reformats the \texttt{gdx}-formatted datasets into structures compatible with the model’s computation framework.  
-It performs country code conversions, consolidates data into AgLU’s food and land-use classifications,  
+It performs country code conversions, consolidates data into AIM-ALPHA’s food and land-use classifications,  
 and includes submodules that output historical data in AgMIP and IAMC template formats.
 \end{programbox}
 
@@ -103,9 +103,9 @@ Generates graphical outputs and visualization figures from the simulation result
 
 \subsection{Execution Method}
 
-The AgLU model can be executed by running the shell script 
-\texttt{AgLU/shell/execution.sh} on either Cygwin or Ubuntu environments.  
-Model configurations are defined in \texttt{AgLU/shell/model\_setting.sh}.  
+The AIM-ALPHA model can be executed by running the shell script 
+\texttt{AIMALPHA/shell/execution.sh} on either Cygwin or Ubuntu environments.  
+Model configurations are defined in \texttt{AIMALPHA/shell/model\_setting.sh}.  
 As summarized in Table~\ref{tab:model_setting}, the configurable items include 
 the selection of executable programs, scenario settings, and computational environment settings.
 
@@ -132,7 +132,7 @@ Once downloaded, this can be turned off. & on \\
 If no data update is needed, this may be turned off. & off \\
 \texttt{grid\_data} & Executes \texttt{0\_grid\_data.R}.  
 If no data update is needed, this may be turned off.  
-If executed, the folder \texttt{L/ModelData/AgLU/grid} must be copied to \texttt{AgLU/data}. & off \\
+If executed, the folder \texttt{L/ModelData/AIMALPHA/grid} must be copied to \texttt{AIMALPHA/data}. & off \\
 \texttt{Scenario\_compare} & Enables comparison across scenarios in plots. & off \\
 \texttt{Model\_compare} & Enables comparison across models in plots. & off \\
 \texttt{historical\_check} & Compares simulated and historical data in plots. & off \\
@@ -142,9 +142,9 @@ If executed, the folder \texttt{L/ModelData/AgLU/grid} must be copied to \texttt
 \multicolumn{3}{@{}l}{\textbf{Scenario settings}} \\[2pt]
 \midrule
 \texttt{socioeconomic\_setting} & Specifies the socioeconomic scenario.  
-A file with the scenario name should exist in \texttt{AgLU/setting/socioeconomic}. & SSP2\_BaU \\
+A file with the scenario name should exist in \texttt{AIMALPHA/setting/socioeconomic}. & SSP2\_BaU \\
 \texttt{climate\_setting} & Specifies the climate scenario.  
-A file with the scenario name should exist in \texttt{AgLU/setting/climate}. & NoCC \\
+A file with the scenario name should exist in \texttt{AIMALPHA/setting/climate}. & NoCC \\
 \texttt{runlist} & Allows individual scenario specification without using the socioeconomic–climate matrix.  
 Scenario names are defined as combined strings (e.g., \texttt{SSP2\_BaU-NoCC}).  
 If this item is specified, the two settings above are ignored. & -- \\

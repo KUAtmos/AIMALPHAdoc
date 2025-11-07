@@ -30,24 +30,25 @@ Table~\ref{tab:data_sources} lists the datasets used in the model.
   \bottomrule
   \endlastfoot
 
-  FAOSTAT & Food Balances   & \nolinkurl{https://www.fao.org/faostat/en/\#data/FBS} \\
-  FAOSTAT & Production      & \nolinkurl{https://www.fao.org/faostat/en/\#data/QCL} \\
-  FAOSTAT & Trade           & \nolinkurl{https://www.fao.org/faostat/en/\#data/TCL} \\
-  FAOSTAT & Producer Prices & \nolinkurl{https://www.fao.org/faostat/en/\#data/PP} \\
-  FAOSTAT & Land Use        & \nolinkurl{https://www.fao.org/faostat/en/\#data/RL} \\
-  FAOSTAT & Emissions       & \nolinkurl{https://www.fao.org/faostat/en/\#data/GCE} \\
-  AQUASTAT & Major hydrological basins of the world & \nolinkurl{https://data.apps.fao.org/catalog//iso/7707086d-af3c-41cc-8aa5-323d8609b2d1} \\
-  FAO and IIASA & GAEZ v4   & \nolinkurl{https://gaez.fao.org/} \\
+  FAOSTAT~\cite{FAOSTATa} & Food Balances   & \nolinkurl{https://www.fao.org/faostat/en/\#data/FBS} \\
+  FAOSTAT~\cite{FAOSTATa} & Production      & \nolinkurl{https://www.fao.org/faostat/en/\#data/QCL} \\
+  FAOSTAT~\cite{FAOSTATa} & Trade           & \nolinkurl{https://www.fao.org/faostat/en/\#data/TCL} \\
+  FAOSTAT~\cite{FAOSTATa} & Producer Prices & \nolinkurl{https://www.fao.org/faostat/en/\#data/PP} \\
+  FAOSTAT~\cite{FAOSTATa} & Land Use        & \nolinkurl{https://www.fao.org/faostat/en/\#data/RL} \\
+  FAOSTAT~\cite{FAOSTATa} & Emissions       & \nolinkurl{https://www.fao.org/faostat/en/\#data/GCE} \\
+  AQUASTAT~\cite{faolandandwaterdivisionMajorHydrologicalBasins2011} & Major hydrological basins of the world & \nolinkurl{https://data.apps.fao.org/catalog//iso/7707086d-af3c-41cc-8aa5-323d8609b2d1} \\
+  FAO and IIASA~\cite{faoGlobalAgroEcologicalZones2025} & GAEZ v4   & \nolinkurl{https://gaez.fao.org/} \\
   IIASA & SSP 3.0          & \nolinkurl{https://data.ece.iiasa.ac.at/ssp/\#/about} \\
-  GTAP  & GTAP 10          & \nolinkurl{https://jgea.org/ojs/index.php/jgea/article/view/77} \\
-  IFPRI & MAPSPAM          & \nolinkurl{https://doi.org/10.7910/DVN/SWPENT} \\
+  GTAP~\cite{aguiarGTAPDataBase2019}  & GTAP 10          & \nolinkurl{https://jgea.org/ojs/index.php/jgea/article/view/77} \\
+  IFPRI~\cite{internationalfoodpolicyresearchinstituteifpriGlobalSpatiallyDisaggregatedCrop2024} & MAPSPAM          & \nolinkurl{https://doi.org/10.7910/DVN/SWPENT} \\
+  IFPRI~\cite{robinsonInternationalModelPolicy2015} & IMPACT          & \nolinkurl{https://github.com/IFPRI/IMPACT} \\
   World Bank & World Bank Open Data & \nolinkurl{https://data.worldbank.org/} \\
-  EDGAR & EDGAR v8.0       & \nolinkurl{https://edgar.jrc.ec.europa.eu/dataset_ghg80} \\
-  Herrero Acosta et~al.~(2018) & Livestock production systems & \nolinkurl{https://doi.org/10.4225/08/5aa068b33fe06} \\
-  Muhammad et~al.~(2011)   & International Evidence on Food Consumption Patterns & \nolinkurl{http://199.135.94.241/publications/pub-details/?pubid=47581} \\
-  T.~P.~Robinson et~al.~(2018) & Global distribution of ruminant livestock production systems V5 & \nolinkurl{https://doi.org/10.7910/DVN/WPDSZE} \\
-  Harmsen et~al.~(2019)    & CH\textsubscript{4} and N\textsubscript{2}O MAC curves & \nolinkurl{https://doi.org/10.1016/j.envsci.2019.05.013} \\
-  Hurtt et~al.~(2019)      & Land Use Harmonization 2 & \nolinkurl{https://luh.umd.edu/index.shtml} \\
+  EDGAR~\cite{europeancommissionjointresearchcentrejrcEDGAREmissionsDatabase2024} & EDGAR v8.0       & \nolinkurl{https://edgar.jrc.ec.europa.eu/dataset_ghg80} \\
+  Herrero et~al.~(2018)~\cite{herreroLivestockProductionSystems2018} & Livestock production systems & \nolinkurl{https://doi.org/10.4225/08/5aa068b33fe06} \\
+  Muhammad et~al.~(2011)~\cite{muhammadInternationalEvidenceFood2013}   & International Evidence on Food Consumption Patterns & \nolinkurl{http://199.135.94.241/publications/pub-details/?pubid=47581} \\
+  T.~P.~Robinson et~al.~(2018)~\cite{robinsonGlobalDistributionRuminant2018} & Global distribution of ruminant livestock production systems V5 & \nolinkurl{https://doi.org/10.7910/DVN/WPDSZE} \\
+  Harmsen et~al.~(2019)~\cite{harmsenLongtermMarginalAbatement2019a}    & CH\textsubscript{4} and N\textsubscript{2}O MAC curves & \nolinkurl{https://doi.org/10.1016/j.envsci.2019.05.013} \\
+  Hurtt et~al.~(2019)~\cite{hurttHarmonizationGlobalLand2020}      & Land Use Harmonization 2 & \nolinkurl{https://luh.umd.edu/index.shtml} \\
 \end{xltabular}
 
 \subsection{Calibration and processing of data}
@@ -66,7 +67,7 @@ where \( QH^{FAO} \) is household consumption data from FAO,
 and \( N_{yr} \) is the number of years for which data exist.
 
 In the FBS data, household consumption includes the amount of food wasted at the household level. 
-To distinguish this, waste rates by seven commodities and seven regions were obtained from FAO (2011). 
+To distinguish this, waste rates by seven commodities and seven regions were obtained from FAO (2011)~\cite{faoGlobalFoodLossesAndFoodWaste2011}. 
 Using these coefficients, household consumption and food waste were estimated as follows:
 
 \begin{align}
@@ -199,7 +200,7 @@ and \( QLPAS^{LUH2} \) is the pasture area from LUH2.
 
 Country-level livestock production data from the FBS were disaggregated 
 into production units, climate zones, and production systems 
-using the dataset from Herrero Acosta et al. (2018). 
+using the dataset from Herrero et al. (2018). 
 Similarly, LUH2 pasture area data were disaggregated by livestock type, 
 climate zone, and production system.
 
@@ -219,7 +220,7 @@ QLSYS_{(aliv,bas,cty,cz,sys)} &=
 
 where \( QS^{HERRERO} \) denotes production data 
 and \( QGRASS^{HERRERO} \) represents pasture use data 
-from Herrero Acosta et al. (2018).
+from Herrero et al. (2018).
 
 Next, the feed efficiency and concentrate feed share were estimated as follows:
 
@@ -232,7 +233,7 @@ FEEDSHARE_{(aliv,bas,cty,cz,sys)} &=
 {QF^{HERRERO}_{(aliv,bas,cty,cz,sys)} + QGRASS^{HERRERO}_{(aliv,bas,cty,cz,sys)}}
 \end{align}
 
-where \( QF^{HERRERO} \) is the amount of concentrate feed from Herrero Acosta et al. (2018).
+where \( QF^{HERRERO} \) is the amount of concentrate feed from Herrero et al. (2018).
 
 Using these values and the FBS feed demand data, 
 the quantities of pasture and concentrate feed use were estimated. 
@@ -254,13 +255,13 @@ FEEDSHARE_{(aliv,bas,cty,cz,sys)} \\
      {\sum_{cfeed} QF^{FAO}_{(cfeed,cty)}}
 \end{multline}
 
-\begin{multline}
-qfcoef_{(cfeed,cty)} =
+\begin{align}
+qfcoef_{(cfeed,cty)} &=
 \frac{QF^{FAO}_{(cfeed,cty)}}
      {\displaystyle
       \sum_{(aliv,bas,cz,sys)}
       QFEEDSYS^{temp}_{(aliv,cfeed,bas,cty,cz,sys)}}
-\end{multline}
+\end{align}
 
 \begin{multline}
 QFEEDSYS_{(aliv,cfeed,bas,cty,cz,sys)} =
