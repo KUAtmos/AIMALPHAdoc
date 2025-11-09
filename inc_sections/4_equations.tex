@@ -192,7 +192,7 @@ Yield improvements due to technological progress and climate impacts are conside
   \tag{YLDEQ}\label{eq:YLDEQ}
 \end{align}
 
-\paragraph{Other Production Factor Price}
+\paragraph{Other Production Factor Price (Crops)}
 \begin{align}
   PO_{acro,bas,cty}
   &= \overline{POBASE}_{acro,bas,cty}
@@ -534,7 +534,7 @@ A constraint is imposed to ensure that total agricultural land does not exceed t
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
   }{
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
     + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
   }
   \tag{QLCROEQ}\label{eq:QLCROEQ}
@@ -548,7 +548,7 @@ A constraint is imposed to ensure that total agricultural land does not exceed t
     \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
   }{
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
     + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
   }
   \tag{QLFRSEQ}\label{eq:QLFRSEQ}
@@ -562,7 +562,7 @@ A constraint is imposed to ensure that total agricultural land does not exceed t
     \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
   }{
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty}\, \overline{PLFRS}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
     + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
   }
   \tag{QLGRAEQ}\label{eq:QLGRAEQ}
@@ -621,36 +621,65 @@ A constraint is imposed to ensure that total agricultural land does not exceed t
   \tag{QLLIVDISTEQ}\label{eq:QLLIVDISTEQ}
 \end{align}
 
+
 \paragraph{Land Prices}
-\begin{align}
+\begin{equation}
   PLCROCLT_{bas,cty}\cdot QLCROCLT_{bas,cty}
-  &= \sum_{acro} PL_{acro,bas,cty}\cdot QL_{acro,bas,cty}
+  = \sum_{acro} PL_{acro,bas,cty}\cdot QL_{acro,bas,cty}
   \tag{PLCROCLTEQ}\label{eq:PLCROCLTEQ}
-  \shortintertext{\vspace{0.6\baselineskip}}
+\end{equation}
+
+\vspace{0.3\baselineskip}
+
+\begin{multline}
   PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
-  &= \bigl(
+  = \bigl(
        PLCROCLT_{bas,cty}\cdot QLCROCLT_{bas,cty}
-       \nonumber\\[-0.3em]
-  &\quad
+       \\[-0.3em]
+  \quad
        + \overline{PLCROFAL}_{bas,cty}\cdot QLCROFAL_{bas,cty}
      \bigr)
-     \nonumber\\[-0.3em]
-  &\quad / (1 + PLCOMP_{bas,cty})
+  \quad / (1 + PLCOMP_{bas,cty})
   \tag{PLCROEQ}\label{eq:PLCROEQ}
-  \shortintertext{\vspace{0.6\baselineskip}}
+\end{multline}
+
+\vspace{0.3\baselineskip}
+
+\begin{multline}
   PLPASN_{bas,cty}\cdot QLPASN_{bas,cty}
-  &= PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
-     \nonumber\\[-0.3em]
-  &\quad + \overline{PLFRS}_{bas,cty}\cdot QLFRS_{bas,cty}
-     \nonumber\\[-0.3em]
-  &\quad + \overline{PLGRA}_{bas,cty}\cdot QLGRA_{bas,cty}
+  = PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
+    \\[-0.3em]
+  \quad + PLFRS_{bas,cty}\cdot QLFRS_{bas,cty}
+  \quad + \overline{PLGRA}_{bas,cty}\cdot QLGRA_{bas,cty}
   \tag{PLPASNEQ}\label{eq:PLPASNEQ}
-  \shortintertext{\vspace{0.6\baselineskip}}
+\end{multline}
+
+\vspace{0.3\baselineskip}
+
+\begin{equation}
   PLPAS_{bas,cty}\cdot QLPAS_{bas,cty}
-  &= \frac{\sum_{aliv} PL_{aliv,bas,cty}\cdot QL_{aliv,bas,cty}}
+  = \frac{\sum_{aliv} PL_{aliv,bas,cty}\cdot QL_{aliv,bas,cty}}
           {1 + PLCOMP_{bas,cty}}
   \tag{PLPASEQ}\label{eq:PLPASEQ}
-\end{align}
+\end{equation}
+
+\vspace{0.3\baselineskip}
+
+\begin{multline}
+  PLFRS_{bas,cty}
+  = \overline{PLFRSBASE}_{bas,cty}
+  \\[-0.3em]
+  \quad
+    + \max\Bigl(
+        0,\,
+        \overline{CARBONSTOCK}_{cty} \cdot
+        \overline{PRCCAR}_{cty} \cdot
+        44/12 \cdot
+        dcffrs_{cty}
+        - affcost_{cty}
+      \Bigr)
+  \tag{PLFRSEQ}\label{eq:PLFRSEQ}
+\end{multline}
 
 \paragraph{Agricultural Land Constraint}
 \begin{align}
@@ -733,6 +762,14 @@ Emissions from the land-use sector are calculated according to each land area.
      + \overline{EF\_LU}_{src,gas,cty}
        \cdot QLPAS_{bas,cty}
   \tag{GHGLUEQ}\label{eq:GHGLUEQ}
+\end{align}
+\begin{align}
+  GHGLU_{"afr","CO_2",bas,cty}
+  &= 
+  - \sum_{age}
+      qlfrs\_age_{bas,cty,age}
+      \cdot \overline{CARBONSEQ}_{cty,age}
+  \tag{GHGLUAFREQ}\label{eq:GHGLUAFREQ}
 \end{align}
 
 \paragraph{Emission Reduction Rate}

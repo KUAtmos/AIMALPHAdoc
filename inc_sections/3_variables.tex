@@ -37,11 +37,12 @@ Table~\ref{tab:indices} lists the indices used in the model.
   \texttt{water}  & Crop production technology & 2 & Irrigated / rainfed \\
   \texttt{cz}     & Climate zone     & 4 & Tropical, temperate, arid, hyper-arid \\
   \texttt{sys}    & Livestock production system & 2 & Pasture-based, mixed farming \\
-  \texttt{src}    & GHG emission sources & 13 &
+  \texttt{src}    & GHG emission sources & 14 &
     Enteric fermentation, manure management, rice cultivation, synthetic fertilizer application, 
     organic fertilizer application, manure on pasture, cultivation of organic soils, crop residues, 
-    crop residue burning, grassland burning, forests, natural wildfires, deforestation \\
+    crop residue burning, grassland burning, forests, natural wildfires, deforestation, afforestation \\
   \texttt{gas}    & Gas species      & 3 & CO\textsubscript{2}, CH\textsubscript{4}, N\textsubscript{2}O \\
+  \texttt{age}    & Forest age      & 85 & 0 to 85 (year 2015 to 2100)\\
 \end{xltabular}
 
 
@@ -114,6 +115,7 @@ Table~\ref{tab:endovars} lists the endogenous variables used in the model.
   \texttt{PLPAS} & Pasture land price & \$/ha \\
   \texttt{PLPASN} & Non-pasture land price & \$/ha \\
   \texttt{PLCRO} & Cropland price & \$/ha \\
+  \texttt{PLFRS} & Forest price & \$/ha \\
   \texttt{PLCROCLT} & Harvested cropland price & \$/ha \\
   \texttt{PL} & Land price & \$/ha \\
   \texttt{PENE} & Energy crop land price & \$/ha \\
@@ -191,9 +193,11 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model. For dat
   \texttt{POBASE} & Price of other production factors in the base year & FAOSTAT, GTAP~10 \\
   \texttt{QLTOT} & Total land area & LUH2 \\
   \texttt{QLVEGN} & Non-vegetated land area & LUH2 \\
-  \texttt{PLFRS} & Forest land price & LUH2, GTAP~10 \\
+  \texttt{PLFRSBASE} & Forest land price in the base year & LUH2, GTAP~10 \\
   \texttt{PLGRA} & Price of other natural land & LUH2, GTAP~10 \\
   \texttt{PLCROFAL} & Fallow land price & LUH2, GTAP~10 \\
+  \texttt{CARBONSTOCK} & Carbon stock & FRA~\cite{FAO2020FRA} \\
+  \texttt{CARBONSEQ} & Carbon sequestration by forest age class & AFOLUB~\cite{hasegawaNationalLandbasedClimate2025} \\
   \texttt{EF} & GHG emission factor in agriculture sector & FAOSTAT \\
   \texttt{EFLU} & GHG emission factor in land-use sector & FAOSTAT \\
   \texttt{PRCCAR} & Carbon price & AIM-Hub \\
@@ -242,5 +246,8 @@ Table~\ref{tab:params} lists the parameters used in the model.
   \texttt{pmres} & Residual between import price and world price & \\
   \texttt{peres} & Residual between export price and world price & \\
   \texttt{exr} & Exchange rate & \\
+  \texttt{dcffrs} & Discount factor for forest carbon value & Introduces the discounted carbon value of forests, reflecting a 60-year forest lifetime and a 5\% interest rate. \\
+  \texttt{affcost} & Afforestation cost & Cost of establishing new forest land, assumed at 250~(100~US\$/acre; 1~acre~=~0.4~ha) based on Gorte R.W. (2009). \\
+  \texttt{qlfrs\_age} & Forest area by age class & Records forest area by age class, tracking the afforestation area in the past years.\\
   $\sigma$ & Elasticity of adoption of abatement technologies & Estimated by regression based on Harmsen et~al.~(2019) \\
 \end{xltabular}

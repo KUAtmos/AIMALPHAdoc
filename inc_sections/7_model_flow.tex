@@ -18,6 +18,8 @@ of AgMIP (Agricultural Model Intercomparison and Improvement Project)
 and IAMC (Integrated Assessment Modeling Consortium) 
 to facilitate data exchange and comparison.
 
+\bigskip
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{fig7_1}
@@ -25,7 +27,7 @@ to facilitate data exchange and comparison.
     \label{fig:model_flow}
 \end{figure}
 
-\bigskip
+\clearpage
 
 \subsection{Programs within the Model}
 
@@ -99,15 +101,45 @@ Generates graphical outputs and visualization figures from the simulation result
 \end{programbox}
 
 
-\bigskip
+\clearpage
 
 \subsection{Execution Method}
 
 The AIM-ALPHA model can be executed by running the shell script 
-\texttt{AIMALPHA/shell/execution.sh} on either Cygwin or Ubuntu environments.  
+\texttt{AIMALPHA/shell/execution.sh} on either Cygwin or Ubuntu environments. \\
 Model configurations are defined in \texttt{AIMALPHA/shell/model\_setting.sh}.  
 As summarized in Table~\ref{tab:model_setting}, the configurable items include 
 the selection of executable programs, scenario settings, and computational environment settings.
+
+\subsubsection*{Basic execution}
+
+To run the model, move to the \texttt{AIMALPHA/shell} directory and execute:
+
+\begin{lstlisting}[language=bash]
+cd AIMALPHA/shell
+bash execution.sh
+\end{lstlisting}
+
+When \texttt{execution.sh} is called without any arguments, 
+the default configuration file \texttt{model\_setting.sh} is loaded automatically 
+and the model is executed using those settings.
+
+\subsubsection*{Using a custom setting file}
+
+It is also possible to specify an alternative setting file as an argument.  
+In this case, the configuration defined in the specified file is used instead of 
+\texttt{model\_setting.sh}:
+
+\begin{lstlisting}[language=bash]
+cd AIMALPHA/shell
+bash execution.sh mysetting
+\end{lstlisting}
+
+Here, \texttt{mysetting.sh} denotes a user-defined setting file 
+(e.g.\ a copy of \texttt{model\_setting.sh} with modified options).  
+Each run of \texttt{bash execution.sh <setting\_file>} loads the corresponding setting file 
+and executes the model according to those configurations.
+
 
 \begin{table}[H]
 \centering
@@ -153,16 +185,32 @@ If this item is specified, the two settings above are ignored. & -- \\
 \midrule
 \multicolumn{3}{@{}l}{\textbf{Execution environment}} \\[2pt]
 \midrule
-\texttt{run\_single} & Runs the model for one scenario at a time. & on \\
-\texttt{run\_paralell} & Runs scenarios in parallel. & off \\
-\texttt{iteration\_number} & Number of iterations per year.  
-Larger values improve convergence but increase computation time. & 0 \\
-\texttt{NCPU} & Maximum number of CPUs used for parallel computation. & 8 \\
-\texttt{mem\_check} & Performs memory usage checks (Windows only). & off \\
-\texttt{mem\_threshold} & Memory usage threshold (\%) at which parallel computation pauses when \texttt{mem\_check} is enabled. & 80 \\
+\texttt{run\_paralell} & Runs multiple scenarios in parallel. & off \\[2pt]
+\texttt{iteration\_number} & 
+Number of iterations per year.  
+This setting is applied only when \texttt{run\_paralell} is \texttt{off}.  
+Larger values improve convergence but increase computation time. & 0 \\[2pt]
+\texttt{MultiSol} & 
+Used only when \texttt{run\_paralell} is \texttt{on}.  
+An integer between 1 and 5.  
+Specifies the number of internally divided iteration settings to be solved in parallel 
+(e.g., if set to 3, iterations such as 1, 3, and 5 are executed concurrently).  
+This helps the model converge more efficiently.  
+Note that the specified number corresponds to the number of threads required per scenario  
+(e.g., 3 scenarios with \texttt{MultiSol}=3 require 9 threads in total). & 3 \\[2pt]
+\texttt{NCPU} & Maximum number of CPUs used for parallel computation. & 8 \\[2pt]
+\texttt{mem\_check} & Performs memory usage checks (Windows only). & off \\[2pt]
+\texttt{mem\_threshold} & 
+Memory usage threshold (\%) at which parallel computation pauses 
+when \texttt{mem\_check} is enabled. & 80 \\[2pt]
+\texttt{YEAR\_TIMEOUT} & 
+Maximum computation time allowed per simulation year (in seconds).  
+If this time limit is exceeded, the scenario run is aborted. & 1800 \\ 
 \bottomrule
 \end{xltabular}
 \end{table}
+
+\clearpage
 
 \subsection{Execution Environment Requirements}
 
@@ -171,11 +219,13 @@ The model can be executed under either Cygwin or Ubuntu with the following depen
 \begin{itemize}[leftmargin=2.5em]
   \item \textbf{Cygwin} (required packages: \texttt{zip}, \texttt{unzip})
   \item \textbf{Ubuntu}
-  \item \textbf{R 4.3.2} (required libraries: 
-  \texttt{tidyverse}, \texttt{gdxrrw}, \texttt{openxlsx}, \texttt{readxl}, 
-  \texttt{ggplot2}, \texttt{furrr}, \texttt{ggpmisc}, \texttt{patchwork}, 
-  \texttt{sf}, \texttt{raster}, \texttt{ncdf4}, \texttt{exactextractr}, 
-  \texttt{rmapshaper}, \texttt{grDevices})
-  \item \textbf{GAMS 38}
+  \item \textbf{R} (version $\geq$ 4.3.2; required libraries: 
+    \texttt{"tidyverse"}, \texttt{"gdxrrw"}, \texttt{"openxlsx"}, \texttt{"readxl"},
+    \texttt{"ggplot2"}, \texttt{"ggpmisc"}, \texttt{"RColorBrewer"},
+    \texttt{"purrr"}, \texttt{"furrr"}, \texttt{"scales"},
+    \texttt{"patchwork"}, \texttt{"sf"}, \texttt{"raster"}, \texttt{"ncdf4"},
+    \texttt{"exactextractr"}, \texttt{"rmapshaper"}, \\
+    \texttt{"rnaturalearth"},\texttt{"rnaturalearthdata"}, \texttt{"grDevices"})
+  \item \textbf{GAMS} (version $\geq$ 38, with the \texttt{PATH} solver available)
   \item \textbf{GitHub}
 \end{itemize}

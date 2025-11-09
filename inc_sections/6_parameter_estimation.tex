@@ -216,8 +216,6 @@ confirming the significance of the coefficients.
 
 \subsubsection{Relationship between feed efficiency and per-capita GDP}
 
-\subsubsection{Relationship between feed efficiency and per-capita GDP}
-
 Figure~\ref{fig:feed_eff_gdp} shows the relationship between per-capita GDP and feed efficiency 
 by livestock type, climate zone, and production system.  
 Table~\ref{tab:feed_eff_gdp} presents the estimated regression parameters,
@@ -319,14 +317,16 @@ which confirms the statistical significance of the estimated coefficients.
     \label{fig:feedshare_gdp}
 \end{figure}
 
-
 \begin{table}[H]
 \centering
 \caption{Estimated parameters of concentrate feed share 
 (95\% confidence intervals in parentheses)}
 \label{tab:feedshare_gdp}
 
-\csvreader[
+\scriptsize
+\setlength{\tabcolsep}{3pt}%
+\resizebox{0.95\textwidth}{!}{%
+\csvreader[%
     tabular={l l l r r r r r l},
     table head=\toprule
         Commodity & System & $\rho_{fs}$ & \multicolumn{4}{c}{$\delta_{fs}$ by climate zone} & $R^2$ & $p$-value \\
@@ -361,6 +361,7 @@ which confirms the statistical significance of the estimated coefficients.
     \num[round-mode=places,round-precision=2]{\deltaY} &
     \num[round-mode=places,round-precision=2]{\Rtwo} &
     $<0.001$%
+}
 }
 \end{table}
 
