@@ -121,18 +121,17 @@ In the demand block, food demand is determined by factors such as prices, popula
 The production block describes the equations determining the production quantities of each food commodity, the input of intermediate goods and production factors, and the producer prices.  
 The production functions are represented by Leontief-type functions, where each good is produced through the combination of specific input factors.
 
-\subsubsection{Crop Production}
-
-Primary crops are differentiated by production technologies (irrigated and rainfed).
-Yield improvements due to technological progress and climate impacts are considered for crops.
-
-
 \paragraph{Domestic Production}
 \begin{align}
   QSUP_{a,cty}
   &= \sum_{bas} QS_{a,bas,cty}
   \tag{QSUPEQ}\label{eq:QSUPEQ}
 \end{align}
+
+\subsubsection{Crop Production}
+
+Primary crops are differentiated by production technologies (irrigated and rainfed).
+Yield improvements due to technological progress and climate impacts are considered for crops.
 
 \paragraph{Crop Production by Technology}
 \begin{align}
@@ -464,6 +463,56 @@ Energy crop production is determined from regional totals provided exogenously b
   \tag{PLENEEQ}\label{eq:PLENEEQ}
 \end{align}
 
+
+\subsection{Price Block}
+
+This subsection describes the equations in the price block.  
+The price block represents the relationships among various prices in the model.  
+Prices are linked through fixed coefficients so that the price used in the demand and supply functions is consistently determined.
+
+\paragraph{Consumer and Producer Prices}
+\begin{align}
+  (1 + \overline{MMJ}_{a,cty})
+  \cdot PP_{a,cty}
+  + PCB_{a,cty}
+  + AC_{a,cty}
+  &= PC_{a,cty}
+  \tag{PCEQ}\label{eq:PCEQ}
+\end{align}
+
+\paragraph{Consumer and Border Prices}
+\begin{align}
+  PC_{c,cty}
+  &= (1 + \overline{PSE}_{c,cty})
+     \cdot PB_{c,cty}
+     \cdot (1 + pbres_{c,cty})
+  \tag{PBEQ}\label{eq:PBEQ}
+\end{align}
+
+\paragraph{Import Price}
+\begin{align}
+  PM_{c,cty}
+  &= PW_{c}
+     \cdot exr_{cty}
+     \cdot
+     (1 + \overline{TM}_{c,cty} + TMCOMP_{c,cty})
+     \nonumber\\[-0.3em]
+  &\quad
+     \cdot (1 + \overline{MMM}_{c,cty})
+     \cdot (1 + pmres_{c,cty})
+  \tag{PMEQ}\label{eq:PMEQ}
+\end{align}
+
+\paragraph{Export Price}
+\begin{align}
+  PE_{c,cty}
+  \cdot (1 + \overline{TE}_{c,cty})
+  \cdot (1 + \overline{MME}_{c,cty})
+  &= PW_{c}
+     \cdot (1 + peres_{c,cty})
+     \cdot exr_{cty}
+  \tag{PEEQ}\label{eq:PEEQ}
+\end{align}
 
 
 \subsection{Land Use Block}
