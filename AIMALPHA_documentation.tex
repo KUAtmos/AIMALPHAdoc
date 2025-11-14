@@ -1,0 +1,330 @@
+% !TeX program = pdflatex
+\documentclass[11pt,a4paper,headings=small,parskip=half]{scrartcl}
+
+%-------------------- Fonts & Micro-typography --------------------
+\usepackage[T1]{fontenc}
+\usepackage[scaled=.95]{helvet}
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+
+%-------------------- Geometry & Layout --------------------
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\emergencystretch}{2em}
+
+%-------------------- Colors & Links --------------------
+\usepackage[dvipsnames]{xcolor}
+\definecolor{Primary}{HTML}{1F3A5F} % deep blue-gray
+\definecolor{Accent}{HTML}{2F6B5C}  % green-teal
+\definecolor{Link}{HTML}{1A73E8}
+
+%-------------------- Document variables (metadata) --------------------
+\input{inc_sections/metadata.tex}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  colorlinks=true,linkcolor=Primary,citecolor=Accent,urlcolor=Link,
+  pdftitle={\doctitle},
+  pdfauthor={\docauthorshort}
+}
+
+%-------------------- Headings (KOMA) --------------------
+\addtokomafont{sectioning}{\color{Primary}\bfseries}
+\RedeclareSectionCommand[beforeskip=1.1\baselineskip,afterskip=.4\baselineskip]{section}
+\RedeclareSectionCommand[beforeskip=.9\baselineskip,afterskip=.3\baselineskip]{subsection}
+\RedeclareSectionCommand[beforeskip=.7\baselineskip,afterskip=.2\baselineskip]{subsubsection}
+
+%-------------------- Headers & Footers --------------------
+\usepackage{scrlayer-scrpage}
+\clearpairofpagestyles
+\automark{section} 
+\ihead{\footnotesize \doctitle\ Ver.\docversion}
+\ohead{\footnotesize \headmark}
+\cfoot{\footnotesize\color{Accent}\thepage}
+\setheadsepline{.4pt}
+\pagestyle{scrheadings}
+
+%-------------------- Math & Notation --------------------
+\usepackage{amsmath,mathtools}
+\usepackage{bm}
+\numberwithin{equation}{section}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%-------------------- Cross-references --------------------
+\usepackage[nameinlink,capitalise]{cleveref}
+
+%-------------------- Figures, Tables, Captions --------------------
+\usepackage{graphicx}
+\graphicspath{{figs/}}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\sisetup{detect-all,table-auto-round=true,separate-uncertainty=true}
+\usepackage[labelfont=bf]{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont=bf}
+\usepackage{csvsimple}
+\usepackage{enumitem}
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{xurl}
+\usepackage[section]{placeins} 
+
+%-------------------- Theorems in subtle boxes --------------------
+\usepackage[most]{tcolorbox}
+\tcbset{enhanced,boxrule=.3pt,arc=2mm,colframe=Accent!60,colback=Accent!3}
+\newtcbtheorem[number within=section]{theobox}{Theorem}{colback=Accent!2!white}{th}
+\newtcbtheorem[number within=section,use counter from=theobox]{lemabox}{Lemma}{colback=Accent!2!white}{lem}
+\newtcbtheorem[number within=section]{defbox}{Definition}{colback=Accent!2!white}{def}
+
+%-------------------- Algorithms (pseudocode) --------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+%-------------------- Code listings (optional) --------------------
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small,frame=single,rulecolor=\color{Accent!50},
+  keywordstyle=\color{Primary}\bfseries,commentstyle=\itshape\color{Accent!80},
+  showstringspaces=false}
+
+%-------------------- Section --------------------
+\RedeclareSectionCommand[beforeskip=1.0ex plus 1ex minus .2ex, afterskip=.8ex]{section}
+\RedeclareSectionCommand[beforeskip=2.2ex plus 1ex minus .2ex, afterskip=.8ex]{subsection}
+\usepackage{etoolbox}
+\newcommand\SectionTopSpace{0.5ex}
+\makeatletter
+\pretocmd{\section}{%
+  \clearpage
+  \ifdim\pagetotal=0pt\relax
+    \vspace*{\SectionTopSpace}
+  \fi
+}{}{}
+\makeatother
+
+\usepackage{float}
+% Section size and color
+\setkomafont{section}{\Huge\bfseries\color{Primary}}
+\setkomafont{subsection}{\Large\bfseries\color{Primary}}
+\setkomafont{subsubsection}{\large\bfseries\color{Primary}}
+
+% Underbar for Section Title
+\newcommand\SecRuleWidth{1.0\linewidth}
+\newcommand\SecRuleThickness{1.1pt}    
+\newcommand\SecRuleVSkip{.20ex}        
+\makeatletter
+\let\orig@sectionlinesformat\sectionlinesformat
+\renewcommand*\sectionlinesformat[4]{%
+  % #1=level name, #2=indent box, #3=number, #4=title
+  \ifnum\pdfstrcmp{#1}{section}=0
+    \par\noindent
+    {\usekomafont{#1}\raggedright #3\enskip #4\par
+     \vspace{\SecRuleVSkip}%
+     {\color{Accent}\rule{\SecRuleWidth}{\SecRuleThickness}}\par}%
+  \else
+    \orig@sectionlinesformat{#1}{#2}{#3}{#4}%
+  \fi
+}
+\makeatother
+
+% Update History
+\newtcolorbox{changelogentry}[3]{% {date}{author}{version}
+  enhanced, breakable,
+  colback=white,      
+  colframe=Accent!70, 
+  boxrule=.9pt,       
+  borderline west={2.4pt}{0pt}{Accent},
+  sharp corners,
+  left=8pt, right=8pt, top=8pt, bottom=8pt,
+  title={\textbf{#1} \quad|\quad #2 \quad v#3},
+  fonttitle=\bfseries\small,
+  coltitle=Primary,
+  colbacktitle=Accent!10,
+  boxed title style={
+    sharp corners,
+    colframe=Accent!70,
+    boxrule=.9pt
+  }
+}
+
+% Reference
+\usepackage[
+  backend=biber,
+  style=numeric, 
+  sorting=none,
+  maxbibnames=6,
+  giveninits=true,
+  url=true,     
+  doi=true,      
+  isbn=false
+]{biblatex}
+\addbibresource{refs.bib}
+
+\renewbibmacro*{url+urldate}{%
+  \ifentrytype{misc}
+    {%
+      \printfield{url}%
+      % \setunit*{\addspace}%
+      % \printurldate
+    }%
+    {%
+    }%
+}
+
+\DeclareNameAlias{author}{last-first}
+\DeclareNameAlias{editor}{last-first}
+
+% --- Authors/Affiliations helpers ---
+\newcommand{\affilmark}[1]{\textsuperscript{#1}}
+\newcommand{\affil}[2]{%
+  \par\hangindent=1.3em\noindent\textsuperscript{#1}\,#2%
+}
+
+% ----------------------------------------------------------------
+
+
+
+% =====================
+%        body
+% =====================
+%============================================================
+\title{\doctitle\\\large \docsubtitle}
+\author{\docauthor}
+\date{\today}
+%============================================================
+
+\begin{document}
+
+% ---- Title Page ----
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+
+{\Huge\bfseries \doctitle\\[0.5em]
+\textcolor{Accent}{Agricultural Land-use\\Partial Equilibrium Model}}
+
+\vspace{2cm}
+{\Large \docauthor\\[0.5em]
+\docorg}
+
+\vfill
+{\large  Version \docversion{} -- \docdate}
+\end{titlepage}
+
+% ---- Imprint / Abstract page (front matter) ----
+\clearpage
+\thispagestyle{empty} % Without page number and header
+
+{\Large\bfseries \doctitle\par}
+{\normalsize \docsubtitle\par}
+\vspace{1.2em}
+
+\textbf{Abstract}\par
+\noindent
+This document describes the model structure and system of equations for
+AIM-ALPHA v\docversion. AIM-ALPHA is a one-year step
+sequential dynamic partial equilibrium model targeting agricultural
+markets and land use. It performs future projections considering 166
+countries on the demand side, 400 production units on the supply side,
+23 food commodities, and 5 land use categories. This model is
+anticipated to be applicable to research including analyses of food
+security issues, climate change impacts, evaluations of climate change
+mitigation measures, and assessments of biodiversity impacts related to
+land use.
+
+\medskip
+\textbf{Keywords:} Integrated assessment model, partial equilibrium, agricultural markets,
+land use, climate change mitigation
+
+\vfill
+
+{\color{Accent}\rule{0.22\linewidth}{0.8pt}\par}\vspace{0.8ex}
+
+{\small
+\textbf{Authors:}\ 
+Ryo Totake\affilmark{1},
+Hiroki Yoshida\affilmark{1},
+Tomoko Hasegawa\affilmark{1,2},
+Shinichiro Fujimori\affilmark{1}\par
+
+\textbf{Affiliations:}
+\affil{1}{Department of Environmental Engineering, Kyoto University, C1-3 361, Kyotodaigaku Katsura, Nishikyoku, Kyoto, Japan}
+\affil{2}{Research Organization of Science and Technology, Ritsumeikan University, 1 Chome-1-1 Nojihigashi, Kusatsu, Shiga, Japan}\par
+\textbf{Contact:} \href{mailto:totake.ryo.85s@st.kyoto-u.ac.jp}{totake.ryo.85s@st.kyoto-u.ac.jp}\par
+\textbf{Version:} \docversion\par 
+\textbf{First release:} November 2, 2025\par
+\textbf{Last update:} \docdate\par
+% \textbf{License:} **\par %\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}\par
+% \textcopyright~
+% \the\year\ \docauthor. All rights reserved.
+% \the\year\ Kyoto University. All rights reserved.
+}
+
+\clearpage
+% -------------- Table of Contents -----------------
+
+\clearpage
+\tableofcontents
+\clearpage
+
+% ------------------- Contents ---------------------
+\section{Introduction}\label{sec:intro}
+\input{inc_sections/1_introduction}
+
+\section{Model Structure}\label{sec:structure}
+\input{inc_sections/2_model_structure}
+
+\section{Variables and Parameters}\label{sec:variables}
+\input{inc_sections/3_variables}
+
+\section{System of Equations}\label{sec:equations}
+\input{inc_sections/4_equations}
+
+\section{Data and Preprocessing}\label{sec:data}
+\input{inc_sections/5_data_processing}
+
+\section{Parameter Estimation}\label{sec:param}
+\input{inc_sections/6_parameter_estimation}
+
+\section[Model Calculation Flow and Execution]{\huge Model Calculation Flow and Execution}\label{sec:calc}
+\input{inc_sections/7_model_flow}
+
+\section{Update History}
+\input{inc_sections/8_update_history}
+
+\printbibliography[
+  title={References},
+  heading=bibintoc
+]
+
+% ------------------- Appendix ---------------------
+\appendix
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+\addsec{Appendix A: Production Units}\label{sec:appendix_a}
+\input{inc_sections/9_appendix_A}
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{B\arabic{figure}}
+
+\addsec{Appendix B: Regional Aggregation}\label{sec:appendix_b}
+\input{inc_sections/10_appendix_B}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{C\arabic{table}}
+
+\addsec{Appendix C: Income Elasticities}\label{sec:appendix_c}
+\input{inc_sections/11_appendix_C}
+
+\end{document}

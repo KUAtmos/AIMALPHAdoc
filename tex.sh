@@ -2,7 +2,7 @@
 #. ~/.bashrc
 set -euxo pipefail
 
-TEXFILE="ALPHA_doc"
+TEXFILE="AIMALPHA_documentation"
 
 pdflatex -interaction=nonstopmode -halt-on-error "${TEXFILE}.tex"
 biber "${TEXFILE}"
