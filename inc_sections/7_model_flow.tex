@@ -19,6 +19,8 @@ and IAMC (Integrated Assessment Modeling Consortium)
 to facilitate data exchange and comparison.  
 When enabled in \texttt{model\_setting.sh}, the AgMIPAssessment submodule is also executed to run vetting and variable-consistency checks, and to generate plots and summary tables.
 
+Optional pre-run bridges convert outputs from AIM-Hub, AFOLUB, and AIM-PLUM into AIM-ALPHA inputs. The switches \texttt{use\_hub\_output}, \texttt{use\_afolu\_output}, and \texttt{use\_plum\_output} control these bridges. When a scenario suffix is specified by \texttt{ModelInt}, the corresponding file in \texttt{setting/modelint} defines the linked-model setting.
+
 \bigskip
 
 \begin{figure}[H]
@@ -81,7 +83,7 @@ and includes submodules that output historical data in AgMIP and IAMC template f
 Performs parameter regression analyses based on the original datasets to estimate elasticities and adjustment coefficients.
 \end{programbox}
 
-\begin{programbox}{2\_basetear.gms}
+\begin{programbox}{2\_baseyear.gms}
 Adjusts baseline datasets to ensure equilibrium consistency in the base year.
 \end{programbox}
 
@@ -97,7 +99,7 @@ Aggregates annual simulation outputs and compiles them into scenario-level resul
 Combines outputs from all scenarios to produce the comprehensive simulation dataset.
 \end{programbox}
 
-\begin{programbox}{Visualization.R}
+\begin{programbox}{Vis\_each\_scenario.R}
 Generates graphical outputs and visualization figures from the simulation results.
 \end{programbox}
 
@@ -111,17 +113,17 @@ Executes the AgMIPAssessment submodule, using \texttt{AGMIP\_all\_scenario.gdx} 
 \subsection{Execution Method}
 
 The AIM-ALPHA model can be executed by running the shell script 
-\texttt{AIMALPHA/shell/ALPHA\_exe.sh} on either Cygwin or Ubuntu environments. \\
-Model configurations are defined in \texttt{AIMALPHA/shell/model\_setting.sh}.  
+\texttt{shell/ALPHA\_exe.sh} on either Cygwin or Ubuntu environments. \\
+Model configurations are defined in \texttt{shell/settings/model\_setting.sh}.  
 As summarized in Table~\ref{tab:model_setting}, the configurable items include 
 the selection of executable programs, scenario settings, and computational environment settings.
 
 \subsubsection*{Basic execution}
 
-To run the model, move to the \texttt{AIMALPHA/shell} directory and execute:
+To run the model, move to the \texttt{shell} directory and execute:
 
 \begin{lstlisting}[language=bash]
-cd AIMALPHA/shell
+cd shell
 bash ALPHA_exe.sh
 \end{lstlisting}
 
@@ -136,7 +138,7 @@ In this case, the configuration defined in the specified file is used instead of
 \texttt{model\_setting.sh}:
 
 \begin{lstlisting}[language=bash]
-cd AIMALPHA/shell
+cd shell
 bash ALPHA_exe.sh mysetting
 \end{lstlisting}
 
@@ -164,29 +166,37 @@ Once downloaded, this can be turned off. & on \\
 \texttt{model\_run} & Executes \texttt{3\_equilibrium.gms}. & on \\
 \texttt{combine\_gdx} & Executes \texttt{4\_combine\_gdx.gms}. & on \\
 \texttt{scenario\_combine} & Executes \texttt{5\_scenario\_combine.gms}. & on \\
-\texttt{Visualization} & Executes \texttt{Visualization.R}. & on \\
-\texttt{AgMIPAssessment} & Executes AgMIPAssessment vetting and variable-consistency checks, and outputs plots/tables to \texttt{plot/AgMIPAssessment} (logs: \texttt{log/AgMIPAssessment}). & on \\
-\texttt{data\_update} & Executes \texttt{0\_csv\_to\_gdx.R}.  
+\texttt{Visualization} & Master switch for the plotting step; the \texttt{Vis\_*} switches select what is drawn. & on \\
+\texttt{AgMIP\_assessment} & Executes AgMIPAssessment vetting and variable-consistency checks, and outputs plots and tables. & off \\
+\texttt{csv2gdx\_update} & Executes \texttt{0\_csv\_to\_gdx.R}.  
 If no data update is needed, this may be turned off. & off \\
-\texttt{grid\_data} & Executes \texttt{0\_grid\_data.R}.  
+\texttt{grid2gdx\_update} & Executes \texttt{0\_grid\_data.R}.  
 If no data update is needed, this may be turned off.  
-If executed, the folder \texttt{L/ModelData/AIMALPHA/grid} must be copied to \texttt{AIMALPHA/data}. & off \\
-\texttt{hubauto} & Executes \texttt{tool/Hub2ALPHA.gms} before model run. Place Hub output \texttt{global\_17\_merged.gdx} in \texttt{AIMALPHA/data/Huboutput}. & off \\
-\texttt{afoluauto} & Executes \texttt{tool/AFOLU2ALPHA.gms} before model run. Place AFOLU output \texttt{IAMC\_templatePlus.gdx} in \texttt{AIMALPHA/data/AFOLUoutput}. & off \\
-\texttt{Scenario\_compare} & Enables comparison across scenarios in plots. & off \\
-\texttt{Model\_compare} & Enables comparison across models in plots. & off \\
-\texttt{historical\_check} & Compares simulated and historical data in plots. & off \\
-\texttt{aggregate} & Performs aggregation of results into 17-region, 10-region, and 5-region groupings. & on \\
-\texttt{AGMIP} & Outputs results in AGMIP and IAMC\_Template formats. & on \\
+If executed, the required gridded input files must be placed in \texttt{data}. & off \\
+\texttt{use\_hub\_output} & Executes the Hub2ALPHA pre-run bridge. & off \\
+\texttt{use\_afolu\_output} & Executes the AFOLU2ALPHA pre-run bridge. & off \\
+\texttt{use\_plum\_output} & Executes the PLUM2ALPHA pre-run bridge. & off \\
+\texttt{backcasting\_run} & Runs the model backward from the base year to 2000. & off \\
+\texttt{history\_diagnose} & Compares the conditioned historical period with model results. & off \\
+\texttt{surplus\_run} & Calculates surplus changes relative to \texttt{surplus\_reference}. & off \\
+\texttt{report\_year\_interval} & Sets the reporting interval to one or five years. & 5 \\
+\texttt{Vis\_each\_scenario} & Generates figures for individual scenarios. & on \\
+\texttt{Vis\_scenario\_compare} & Enables comparison across scenarios in plots. & off \\
+\texttt{Vis\_scenario\_list} & Restricts scenario-comparison plots to the listed scenarios; an empty list uses all scenarios. & empty \\
+\texttt{Vis\_model\_compare} & Enables comparison across models in plots. & off \\
+\texttt{Vis\_history} & Compares simulated and historical data in plots. & off \\
+\texttt{Vis\_country}, \texttt{Vis\_global17}, \texttt{Vis\_map} & Selects country, regional, and map outputs. & on, on, off \\
+\texttt{aggregate\_global17} & Performs aggregation of results into 17-region, 10-region, and 5-region groupings. & on \\
+\texttt{AgMIP\_output} & Outputs results in AGMIP and IAMC\_Template formats. & on \\
 \midrule
 \multicolumn{3}{@{}l}{\textbf{Scenario settings}} \\[2pt]
 \midrule
-\texttt{socioeconomic\_setting} & Specifies the socioeconomic scenario.  
-A file with the scenario name should exist in \texttt{AIMALPHA/setting/socioeconomic}. & SSP2 \\
-\texttt{climatepolicy\_setting} & Specifies the climate-policy scenario.  
-A file with the scenario name should exist in \texttt{AIMALPHA/setting/climatepolicy}. & BaU \\
-\texttt{climate\_setting} & Specifies the climate scenario.  
-A file with the scenario name should exist in \texttt{AIMALPHA/setting/climate}. & NoCC \\
+\texttt{socioeconomics} & Specifies the socioeconomic scenario.  
+A file with the scenario name should exist in \texttt{setting/socioeconomic}. & SSP2 \\
+\texttt{climatepolicies} & Specifies the climate-policy scenario.  
+A file with the scenario name should exist in \texttt{setting/climatepolicy}. & BaU \\
+\texttt{climates} & Specifies the climate scenario.  
+A file with the scenario name should exist in \texttt{setting/climate}. & NoCC \\
 \texttt{runlist} & Allows direct scenario specification without using the scenario matrix.  
 Scenario names are defined as \texttt{socioeconomic|climatepolicy|climate} (e.g., \texttt{SSP2|500C\_CACN\_DAC|NoCC}).  
 If this item is specified, the three settings above are ignored. & -- \\
@@ -196,27 +206,18 @@ If this item is specified, the three settings above are ignored. & -- \\
 \multicolumn{3}{@{}l}{\textbf{Execution environment}} \\[2pt]
 \midrule
 \texttt{run\_parallel} & Runs multiple scenarios in parallel. & on \\[2pt]
-\texttt{iteration\_number} & 
-Number of iterations per year.  
-This setting is applied only when \texttt{run\_parallel} is \texttt{off}.  
-Larger values improve convergence but increase computation time. & 0 \\[2pt]
+\texttt{serial\_iterations} & Ordered list of solver iteration settings tried when \texttt{run\_parallel} is \texttt{off}. & 0, 3, 5 \\[2pt]
 \texttt{MultiSol} & 
-Used only when \texttt{run\_parallel} is \texttt{on}.  
-An integer between 1 and 5.  
-Specifies the number of internally divided iteration settings to be solved in parallel 
-(e.g., if set to 3, iterations such as 1, 3, and 5 are executed concurrently).  
-This helps the model converge more efficiently.  
-Note that the specified number corresponds to the number of threads required per scenario  
-(e.g., 3 scenarios with \texttt{MultiSol}=3 require 9 threads in total). & 3 \\[2pt]
-\texttt{ModelInt} & Optional suffix appended to scenario IDs. If empty, no suffix is appended. & "" \\[2pt]
+Specifies the number of solver candidates run concurrently for each year when \texttt{run\_parallel} is \texttt{on}; the first successful solution is retained. & 3 \\[2pt]
+\texttt{ModelInt} & Optional suffix appended to scenario IDs and linked to \texttt{setting/modelint/<ModelInt>.gms}. If empty, no suffix is appended. & "" \\[2pt]
 \texttt{NCPU} & Maximum number of CPUs used for parallel computation. & 8 \\[2pt]
-\texttt{mem\_check} & Performs memory usage checks (Windows only). & off \\[2pt]
-\texttt{mem\_threshold} & 
-Memory usage threshold (\%) at which parallel computation pauses 
-when \texttt{mem\_check} is enabled. & 80 \\[2pt]
-\texttt{YEAR\_TIMEOUT} & 
-Maximum computation time allowed per simulation year (in seconds).  
-If this time limit is exceeded, the scenario run is aborted. & 1800 \\ 
+\texttt{year\_timeout} &
+Maximum computation time allowed per simulation year (in seconds).
+If this time limit is exceeded, the scenario run is aborted. & 900 \\[2pt]
+\texttt{solprint} &
+Writes the full solve report into the listing files of \texttt{3\_equilibrium.gms},
+for debugging.
+Turning it off keeps the listing files small. & on \\
 \bottomrule
 \end{xltabular}
 \end{table}

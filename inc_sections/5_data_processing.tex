@@ -49,6 +49,9 @@ Table~\ref{tab:data_sources} lists the datasets used in the model.
   T.~P.~Robinson et~al.~(2018)~\cite{robinsonGlobalDistributionRuminant2018} & Global distribution of ruminant livestock production systems V5 & \nolinkurl{https://doi.org/10.7910/DVN/WPDSZE} \\
   Harmsen et~al.~(2019)~\cite{harmsenLongtermMarginalAbatement2019a}    & CH\textsubscript{4} and N\textsubscript{2}O MAC curves & \nolinkurl{https://doi.org/10.1016/j.envsci.2019.05.013} \\
   Hurtt et~al.~(2019)~\cite{hurttHarmonizationGlobalLand2020}      & Land Use Harmonization 2 & \nolinkurl{https://luh.umd.edu/index.shtml} \\
+  Hanasaki et~al.~(2008)~\cite{hanasakiIntegratedModelAssessment2008a,hanasakiIntegratedModelAssessment2008b} & H08 rainfed crop yield & \nolinkurl{https://doi.org/10.5194/hess-12-1007-2008} \\
+  Hasegawa et~al.~(2017)~\cite{hasegawaGlobalLanduseAllocation2017} & AIM-PLUM spatial land-use outputs & \nolinkurl{https://doi.org/10.1016/j.scitotenv.2016.12.025} \\
+  Ito and Inatomi (2012)~\cite{itoWaterUseEfficiencyTerrestrial2012} & VISIT carbon-cycle outputs & \nolinkurl{https://doi.org/10.1175/JHM-D-10-05034.1} \\
   Gao and Pesaresi (2021)~\cite{gaoGlobal1kmDownscaled2021} & Global 1-km Downscaled Urban Land Extent Projection and Base Year Grids by SSP Scenarios, 2000-2100 & \nolinkurl{https://doi.org/10.7927/1z4r-ez63} \\
   Gao and Pesaresi (2021)~\cite{gaoDownscalingSSPconsistent2021} & Downscaling SSP-consistent Global Spatial Urban Land Projections from 1/8-degree to 1-km Resolution, 2000-2100 & \nolinkurl{https://doi.org/10.1038/s41597-021-01052-0} \\
   IUCN and UNEP-WCMC~\cite{iucnUNEPWCMCWorldDatabase2025} & World Database on Protected Areas (WDPA), Dec 2025 release & \nolinkurl{https://www.protectedplanet.net} \\
@@ -103,7 +106,6 @@ QOTH_{(c,cty)} &= QDEM_{(c,cty)} -
   &\quad
   QTOUR_{(c,cty)} + QLOSS_{(c,cty)} + QWASTE_{(c,cty)}\big)
 \end{align}
-
 
 \subsubsection{Adjustment of crop production data}
 Next, the adjustment of crop production data was conducted. 
@@ -166,6 +168,10 @@ and cropping intensities as follows:
 YLD_{(acro,bas,cty,water)} = 
 \frac{QSWAT_{(acro,bas,cty,water)}}{QLWAT_{(acro,bas,cty,water)} \cdot CROPINTSNSITY_{(acro,bas,cty,water)}}
 \end{equation}
+
+Food-crop yields are based on FAOSTAT production and GAEZ spatial allocation. For dedicated energy crops, AIM-ALPHA instead uses the rainfed yield from H08, following the bioenergy-potential assessment of Wu et~al.~\cite{hanasakiIntegratedModelAssessment2008a,hanasakiIntegratedModelAssessment2008b,wuGlobalAdvancedBioenergy2019}.
+
+When feedback from AIM-PLUM is enabled, the crop-yield driver is adjusted by the change in basin-average yield associated with changes in the grid-level spatial allocation of crop production~\cite{hasegawaGlobalLanduseAllocation2017}. The adjustment is one when this feedback is not used.
 
 
 \subsubsection{Adjustment of livestock production data}
@@ -330,14 +336,10 @@ QE_{(c,cty)} &= QE^{FAO}_{(c,cty)} - QM^{FAO}_{(c,cty)}
 where \( QM^{FAO} \) denotes the import quantity data from FAO, 
 and \( QE^{FAO} \) denotes the export quantity data from FAO.
 
-In the FBS dataset, global trade is not balanced; 
-that is, the total export quantity and total import quantity of the world do not match.  
-Therefore, the global discrepancy between total exports and imports was treated as a residual.  
-This residual can be interpreted as trade with countries or regions 
-outside the model scope, as well as losses occurring during international food transport.
+In the FBS dataset, global trade is not balanced; that is, total world exports and imports do not match. The discrepancy is retained as the signed accounting residual \(QRES\), rather than interpreted as a physical transport loss.
 
 \begin{equation}
-QRES_{c} = \sum_{cty} QM_{(c,cty)} - \sum_{cty} QE_{(c,cty)}
+QRES_{c} = \sum_{cty} QE_{(c,cty)} - \sum_{cty} QM_{(c,cty)}
 \end{equation}
 
 
@@ -369,13 +371,17 @@ where:
 \end{itemize}
 
 In addition, protected-area information was incorporated using the World Database on Protected Areas (WDPA)~\cite{iucnUNEPWCMCWorldDatabase2025}.  
-The WDPA polygons were overlaid with basin-country units to estimate protected land by class, and these values were used to construct \(\overline{QLPROT}_{(bas,cty,lu\_prot)}\), which is excluded from allocatable vegetation land in the land-use block.
+The WDPA polygons were overlaid with basin-country units and classified into primary forest, secondary forest, other natural land, pasture, and rangeland. These areas form \(\overline{QLPROT}_{(bas,cty,lu\_prot)}\), which is imposed as a lower bound on the corresponding land class; pasture and rangeland share the pasture constraint.
 
 Urban land is based on the LUH2-consistent base-year area in the default model configuration.  
 The base-year value is held constant in future years unless the optional SEDAC urban-projection extension is enabled.  
 For this extension, the SEDAC 1-km urban fraction data~\cite{gaoGlobal1kmDownscaled2021,gaoDownscalingSSPconsistent2021} were aggregated to basin-country units and converted to annual SSP-specific series.  
 When the extension is switched on, these SEDAC series are used to update urban land in scenario runs while preserving the LUH2-consistent base-year level.  
-To maintain physical consistency of the land balance, urban area was bounded by zero and by available land after subtracting water/ice and protected land.
+To maintain physical consistency of the land balance, urban area was bounded by zero and by available land after subtracting water/ice.
+
+\subsubsection{Estimation of forest carbon data}
+
+Forest and other natural-land carbon stocks are derived from spatial outputs of AIM-PLUM and VISIT and aggregated to basin-country units~\cite{hasegawaGlobalLanduseAllocation2017,itoWaterUseEfficiencyTerrestrial2012}. Forest growth by stand age is used to calculate carbon sequestration from annual afforestation~\cite{hasegawaCarefulSelectionForest2024}.
 
 
 \subsubsection{Adjustment of price data}
@@ -637,4 +643,3 @@ where:
 \item The denominator represents the total value of domestic and imported intermediate inputs 
       and factor inputs, excluding those corresponding to market margin sectors.
 \end{itemize}
-

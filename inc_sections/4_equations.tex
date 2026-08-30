@@ -121,6 +121,33 @@ In the demand block, food demand is determined by factors such as prices, popula
 The production block describes the equations determining the production quantities of each food commodity, the input of intermediate goods and production factors, and the producer prices.  
 The production functions are represented by Leontief-type functions, where each good is produced through the combination of specific input factors.
 
+\subsubsection{Annual Driver Calculations}
+
+Crop yields, livestock system shares, and feed input coefficients are calculated before each annual or sub-step equilibrium solve. They are therefore time-varying parameters rather than MCP equilibrium variables:
+
+\begin{align*}
+  \overline{YLD}_{acro,bas,cty,water}
+  &= \overline{YLDBASE}_{acro,bas,cty,water}
+     \cdot \overline{YLDTECH}_{acro,bas,cty,water}
+     \\
+  &\quad
+     \cdot \overline{YLDCHAN}_{acro,bas,cty,water}
+     \cdot \overline{YLDPLUM}_{acro,bas,cty},\\
+  \overline{SYSSHARE}_{aliv,bas,cty,cz,\mathrm{LG}}
+  &= \frac{1}{1+\delta^{sys}_{aliv,bas,cty,cz,\mathrm{LG}}
+     \cdot \overline{GDPPC}_{cty}^{-\rho^{sys}_{aliv,\mathrm{LG}}}},\\
+  \overline{SYSSHARE}_{aliv,bas,cty,cz,\mathrm{MX}}
+  &= 1-\overline{SYSSHARE}_{aliv,bas,cty,cz,\mathrm{LG}},\\
+  \overline{ICL}_{aliv,cfeed,bas,cty,cz,sys}
+  &= \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}
+     \cdot \overline{FEEDSHARE}_{aliv,bas,cty,cz,sys}
+     \\
+  &\quad
+     \cdot \overline{GRAINSHARE}_{aliv,cfeed,bas,cty,cz,sys}.
+\end{align*}
+
+The optional \(YLDPLUM\) term is one when AIM-PLUM feedback is not used.
+
 \paragraph{Domestic Production}
 \begin{align}
   QSUP_{a,cty}
@@ -150,7 +177,7 @@ Yield improvements due to technological progress and climate impacts are conside
       \frac{
         watshare_{acro,bas,cty,water}
       }{
-        YLD_{acro,bas,cty,water}
+        \overline{YLD}_{acro,bas,cty,water}
         \cdot
         \overline{CROPINTENSITY}_{acro,bas,cty,water}
       }
@@ -171,24 +198,11 @@ Yield improvements due to technological progress and climate impacts are conside
      \frac{
        watshare_{acro,bas,cty,water}
      }{
-       YLD_{acro,bas,cty,water}
+       \overline{YLD}_{acro,bas,cty,water}
        \cdot
        \overline{CROPINTENSITY}_{acro,bas,cty,water}
      }
   \tag{QLCROINPUTEQ}\label{eq:QLCROINPUTEQ}
-\end{align}
-
-\paragraph{Crop Yield}
-\begin{align}
-  YLD_{acro,bas,cty,water}
-  &= \overline{YLDBASE}_{acro,bas,cty,water}
-     \cdot
-     \overline{YLDGR}_{acro,bas,cty,water}
-     \nonumber\\
-  &\quad
-     \cdot
-     \overline{YLDCHAN}_{acro,bas,cty,water}
-  \tag{YLDEQ}\label{eq:YLDEQ}
 \end{align}
 
 \paragraph{Other Production Factor Price (Crops)}
@@ -215,20 +229,8 @@ Feed use and production efficiency depend on feed composition, feed efficiency, 
   QSSYS_{aliv,bas,cty,cz,sys}
   &= QS_{aliv,bas,cty}
      \cdot czshare_{aliv,bas,cty,cz}
-     \cdot SYSSHARE_{aliv,bas,cty,cz,sys}
+     \cdot \overline{SYSSHARE}_{aliv,bas,cty,cz,sys}
   \tag{LIVSYSEQ}\label{eq:LIVSYSEQ}
-\end{align}
-
-\paragraph{Livestock System Share Function}
-\begin{align}
-  SYSSHARE_{aliv,bas,cty,cz,sys}
-  &= \frac{1}{
-       1 + \delta^{sys}_{aliv,cz,sys}
-       \cdot
-       \overline{GDPPC}_{cty}^{\,\rho^{sys}_{aliv,sys}}
-     }
-     + res_{aliv,bas,cty,cz,sys}
-  \tag{SYSSHAREEQ}\label{eq:SYSSHAREEQ}
 \end{align}
 
 \paragraph{Producer Price of Livestock}
@@ -252,9 +254,9 @@ Feed use and production efficiency depend on feed composition, feed efficiency, 
          \Bigl(
            czshare_{aliv,bas,cty,cz}
            \cdot
-           SYSSHARE_{aliv,bas,cty,cz,sys}
+           \overline{SYSSHARE}_{aliv,bas,cty,cz,sys}
            \cdot
-           ICL_{aliv,cfeed,bas,cty,cz,sys}
+           \overline{ICL}_{aliv,cfeed,bas,cty,cz,sys}
          \Bigr)
          \nonumber\\[-0.3em]
   &\quad
@@ -280,7 +282,7 @@ Feed use and production efficiency depend on feed composition, feed efficiency, 
      \Bigl(
        czshare_{aliv,bas,cty,cz}
        \cdot
-       SYSSHARE_{aliv,bas,cty,cz,sys}
+       \overline{SYSSHARE}_{aliv,bas,cty,cz,sys}
        \nonumber\\[-0.3em]
   &\quad
        \cdot
@@ -327,23 +329,13 @@ Feed use and production efficiency depend on feed composition, feed efficiency, 
      \sum_{cz,sys}
      \bigl(
        czshare_{aliv,bas,cty,cz}
-       \cdot SYSSHARE_{aliv,bas,cty,cz,sys}
+       \cdot \overline{SYSSHARE}_{aliv,bas,cty,cz,sys}
        \nonumber\\[-0.3em]
   &\quad
-       \cdot ICL_{aliv,cfeed,bas,cty,cz,sys}
+       \cdot \overline{ICL}_{aliv,cfeed,bas,cty,cz,sys}
      \bigr)
   \tag{QFEEDINPUTEQ}\label{eq:QFEEDINPUTEQ}
 \end{align}
-
-\paragraph{Feed Input Coefficient}
-\begin{multline}
-  ICL_{aliv,cfeed,bas,cty,cz,sys} = \overline{FEEDEFFICIENCY}_{aliv,bas,cty,cz,sys}\\
-     \cdot
-     \overline{FEEDSHARE}_{aliv,bas,cty,cz,sys}
-     \cdot
-     \overline{GRAINSHARE}_{aliv,cfeed,bas,cty,cz,sys}
-  \tag{ICLEQ}\label{eq:ICLEQ}
-\end{multline}
 
 \paragraph{Other Production Factor Price (Livestock)}
 \begin{align}
@@ -442,7 +434,7 @@ Energy crop production is determined from regional totals provided exogenously b
   &= \frac{
        QS_{\mathrm{ecr},bas,cty}
      }{
-       YLD_{\mathrm{ecr},bas,cty}
+       \overline{YLD}_{\mathrm{ecr},bas,cty,\mathrm{Rainfed}}
      }
   \tag{QLENEINPUTEQ}\label{eq:QLENEINPUTEQ}
 \end{align}
@@ -509,8 +501,7 @@ Prices are linked through fixed coefficients so that the price used in the deman
 \subsection{Land Use Block}
 
 The land-use block allocates available land among different uses through a Logit function.  
-Prices for non-human-used land (forest, other natural land, and fallow land) are fixed at their baseline values.  
-A constraint is imposed to ensure that total agricultural land does not exceed the physically available land area due to slope and soil limitations.  
+Non-pasture vegetation is allocated among cropland, forest, other natural land, and afforested land. Protected areas are imposed as lower bounds for the corresponding land classes, and the agro-ecological suitability constraint applies to cropland.  
 Urban land is fixed exogenously. In the default configuration, the LUH2-consistent base-year urban area is held constant over future years; as an optional extension, SSP-specific urban projections from the SEDAC urban dataset can be used to update urban land over time.
 
 \paragraph{Vegetation Area}
@@ -520,7 +511,6 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
      \overline{QLTOT}_{bas,cty}
      - \overline{QLOTH}_{bas,cty}
      - \overline{QLURB}_{bas,cty}
-     - \sum_{lu\_prot}\overline{QLPROT}_{bas,cty,lu\_prot}
   \tag{QLVEGEQ}\label{eq:QLVEGEQ}
 \end{align}
 
@@ -620,7 +610,8 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
   }{
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
     + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty}\, PLAFR_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
   }
   \tag{QLCROEQ}\label{eq:QLCROEQ}
 \end{multline}
@@ -634,7 +625,8 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
   }{
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
     + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{gra}}_{bas,cty}\, \overline{PLGRA}_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty}\, PLAFR_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
   }
   \tag{QLFRSEQ}\label{eq:QLFRSEQ}
 \end{multline}
@@ -675,8 +667,24 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
     \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
     + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
     + \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty}\, PLAFR_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
   }
   \tag{QLGRAEQ}\label{eq:QLGRAEQ}
+\end{multline}
+
+\paragraph{Afforested Land}
+\begin{multline}
+  QLAFR_{bas,cty} = QLPASN_{bas,cty}\\
+  \cdot
+  \frac{
+    \delta^{\text{afr}}_{bas,cty}\, PLAFR_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+  }{
+    \delta^{\text{cro}}_{bas,cty}\, PLCRO_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty}\, PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    + \delta^{\text{gra}}_{bas,cty}\, PLGRA_{bas,cty}^{\,\rho^{\text{gra}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty}\, PLAFR_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+  }
+  \tag{QLAFREQ}\label{eq:QLAFREQ}
 \end{multline}
 
 \paragraph{Harvested Cropland Area}
@@ -734,6 +742,7 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
 
 
 \paragraph{Land Prices}
+The price drivers for other natural land and afforestation include their land-carbon value before the associated complementarity wedges are applied.
 \begin{equation}
   PLCROCLT_{bas,cty}\cdot QLCROCLT_{bas,cty}
   = \sum_{acro} PL_{acro,bas,cty}\cdot QL_{acro,bas,cty}
@@ -757,11 +766,16 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
 \vspace{0.3\baselineskip}
 
 \begin{multline}
-  PLPASN_{bas,cty}\cdot QLPASN_{bas,cty}
-  = PLCRO_{bas,cty}\cdot QLCRO_{bas,cty}
-    \\[-0.3em]
-  \quad + PLFRS_{bas,cty}\cdot QLFRS_{bas,cty}
-  \quad + \overline{PLGRA}_{bas,cty}\cdot QLGRA_{bas,cty}
+  PLPASN_{bas,cty}^{\,\rho^{\text{pasn}}_{bas,cty}}
+  \cdot \overline{QLPASNBASE}_{bas,cty}
+  = \overline{PLPASNBASE}_{bas,cty}^{\,\rho^{\text{pasn}}_{bas,cty}}
+  \\
+  \cdot \left(
+    \delta^{\text{cro}} PLCRO^{\rho^{\text{cro}}}
+    + \delta^{\text{frs}} PLFRS^{\rho^{\text{frs}}}
+    + \delta^{\text{gra}} PLGRA^{\rho^{\text{gra}}}
+    + \delta^{\text{afr}} PLAFR^{\rho^{\text{afr}}}
+  \right)_{bas,cty}
   \tag{PLPASNEQ}\label{eq:PLPASNEQ}
 \end{multline}
 
@@ -786,72 +800,86 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
     PLPASUNG_{bas,cty}\cdot QLPASUNG_{bas,cty}
   \right)
   \\[-0.3em]
-  \quad / (1 + PLLIMCOMP_{bas,cty})
+  \quad \cdot (1 + PLPASPROTCOMP_{bas,cty})
   \tag{PLPASEQ}\label{eq:PLPASEQ}
 \end{multline}
 
 \vspace{0.3\baselineskip}
 
 \begin{multline}
-  PLFRS_{bas,cty}\cdot QLFRS_{bas,cty}
-  =
-  \\[-0.3em]
-  \quad 
-  PLPRIMF_{bas,cty}\cdot QLPRIMF_{bas,cty}
-  +
-  PLSECDF_{bas,cty}\cdot QLSECDF_{bas,cty}
+  PLFRS_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+  \cdot \overline{QLFRSBASE}_{bas,cty}
+  = \overline{PLFRSBASE}_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+  \\
+  \cdot \left(
+    \delta^{\text{primf}} PLPRIMF^{\rho^{\text{primf}}}
+    + \delta^{\text{secdf}} PLSECDF^{\rho^{\text{secdf}}}
+  \right)_{bas,cty}
   \tag{PLFRSEQ}\label{eq:PLFRSEQ}
 \end{multline}
 
-\begin{multline}
+\begin{align}
   PLPRIMF_{bas,cty}
-  =
-  \\[-0.3em]
-  \quad 
-  \left(
-    \overline{PLFRSBASE}_{bas,cty}
-    + \max\!\left(
+  &= \Biggl[
+    \overline{PLPRIMFBASE}_{bas,cty}
+    + \max\!\Biggl(
         0,\,
-        \overline{CARBONSTOCK}_{cty}
-        \cdot \frac{44}{12}
-        \cdot \overline{PRCCAR}_{cty}
+        \overline{CARBONSTOCK}_{bas,cty}\cdot\frac{44}{12}
+        \nonumber\\[-0.3em]
+  &\qquad\qquad
+        \cdot \overline{PRCCAR\_LND}_{bas,cty}
         \cdot dcffrs_{cty}
         - affcost_{cty}
-      \right)
-  \right)
-  \\[-0.3em]
-  \quad / (1 + PLPRIMFCOMP_{bas,cty})
+      \Biggr)
+  \Biggr]
+  \nonumber\\[-0.3em]
+  &\quad \cdot
+  \frac{1 + PLPRIMFPROTCOMP_{bas,cty}}
+       {1 + PLPRIMFCOMP_{bas,cty}}
   \tag{PLPRIMFEQ}\label{eq:PLPRIMFEQ}
-\end{multline}
+\end{align}
 
-\begin{multline}
+\begin{align}
   PLSECDF_{bas,cty}
-  =
-  \\[-0.3em]
-  \quad 
-  \left(
-    \overline{PLFRSBASE}_{bas,cty}
-    + \max\!\left(
+  &= \Biggl[
+    \overline{PLSECDFBASE}_{bas,cty}
+    + \max\!\Biggl(
         0,\,
-        \overline{CARBONSTOCK}_{cty}
-        \cdot \frac{44}{12}
-        \cdot \overline{PRCCAR}_{cty}
+        \overline{CARBONSTOCK}_{bas,cty}\cdot\frac{44}{12}
+        \nonumber\\[-0.3em]
+  &\qquad\qquad
+        \cdot \overline{PRCCAR\_LND}_{bas,cty}
         \cdot dcffrs_{cty}
         - affcost_{cty}
-      \right)
-  \right)
-  \\[-0.3em]
-  \quad / (1 + PLSECDFCOMP_{bas,cty})
+      \Biggr)
+  \Biggr]
+  \nonumber\\[-0.3em]
+  &\quad \cdot
+  \frac{1 + PLSECDFPROTCOMP_{bas,cty}}
+       {1 + PLSECDFCOMP_{bas,cty}}
   \tag{PLSECDFEQ}\label{eq:PLSECDFEQ}
-\end{multline}
+\end{align}
 
 \begin{align}
   PLGRA_{bas,cty}
   &=
-  \overline{PLGRA}_{bas,cty}
-  \cdot
-  (1+PLLIMCOMP_{bas,cty})^{1/\rho^{\text{gra}}_{bas,cty}}
+  \overline{PLGRA\_C}_{bas,cty}
+  \cdot (1+PLGRAPROTCOMP_{bas,cty})
   \tag{PLGRAEQ}\label{eq:PLGRAEQ}
+\end{align}
+
+\paragraph{Afforestation Price and Annual Limit}
+\begin{align}
+  PLAFR_{bas,cty}
+  &= \frac{\overline{PLAFR\_C}_{bas,cty}}
+           {1+PLAFRCOMP_{bas,cty}}
+  \tag{PLAFREQ}\label{eq:PLAFREQ}\\[0.4em]
+  QLAFR_{bas,cty}
+  &\le QLAFR^{t-1}_{bas,cty}
+     + \overline{AFR\_PLANT\_MAX}\cdot\overline{QLPASNBASE}_{bas,cty}
+  \nonumber\\[-0.3em]
+  &\quad\perp\quad PLAFRCOMP_{bas,cty}\ge 0
+  \tag{QLAFRLIMEQ}\label{eq:QLAFRLIMEQ}
 \end{align}
 
 \paragraph{Forest Expansion Constraints}
@@ -879,11 +907,27 @@ Urban land is fixed exogenously. In the default configuration, the LUH2-consiste
   \tag{QLSECDFLIMEQ}\label{eq:QLSECDFLIMEQ}
 \end{align}
 
-\paragraph{Agricultural Land Constraint}
+\paragraph{Protected-Area Constraints}
+\begin{align}
+  QLPRIMF_{bas,cty} &\ge \overline{QLPROT}_{bas,cty,\mathrm{primf}}
+  \quad\perp\quad PLPRIMFPROTCOMP_{bas,cty}\ge0,
+  \tag{QLPRIMFPROTEQ}\label{eq:QLPRIMFPROTEQ}\\
+  QLSECDF_{bas,cty} &\ge \overline{QLPROT}_{bas,cty,\mathrm{secdf}}
+  \quad\perp\quad PLSECDFPROTCOMP_{bas,cty}\ge0,
+  \tag{QLSECDFPROTEQ}\label{eq:QLSECDFPROTEQ}\\
+  QLGRA_{bas,cty} &\ge \overline{QLPROT}_{bas,cty,\mathrm{gra}}
+  \quad\perp\quad PLGRAPROTCOMP_{bas,cty}\ge0,
+  \tag{QLGRAPROTEQ}\label{eq:QLGRAPROTEQ}\\
+  QLPAS_{bas,cty} &\ge \sum_{lu\_pas}\overline{QLPROT}_{bas,cty,lu\_pas}
+  \quad\perp\quad PLPASPROTCOMP_{bas,cty}\ge0.
+  \tag{QLPASPROTEQ}\label{eq:QLPASPROTEQ}
+\end{align}
+
+\paragraph{Cropland Constraint}
 \begin{align}
   \overline{QLLIM}_{bas,cty}
   &\ge
-  QLCRO_{bas,cty} + QLPAS_{bas,cty}
+  QLCRO_{bas,cty}
   \;\perp\;
   PLLIMCOMP_{bas,cty} \ge 0
   \tag{QLLIMEQ}\label{eq:QLLIMEQ}
@@ -955,7 +999,7 @@ Emissions from the land-use sector are calculated according to each land area.
     \\[-0.3em]
     + \overline{EF\_LU\_FRS}_{src,gas,cty}\cdot QLFRS_{bas,cty}
     \\[-0.3em]
-    + \overline{EF\_LU\_FRSCOV}_{src,gas,cty}
+    - \overline{CARBONSTOCK}_{bas,cty}\cdot\frac{44}{12}
       \cdot \min\!\Bigl\{
         0,\,
         QLFRS_{bas,cty}-QLFRS^{t-1}_{bas,cty}
@@ -970,8 +1014,8 @@ Emissions from the land-use sector are calculated according to each land area.
   GHG\_LU_{"afr","CO_2",cty}
   &=
   - \sum_{bas}\sum_{age}
-      qlfrs\_age_{bas,cty,age}
-      \cdot \overline{CARBONSEQ}_{cty,age}
+      qlafr\_age_{bas,cty,age}
+      \cdot \overline{CARBONSEQ}_{bas,cty,age}
   \tag{GHG\_LU\_AFREQ}\label{eq:GHG_LU_AFREQ}
 \end{align}
 

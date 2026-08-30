@@ -14,11 +14,15 @@ and raw materials as inputs. Other factors such as labor, capital, and energy ar
 
 Primary crops and livestock products that require land are differentiated by production unit, whereas processed goods, which do not require 
 land inputs, are modeled at the level of the 166 countries. Land use within each production unit is allocated according to a multi-nested 
-logit function that balances total land area, and land shares are determined by relative land prices.
+logit function that balances total land area, and land shares are determined by relative land prices. The non-pasture land nest includes
+cropland, forest, other natural land, and afforested land. Protected areas are represented as minimum areas for the corresponding land classes,
+while the agro-ecological suitability constraint limits cropland expansion.
 
 Food demand is driven by population and GDP, with income elasticity considered for future changes. Food prices are determined endogenously 
 so that supply and demand are balanced in the domestic market. Within each country, the balance between production, domestic demand, and net trade 
 (imports minus exports) is maintained. In the global market, total world imports and exports are balanced after accounting for a calibrated trade residual. 
+
+AIM-ALPHA can be linked with other AIM models. AIM-Hub provides socioeconomic, climate-policy, energy-crop, and carbon-price drivers; AFOLUB can provide land-based mitigation assumptions; and AIM-PLUM can return changes in basin-level crop yields resulting from spatial land-use allocation~\cite{fujimoriSSP3AIMImplementation2017,hasegawaNationalLandbasedClimate2025,hasegawaGlobalLanduseAllocation2017}.
 
 
 \begin{figure}[tbp]
