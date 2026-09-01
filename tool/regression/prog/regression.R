@@ -12,22 +12,35 @@ theme_1 <- theme_bw() +
   )
 
 
-# Put data.gdx and baseyear.gdx in tool/regression/data/.
+# Use local copies when present; otherwise use the model-data directory.
+gdx_dir <- "../data"
+if (!file.exists(file.path(gdx_dir, "data.gdx")) ||
+    !file.exists(file.path(gdx_dir, "baseyear.gdx"))) {
+  gdx_dir <- "../../../../data/AIMALPHA_data/model_data"
+}
+
+gams_sys_dir <- Sys.getenv("GAMS_SYSDIR")
+if (nzchar(gams_sys_dir)) {
+  igdx(gams_sys_dir)
+}
 
 # data --------------------------------------------------------------------
-GDPPC <- rgdx.param("../data/baseyear.gdx", "GDPpc")
-feed_efficiency <- rgdx.param("../data/data.gdx", "feed_efficiency")
-feed_share <- rgdx.param("../data/data.gdx", "feed_share")
-elhp <- rgdx.param("../data/data.gdx", "elhp")
-SYSSHARE <- rgdx.param("../data/data.gdx", "Liv")
-elhg <- rgdx.param("../data/baseyear.gdx", "elhg2")
+gdpPc <- rgdx.param(file.path(gdx_dir, "baseyear.gdx"), "gdpPc")
+feedReq <- rgdx.param(file.path(gdx_dir, "data.gdx"), "feedReq")
+feedConcShr <- rgdx.param(file.path(gdx_dir, "data.gdx"), "feedConcShr")
+elaP <- rgdx.param(file.path(gdx_dir, "data.gdx"), "elaP") %>%
+  filter(as.character(c) == as.character(c2)) %>%
+  dplyr::select(!c2)
+sysShr <- rgdx.param(file.path(gdx_dir, "data.gdx"), "sysShr") %>%
+  rename(c = a_liv)
+elaIncFdm <- rgdx.param(file.path(gdx_dir, "baseyear.gdx"), "elaIncFdm")
 
 # 6-1 ---------------------------------------------------------------------
-GDPPC_2005 <- GDPPC %>%
-  filter(sc == "SSP2") %>%
+gdpPc_2005 <- gdpPc %>%
+  filter(ssp == "SSP2") %>%
   filter(yr == "2005") %>%
-  dplyr::select(!c(sc, yr))
-data6_1 <- full_join(elhp, GDPPC_2005)
+  dplyr::select(!c(ssp, yr))
+data6_1 <- full_join(elaP, gdpPc_2005, by = "cty")
 data6_1 <- data6_1 %>%
   filter(c %in% c("wht", "str", "cmt", "mlk", "vol", "alc", "sgr")) %>%
   mutate(c = dplyr::recode(c,
@@ -40,8 +53,8 @@ data6_1 <- data6_1 %>%
     "sgr" = "sgr swt egg"
   ))
 g6_1 <- data6_1 %>% ggplot() +
-  geom_point(aes(x = log(GDPpc), y = elhp)) +
-  labs(x = "log(GDPPC)", y = "elhp") +
+  geom_point(aes(x = log(gdpPc), y = elaP)) +
+  labs(x = "log(gdpPc)", y = "elaP") +
   facet_wrap(vars(c), scales = "free_y") +
   theme_1
 ggsave("../../../figs/fig6_1.png", plot = g6_1, width = 14, height = 8)
@@ -52,7 +65,7 @@ for (i in c_list) {
   data6_1_c <- data6_1 %>%
     filter(c == i) %>%
     na.omit()
-  regression <- lm(data = data6_1_c, elhp ~ log(GDPpc))
+  regression <- lm(data = data6_1_c, elaP ~ log(gdpPc))
   regresult_temp <- summary(regression)
   regresult[c_list == i, "alpha"] <- regresult_temp$coefficients[1]
   regresult[c_list == i, "beta"] <- regresult_temp$coefficients[2]
@@ -63,7 +76,7 @@ for (i in c_list) {
 }
 write.csv(regresult, file = "../../../data/table6_1.csv", quote = FALSE, row.names = FALSE)
 # 6-2 ---------------------------------------------------------------------
-data6_2 <- SYSSHARE %>%
+data6_2 <- sysShr %>%
   filter(sys != "tot") %>%
   mutate(cz = dplyr::recode(cz,
     "A" = "Arid",
@@ -71,7 +84,7 @@ data6_2 <- SYSSHARE %>%
     "H" = "Humid",
     "Y" = "HyperArid"
   )) %>%
-  pivot_wider(names_from = "sys", values_from = "Liv")
+  pivot_wider(names_from = "sys", values_from = "sysShr")
 data6_2[is.na(data6_2)] <- 0
 data6_2 <- data6_2 %>%
   mutate(TOT = MX + LG) %>%
@@ -80,10 +93,10 @@ data6_2 <- data6_2 %>%
   mutate(MX = log(MX / (1 - MX)), LG = log(LG / (1 - LG))) %>%
   dplyr::select(!MX) %>%
   filter(!LG %in% c(Inf, -Inf))
-data6_2 <- left_join(data6_2, GDPPC_2005)
+data6_2 <- left_join(data6_2, gdpPc_2005, by = "cty")
 g6_2 <- data6_2 %>% ggplot() +
-  geom_point(aes(x = log(GDPpc), y = LG, color = cz)) +
-  labs(x = "log(GDPPC)", y = "logit(SYSSHARE)") +
+  geom_point(aes(x = log(gdpPc), y = LG, color = cz)) +
+  labs(x = "log(gdpPc)", y = "logit(sysShr)") +
   facet_wrap(vars(c, cz), scales = "free_y") +
   theme_1
 ggsave("../../../figs/fig6_2.png", plot = g6_2, width = 16, height = 10)
@@ -92,7 +105,7 @@ regresult <- as.data.frame(c_list)
 regresult <- regresult %>% mutate(ro = 0, delta_A = 0, delta_T = 0, delta_H = 0, delta_Y = 0, r2 = 0, upper = 0, lower = 0, p = 0)
 for (i in c_list) {
   data6_2_c <- data6_2 %>% filter(c == i)
-  regression <- lm(data = data6_2_c, LG ~ -1 + log(GDPpc) + cz)
+  regression <- lm(data = data6_2_c, LG ~ -1 + log(gdpPc) + cz)
   regresult_temp <- summary(regression)
   regresult[c_list == i, "ro"] <- regresult_temp$coefficients[1]
   regresult[c_list == i, "delta_A"] <- regresult_temp$coefficients[2]
@@ -106,7 +119,7 @@ for (i in c_list) {
 }
 write.csv(regresult, file = "../../../data/table6_2.csv", quote = FALSE, row.names = FALSE)
 # 6-3 ---------------------------------------------------------------------
-data6_3 <- left_join(feed_efficiency, GDPPC_2005) %>%
+data6_3 <- left_join(feedReq, gdpPc_2005, by = "cty") %>%
   mutate(
     cz = dplyr::recode(cz,
       "A" = "Arid",
@@ -119,9 +132,9 @@ data6_3 <- left_join(feed_efficiency, GDPPC_2005) %>%
   ) %>%
   mutate(c = factor(c, levels = c("cmt", "rmt", "mlk", "pmt", "omt")))
 g6_3 <- data6_3 %>% ggplot() +
-  geom_point(aes(x = log(GDPpc), y = log(feed_efficiency), color = cz)) +
+  geom_point(aes(x = log(gdpPc), y = log(feedReq), color = cz)) +
   facet_wrap(vars(cz, sys, c), scales = "free_y", ncol = 6) +
-  labs(x = "log(GDPPC)", y = "log(FEEDEFFICIENCY)") +
+  labs(x = "log(gdpPc)", y = "log(feedReq)") +
   theme_1
 ggsave("../../../figs/fig6_3.png", g6_3, width = 18, height = 14, create.dir = T)
 c_list <- c("cmt", "rmt", "mlk")
@@ -131,7 +144,7 @@ for (j in c("LG", "MX")) {
   data6_3_sys <- data6_3 %>% filter(sys == j)
   for (i in c_list) {
     data6_3_c <- data6_3_sys %>% filter(c == i)
-    regression <- lm(data = data6_3_c, log(feed_efficiency) ~ -1 + log(GDPpc) + cz)
+    regression <- lm(data = data6_3_c, log(feedReq) ~ -1 + log(gdpPc) + cz)
     regresult_temp <- summary(regression)
     regresult[c_list == i, "beta"] <- regresult_temp$coefficients[1]
     regresult[c_list == i, "alpha_A"] <- regresult_temp$coefficients[2]
@@ -156,7 +169,7 @@ regresult <- regresult %>% mutate(beta = 0, alpha_tot = 0, r2 = 0, sys = "Total"
 data6_3_sys <- data6_3 %>% filter(sys == "Total")
 for (i in c_list) {
   data6_3_c <- data6_3_sys %>% filter(c == i)
-  regression <- lm(data = data6_3_c, log(feed_efficiency) ~ log(GDPpc))
+  regression <- lm(data = data6_3_c, log(feedReq) ~ log(gdpPc))
   regresult_temp <- summary(regression)
   regresult[c_list == i, "beta"] <- regresult_temp$coefficients[2]
   regresult[c_list == i, "alpha_tot"] <- regresult_temp$coefficients[1]
@@ -168,7 +181,7 @@ for (i in c_list) {
 regresult <- full_join(regresult_agg, regresult)
 write.csv(regresult, file = "../../../data/table6_3.csv", quote = FALSE, row.names = FALSE)
 # 6-4 ---------------------------------------------------------------------
-data6_4 <- left_join(feed_share, GDPPC_2005) %>%
+data6_4 <- left_join(feedConcShr, gdpPc_2005, by = "cty") %>%
   mutate(cz = dplyr::recode(cz,
     "A" = "Arid",
     "T" = "Temperate",
@@ -176,11 +189,11 @@ data6_4 <- left_join(feed_share, GDPPC_2005) %>%
     "Y" = "HyperArid"
   )) %>%
   filter(!c %in% c("omt", "pmt")) %>%
-  mutate(logit_feed_share = log(feed_share / (1 - feed_share)))
+  mutate(logit_feed_conc_shr = log(feedConcShr / (1 - feedConcShr)))
 g6_4 <- data6_4 %>% ggplot() +
-  geom_point(aes(x = log(GDPpc), y = logit_feed_share, color = cz)) +
+  geom_point(aes(x = log(gdpPc), y = logit_feed_conc_shr, color = cz)) +
   facet_wrap(vars(cz, sys, c), scales = "free_y", ncol = 6) +
-  labs(x = "log(GDPPC)", y = "logit(FEEDSHARE)") +
+  labs(x = "log(gdpPc)", y = "logit(feedConcShr)") +
   theme_1
 ggsave("../../../figs/fig6_4.png", g6_4, width = 18, height = 12, create.dir = T)
 c_list <- c("cmt", "rmt", "mlk")
@@ -190,7 +203,7 @@ for (j in c("LG", "MX")) {
   data6_4_sys <- data6_4 %>% filter(sys == j)
   for (i in c_list) {
     data6_4_c <- data6_4_sys %>% filter(c == i)
-    regression <- lm(data = data6_4_c, logit_feed_share ~ -1 + log(GDPpc) + cz)
+    regression <- lm(data = data6_4_c, logit_feed_conc_shr ~ -1 + log(gdpPc) + cz)
     regresult_temp <- summary(regression)
     regresult[c_list == i, "beta"] <- regresult_temp$coefficients[1]
     regresult[c_list == i, "alpha_A"] <- regresult_temp$coefficients[2]
@@ -218,8 +231,8 @@ representative_countries <- c(
   "EGY", "NGA", "ZAF", "NPL",
   "CHN", "MEX", "TUR", "VNM"
 )
-data_elhg <- elhg %>%
-  select(c, cty, sc, yr, elhg2) %>%
+data_ela_inc <- elaIncFdm %>%
+  select(c, cty, ssp, yr, elaIncFdm) %>%
   filter(c %in% c("wht", "rce", "crl", "sgr", "swt",
                   "pls", "vol", "vgt", "frt",
                   "cmt", "pmt", "omt", "mlk"),
@@ -240,11 +253,11 @@ data_elhg <- elhg %>%
       "vol" = "vol",
       "mlk" = "mlk_dai_egg"
     ),
-    elhg2 = round(elhg2, 3)
+    elaIncFdm = round(elaIncFdm, 3)
   ) %>%
   filter(yr %in% c(2015, 2050, 2100)) %>%
   pivot_wider(
     names_from  = c,
-    values_from = elhg2
+    values_from = elaIncFdm
   )
-write.csv(data_elhg, file = "../../../data/tableC_1.csv", quote = FALSE, row.names = FALSE)
+write.csv(data_ela_inc, file = "../../../data/tableC_1.csv", quote = FALSE, row.names = FALSE)

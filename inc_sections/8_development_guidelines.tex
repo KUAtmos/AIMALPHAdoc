@@ -1,0 +1,97 @@
+% !TeX root = ../AIMALPHA_documentation.tex
+
+This section summarizes the conventions used when extending or maintaining AIM-ALPHA. The purpose is to keep the GAMS programs readable and to preserve consistency across calibration, equilibrium calculation, and output processing.
+
+\subsection{Location of Model Components}
+
+Sets and mappings shared by several programs are defined under \texttt{define}. Model assumptions and constant values are placed in the relevant file under \texttt{prog/inc\_prog/const}. Their application conditions remain in the program that uses them. Source-data corrections are kept separate from economic equations and accompanied by a short explanation of the underlying data issue.
+
+The model is processed in a sequence. Data are imported and regionalized in \texttt{1\_data\_import.gms} and \texttt{1-5\_regression.gms}; base-year values are calibrated in \texttt{2\_baseyear.gms}; and the dynamic equilibrium is solved in \texttt{3\_equilibrium.gms}. Annual results are then combined and aggregated by the programs beginning with \texttt{4\_} and \texttt{5\_}. A change to a symbol or equation should therefore be followed through each affected stage, including the shell and R programs that read the resulting GDX files.
+
+Numerical initialization, bounds, fixing, and scaling are maintained in \texttt{3\_level.gms}, \texttt{3\_lower.gms}, \texttt{3\_fix.gms}, and \texttt{3\_scale.gms}. Economic assumptions should not be hidden in these numerical-support files. The global \texttt{base\_year} setting is used for calibration-year references instead of a year written directly into the program.
+
+\subsection{Symbol Names}
+
+Names are kept short enough for equations to remain readable, while retaining the economic meaning of each symbol. GAMS is case-insensitive, so capitalization is a convention for readers rather than a means of distinguishing symbols.
+
+\begin{table}[H]
+  \centering
+  \caption{General naming conventions}
+  \label{tab:development_naming}
+  \begin{tabular}{lll}
+    \toprule
+    Symbol type & Convention & Examples \\
+    \midrule
+    Variable  & Begins with an uppercase letter & \texttt{QD}, \texttt{QSBas}, \texttt{PL} \\
+    Parameter & Begins with a lowercase letter & \texttt{qd0}, \texttt{qsBasPrev1}, \texttt{elaP} \\
+    Equation  & Begins with an uppercase letter and ends in \texttt{Eq} & \texttt{QDEq}, \texttt{CroZeroProfitEq} \\
+    Set       & Lowercase & \texttt{c}, \texttt{cty}, \texttt{a\_liv} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Quantity variables begin with \texttt{Q}. The \texttt{QD} family contains total domestic demand and its components, such as \texttt{QDFood}, \texttt{QDFed}, and \texttt{QDInt}. Domestic production uses \texttt{QS}; production by basin, crop technology, and livestock system uses \texttt{QSBas}, \texttt{QSWat}, and \texttt{QSSys}, respectively. Land quantities use \texttt{QL}, and land prices use \texttt{PL}. Other common stems are \texttt{P} for prices, \texttt{S} for shares, \texttt{R} for rates, \texttt{Y} for yields, \texttt{C} for unit costs, and \texttt{N} for stocks or counts.
+
+Short qualifiers are added in CamelCase when a distinction is needed. Examples include \texttt{Bas} for basin, \texttt{Cty} for country, \texttt{Cro} for crops, \texttt{Liv} for livestock, \texttt{Wat} for crop production technology, \texttt{Pas} for pasture, and \texttt{Emis} for emissions. A one-letter qualifier is avoided when it may have more than one interpretation.
+
+Complementarity multipliers begin with \texttt{Mu} and name the associated constraint. Thus, \texttt{MuBasMin} is paired with \texttt{QSBasMinEq}, and \texttt{MuAfrCap} is paired with \texttt{AfrCapEq}. Equation names describe their role using terms such as \texttt{Bal}, \texttt{Logit}, \texttt{Min}, \texttt{Max}, \texttt{Parity}, and \texttt{ZeroProfit}.
+
+\subsubsection{Sets and Mappings}
+
+Basic Set names are lowercase and normally contain no more than three characters. A subset is named as the parent Set followed by its classification, as in \texttt{a\_cro}, \texttt{a\_liv\_rum}, and \texttt{c\_ntrd}. A two-dimensional mapping is named \texttt{<left>\_<right>\_map}; for example, \texttt{cty\_reg\_map(cty,reg)} maps countries to regions. Aliases use the same stem followed by \texttt{2}, as in \texttt{a\_cro2}.
+
+\subsubsection{Time and Processing State}
+
+The same stem is retained as a value moves through calibration and the annual calculation. The suffixes \texttt{Prev1} and \texttt{Prev2} identify stored states one and two annual steps earlier. A bare \texttt{Prev} denotes the one-period-lagged working value for the current substep; when both stored states are needed, it is normally interpolated from \texttt{Prev2} and \texttt{Prev1}. \texttt{Ref} is reserved for a non-temporal benchmark or reference value, and \texttt{Drv} denotes an exogenous driver before the endogenous response is applied.
+
+The suffix \texttt{\_load} is reserved for data read from an external file before scenario or year selection. \texttt{Path} denotes a future path constructed inside the model, and \texttt{Raw} denotes a value before a bound or adjustment is applied. Bounds use the functional suffixes \texttt{Cap}, \texttt{Min}, and \texttt{Max}.
+
+\subsubsection{External Data and Output}
+
+Names fixed by an external GDX schema are not changed at the interface. When necessary, the symbol is renamed on the model side of the \texttt{\$load} statement. Established abbreviations in imported databases, including the GTAP parameters \texttt{pse}, \texttt{cse}, \texttt{mmj}, \texttt{mmm}, \texttt{mme}, \texttt{tm}, and \texttt{te}, are retained.
+
+Annual GDX outputs use \texttt{<stem>\_result}. Combined time-series values use \texttt{<stem>\_load}, single-year scratch values use \texttt{<stem>Single}, and aggregated values use \texttt{<stem>Agg\_load}. A value derived from an endogenous variable retains the uppercase variable stem; an output derived from a Parameter retains the lowercase Parameter stem.
+
+Descriptions are written as short noun phrases and include units where applicable. Standard forms include \texttt{[1000 t]}, \texttt{[1000 ha]}, \texttt{[1000 head]}, \texttt{[kt CO2-eq/yr]}, \texttt{[USD/t]}, and \texttt{[USD/ha]}.
+
+\subsection{Time Steps and Scenario Measures}
+
+The annual calculation can divide the transition from \texttt{pre\_year} to \texttt{year} into smaller intervals. The loop in \texttt{3\_equilibrium.gms} evaluates \texttt{3\_timestep.gms}, applies the scenario measures in \texttt{3\_scenario.gms}, and then solves the equilibrium. The solution levels from one pass provide the starting point for the next pass, which allows the model to approach the target year gradually when a direct annual change would be numerically difficult.
+
+When \texttt{iter\_num=0}, the loop is evaluated once and the requested year is solved directly. When \texttt{iter\_num=k>0}, the loop runs from \texttt{n=0} to \texttt{n=k}. The first solve represents \texttt{pre\_year}, the last represents \texttt{year}, and the intervening solves divide the transition into \texttt{k} equal intervals. There are therefore \texttt{k+1} equilibrium solves. The scalar \texttt{tCur} gives the time represented by the current pass, and the interpolation weights are
+
+\begin{equation}
+  wPrev = \frac{k-n}{k}, \qquad
+  wCur = \frac{n}{k}, \qquad
+  tCur = pre\_year + (year-pre\_year)wCur.
+\end{equation}
+
+Parameters that vary exogenously over time must be assigned on every pass through \texttt{3\_timestep.gms}. A parameter stored at the two endpoint years is normally calculated as
+
+\begin{equation}
+  x = x(pre\_year)wPrev + x(year)wCur,
+\end{equation}
+
+while a trend may instead be evaluated directly at \texttt{tCur}. This applies to drivers such as population, GDP per capita, elasticities, yield changes, carbon prices, and mitigation parameters. Quantities carried forward from earlier endogenous solutions use \texttt{Prev1} and \texttt{Prev2} for the stored annual states. Their one-period-lagged value at the current substep is
+
+\begin{equation}
+  xPrev = xPrev2\,wPrev + xPrev1\,wCur.
+\end{equation}
+
+At the final substep, and whenever \texttt{iter\_num=0}, \texttt{xPrev} therefore equals \texttt{xPrev1}. Intermediate solves are used for numerical continuation and are not written as separate annual results; \texttt{3\_result.gms} is evaluated only after the loop has finished.
+
+The order of calculation is important. \texttt{3\_timestep.gms} first restores or constructs the baseline value for the current time point, after which \texttt{3\_scenario.gms} applies the active measures. If a scenario changes a Parameter in place, that Parameter must be restored or rebuilt on the next pass before the measure is applied again. Otherwise the policy effect compounds across substeps. Conversely, an exogenous Parameter that is set only outside the loop remains stale while the model advances toward the target year.
+
+Introducing a time-varying exogenous driver therefore requires four related changes. Its annual series is declared and loaded outside the loop; its working Parameter is assigned in \texttt{3\_timestep.gms} using \texttt{wPrev} and \texttt{wCur}, or directly from \texttt{tCur}; any fallback and backcasting behavior is specified there; and its baseline value is restored there if a scenario later modifies it in place. The implementation is checked at both endpoints: \texttt{n=0} must reproduce the \texttt{pre\_year} value, \texttt{n=iter\_num} must reproduce the target-year value, and \texttt{iter\_num=0} must assign the target-year value directly.
+
+A new scenario measure is added as an include file under \texttt{prog/inc\_prog/scenario}. Its \texttt{SCE\_*} switch is set to \texttt{off} by default, dispatched from \texttt{3\_scenario.gms}, and enabled only in the relevant setting file. Symbols are declared outside the scenario include because that include is evaluated repeatedly.
+
+Conditional compilation blocks use matching labels, for example \texttt{\$ifthen.name} and \texttt{\$endif.name}. Conditions over large domains include a sparse operand so that inactive tuples are not evaluated unnecessarily.
+
+\subsection{Validation of Changes}
+
+All affected GAMS stages are compiled with the settings used by the intended run. Changes to imported or exported symbols are tested through data import, base-year calibration, equilibrium calculation, and output aggregation. Modified shell and R programs are also parsed with their native tools.
+
+For a rename or another change that is not intended to affect model behavior, a pre-change GDX is retained. Old and new symbols are mapped explicitly and their records are compared; both the domain and the values should agree exactly. A representative scenario run is then checked for GAMS execution errors, model status, solver status, and diagnostic residuals. A process exit code of zero alone does not establish that all annual solves succeeded.
+
+Generated outputs, temporary solver files, and local configuration files are not included in a contribution unless they are an intentional part of the change.

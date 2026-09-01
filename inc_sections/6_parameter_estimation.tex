@@ -10,7 +10,7 @@ Since price elasticities in the model were assumed to vary with per-capita GDP,
 the following regression equation was estimated:
 
 \begin{equation}
-\overline{elhp}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{GDPPC}_{cty})
+\overline{elaP}_{(c,cty)} = \alpha^{pe}_{c} + \beta^{pe}_{c} \cdot \log(\overline{gdpPc}_{cty})
 \label{eq:pe_reg}
 \end{equation}
 
@@ -23,13 +23,13 @@ In this estimation, dummy variables were introduced to represent climatic zones.
 \begin{equation}
 \log \left(
 \frac{
-\overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}
+\overline{sysShr}_{(a\_liv,bas,cty,cz,sys)}
 }{
-1 - \overline{SYSSHARE}_{(aliv,bas,cty,cz,sys)}
+1 - \overline{sysShr}_{(a\_liv,bas,cty,cz,sys)}
 }
 \right)
-= 
-\delta^{sys}_{(aliv,cz,sys)} + \rho^{sys}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+=
+\delta^{sys}_{(a\_liv,cz,sys)} + \rho^{sys}_{(a\_liv,sys)} \cdot \log(\overline{gdpPc}_{cty})
 \label{eq:sys_reg}
 \end{equation}
 
@@ -40,18 +40,18 @@ also change with the level of economic development.
 Regression analyses were conducted using the following equations:
 
 \begin{align}
-\log \left( \overline{FEEDEFFICIENCY}_{(aliv,bas,cty,cz,sys)} \right)
-&= 
-\alpha^{fe}_{(aliv,cz,sys)} + \beta^{fe}_{(aliv,cz,sys)} \cdot \log(\overline{GDPPC}_{cty}) \label{eq:fe_reg}\\[6pt]
+\log \left( \overline{feedReq}_{(a\_liv,bas,cty,cz,sys)} \right)
+&=
+\alpha^{fe}_{(a\_liv,cz,sys)} + \beta^{fe}_{(a\_liv,cz,sys)} \cdot \log(\overline{gdpPc}_{cty}) \label{eq:fe_reg}\\[6pt]
 \log \left(
 \frac{
-\overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+\overline{feedConcShr}_{(a\_liv,bas,cty,cz,sys)}
 }{
-1 - \overline{FEEDSHARE}_{(aliv,bas,cty,cz,sys)}
+1 - \overline{feedConcShr}_{(a\_liv,bas,cty,cz,sys)}
 }
 \right)
 &=
-\delta^{fs}_{(aliv,cz,sys)} + \rho^{fs}_{(aliv,sys)} \cdot \log(\overline{GDPPC}_{cty})
+\delta^{fs}_{(a\_liv,cz,sys)} + \rho^{fs}_{(a\_liv,sys)} \cdot \log(\overline{gdpPc}_{cty})
 \label{eq:fs_reg}
 \end{align}
 
@@ -65,13 +65,13 @@ was estimated using the following regression equation:
 \log \left(
 1 - 
 \frac{
-\overline{RR}_{(src,gas,cty)}
+\overline{RRed}_{(src,gas,cty)}
 }{
-\overline{MRP}_{(src,gas,cty)}
+\overline{mrp}_{(src,gas,cty)}
 }
 \right)
 =
-\sigma_{(src,gas,cty)} \cdot \log(\overline{PRCCAR}_{cty} + 1)
+\sigma_{(src,gas,cty)} \cdot \log(\overline{pCar}_{cty} + 1)
 \label{eq:sigma_reg}
 \end{equation}
 
@@ -154,7 +154,7 @@ Figure~\ref{fig:sys_share_gdp} illustrates the relationship between per-capita G
 the proportion of pasture-based production by livestock type and climatic zone.  
 Table~\ref{tab:sys_share_gdp} presents the estimated parameters.
 
-The parameters $\delta^{sys}_{(aliv,cz,sys)}$ and $\rho^{sys}_{(aliv,sys)}$ 
+The parameters $\delta^{sys}_{(a\_liv,cz,sys)}$ and $\rho^{sys}_{(a\_liv,sys)}$
 were estimated using the logistic regression model in Eq.~\eqref{eq:sys_reg}.
 
 As per-capita GDP increases, the share of pasture-based production decreases for all livestock products.  
@@ -214,11 +214,11 @@ confirming the significance of the coefficients.
 
 \bigskip
 
-\subsubsection{Relationship between feed efficiency and per-capita GDP}
+\subsubsection{Relationship between feed requirements and per-capita GDP}
 
-Figure~\ref{fig:feed_eff_gdp} shows the relationship between per-capita GDP and feed efficiency 
-by livestock type, climate zone, and production system.  
-Table~\ref{tab:feed_eff_gdp} presents the estimated regression parameters,
+Figure~\ref{fig:feed_req_gdp} shows the relationship between per-capita GDP and feed requirements
+by livestock type, climate zone, and production system.
+Table~\ref{tab:feed_req_gdp} presents the estimated regression parameters,
 obtained using the model in Eq.~\eqref{eq:fe_reg}.
 
 Higher per-capita GDP is associated with lower feed requirements.  
@@ -233,16 +233,16 @@ did not include zero, confirming statistical significance.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{fig6_3}
-    \caption{Relationship between per-capita GDP and feed efficiency}
-    \label{fig:feed_eff_gdp}
+    \caption{Relationship between per-capita GDP and feed requirements}
+    \label{fig:feed_req_gdp}
 \end{figure}
 
 \begin{table}[H]
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\caption{Estimated parameters of feed efficiency (95\% confidence intervals in parentheses)}
-\label{tab:feed_eff_gdp}
+\caption{Estimated parameters of feed requirements (95\% confidence intervals in parentheses)}
+\label{tab:feed_req_gdp}
 \resizebox{\textwidth}{!}{%
 \csvreader[
     tabular={@{} l l l r r r r r r l @{}},
