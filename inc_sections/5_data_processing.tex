@@ -49,6 +49,7 @@ Table~\ref{tab:data_sources} lists the datasets used in the model.
   T.~P.~Robinson et~al.~(2018)~\cite{robinsonGlobalDistributionRuminant2018} & Global distribution of ruminant livestock production systems V5 & \nolinkurl{https://doi.org/10.7910/DVN/WPDSZE} \\
   Harmsen et~al.~(2019)~\cite{harmsenLongtermMarginalAbatement2019a}    & CH\textsubscript{4} and N\textsubscript{2}O MAC curves & \nolinkurl{https://doi.org/10.1016/j.envsci.2019.05.013} \\
   Hurtt et~al.~(2019)~\cite{hurttHarmonizationGlobalLand2020}      & Land Use Harmonization 2 & \nolinkurl{https://luh.umd.edu/index.shtml} \\
+  LUH & Land Use Harmonization 3 & \nolinkurl{https://luh.umd.edu/} \\
   Hanasaki et~al.~(2008)~\cite{hanasakiIntegratedModelAssessment2008a,hanasakiIntegratedModelAssessment2008b} & H08 rainfed crop yield & \nolinkurl{https://doi.org/10.5194/hess-12-1007-2008} \\
   Hasegawa et~al.~(2017)~\cite{hasegawaGlobalLanduseAllocation2017} & AIM-PLUM spatial land-use outputs & \nolinkurl{https://doi.org/10.1016/j.scitotenv.2016.12.025} \\
   Ito and Inatomi (2012)~\cite{itoWaterUseEfficiencyTerrestrial2012} & VISIT carbon-cycle outputs & \nolinkurl{https://doi.org/10.1175/JHM-D-10-05034.1} \\
@@ -77,14 +78,14 @@ To distinguish this, waste rates by seven commodities and seven regions were obt
 Using these coefficients, household consumption and food waste were estimated as follows:
 
 \begin{align}
-qdWaste_{(c,cty)} &= qdFood^{FAO}_{(c,cty)} \cdot wasteRate_{(c,cty)} \\
-qdFood_{(c,cty)} &= qdFood^{FAO}_{(c,cty)} \cdot (1 - wasteRate_{(c,cty)})
+qdWaste_{(c,cty)} &= qdFood^{FAO}_{(c,cty)} \cdot rWaste_{(c,cty)} \\
+qdFood_{(c,cty)} &= qdFood^{FAO}_{(c,cty)} \cdot (1 - rWaste_{(c,cty)})
 \end{align}
 
 For model simplification, the commodities used as livestock feed, processing materials, and biofuel inputs were limited. 
-Wheat, rice, maize, other cereals, roots and tubers, sugar crops, pulses, oil crops, and vegetables were used as livestock feed. 
+Wheat, rice, maize, other cereals, roots and tubers, sugar crops, pulses, oil crops, vegetables, and oilseed cakes were used as livestock feed. 
 Wheat, rice, maize, other cereals, and fruits were used as raw materials for alcoholic beverages. 
-Sugar crops were used as inputs for sugars, oil crops for vegetable oils, and maize, sugar crops, and vegetable oils for biofuels. 
+Sugar crops were used as inputs for sugars, oil crops for vegetable oils and oilseed cakes, and maize, sugar crops, and vegetable oils for biofuels. 
 Feed demand, intermediate input demand, and biofuel demand for other commodities were set to zero.
 
 \begin{align}
@@ -92,6 +93,19 @@ qdFed_{(c \notin c_{fed},cty)} &= 0 \\
 qdBio_{(c \notin c_{bio},cty)} &= 0 \\
 qdInt_{(c \notin c_{int},cty)} &= 0
 \end{align}
+
+Dairy quantities are expressed in raw-milk equivalent, and dairy unit values use the same quantity basis.
+
+The FBS do not cover oilseed cakes, so their supply and utilization were taken from the FAOSTAT Supply Utilization Accounts. 
+Crushing yields vegetable oil and oilseed cake jointly. 
+The crushed oil crops were split between the two products in proportion to their output values at world export unit values:
+
+\begin{equation}
+intCoef_{(a,ocr,cty)} = \frac{qdInt_{(ocr,cty)} \cdot peWld_{(a)}}{\sum_{a' \in a_{crush}} \bigl(peWld_{(a')} \cdot qs_{(a',cty)}\bigr)}
+\quad a \in a_{crush} = \{vol, cak\}
+\end{equation}
+
+where \( peWld \) is the export-weighted world unit value of each product.
 
 As a result of these adjustments, the total domestic demand changed. 
 If the sum of all demand components was less than the total demand from the data, 
@@ -121,40 +135,26 @@ qs^{FAO}_{(a\_cro,cty)} \cdot
 where \( qs^{FAO} \) denotes production quantity data from FAO,
 and \( qsGaez^{GAEZ} \) represents production data from GAEZ.
 
-From the LUH2 dataset, the cultivated land area for each production unit was obtained. 
-Using the FAOSTAT data on national land use, these cultivated lands were divided into harvested and fallow lands as follows:
-
+National harvested and fallow cropland totals were derived from LUH3 cropland and FAOSTAT land-use shares. Harvested land was allocated among crops using national FAOSTAT harvested areas, and then among basins and technologies using crop-specific GAEZ shares:
 \begin{align}
-qlCroCul_{(bas,cty)} &=
-qlCro^{LUH2}_{(bas,cty)} \cdot
-\frac{qlCroCul^{FAO}_{cty}}{qlCroCul^{FAO}_{cty} + qlCroFal^{FAO}_{cty}} \\
-qlCroFal_{(bas,cty)} &=
-qlCro^{LUH2}_{(bas,cty)} \cdot
-\frac{qlCroFal^{FAO}_{cty}}{qlCroCul^{FAO}_{cty} + qlCroFal^{FAO}_{cty}}
+qlCroCul_{cty}
+&=\sum_{bas}qlCro^{LUH3}_{(bas,cty)}
+\frac{qlCroCul^{FAO}_{cty}}{qlCroCul^{FAO}_{cty}+qlCroFal^{FAO}_{cty}},\\
+qlWat_{(a\_cro,bas,cty,wat)}
+&=qlCroCul_{cty}
+\frac{qlHarvFao_{(a\_cro,cty)}}{\sum_{a\_cro2}qlHarvFao_{(a\_cro2,cty)}}
+\nonumber\\[-0.3em]
+&\quad\cdot\frac{qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}
+{\sum_{bas,wat}qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}.
 \end{align}
-
-where \( qlCro^{LUH2} \) denotes cultivated area data from LUH2,
-\( qlCroCul^{FAO} \) is harvested land area data from FAO,
-and \( qlCroFal^{FAO} \) is fallow land area data from FAO.
-
-Furthermore, the harvested land was disaggregated by crop type and production technology 
-using GAEZ data as follows:
-
-\begin{equation}
-qlWat_{(a\_cro,bas,cty,wat)} =
-qlCroCul_{(bas,cty)} \cdot
-\frac{qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}{\sum_{(a\_cro,wat)} qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}
-\end{equation}
-
-where \( qlWat \) is the cropland area by crop type and production technology,
-and \( qlGaez^{GAEZ} \) is the crop-specific land area from GAEZ.
+Here, \(qlHarvFao\) is FAOSTAT harvested area and \(qlGaez\) is GAEZ physical crop area. Basin harvested cropland is the sum of \(qlWat\) over crops and technologies; fallow cropland follows the national FAOSTAT fallow share.
 
 From the MAPSPAM dataset, harvested and physical area data were obtained for each crop, 
 production unit, and production technology. 
 Using these data, the cropping intensity was estimated as follows:
 
 \begin{equation}
-croInt_{(a\_cro,bas,cty,wat)} =
+croInt_{(bas,cty,a\_cro,wat)} =
 \frac{mapspam^{Harvested}_{(a\_cro,bas,cty,wat)}}{mapspam^{Physical}_{(a\_cro,bas,cty,wat)}}
 \end{equation}
 
@@ -166,7 +166,7 @@ and cropping intensities as follows:
 
 \begin{equation}
 yld_{(a\_cro,bas,cty,wat)} =
-\frac{qsWat_{(a\_cro,bas,cty,wat)}}{qlWat_{(a\_cro,bas,cty,wat)} \cdot croInt_{(a\_cro,bas,cty,wat)}}
+\frac{qsWat_{(a\_cro,bas,cty,wat)}}{qlWat_{(a\_cro,bas,cty,wat)} \cdot croInt_{(bas,cty,a\_cro,wat)}}
 \end{equation}
 
 Food-crop yields are based on FAOSTAT production and GAEZ spatial allocation. For dedicated energy crops, AIM-ALPHA instead uses the rainfed yield from H08, following the bioenergy-potential assessment of Wu et~al.~\cite{hanasakiIntegratedModelAssessment2008a,hanasakiIntegratedModelAssessment2008b,wuGlobalAdvancedBioenergy2019}.
@@ -183,14 +183,14 @@ A minimum threshold of 0.3 was set for the production rate; if it fell below thi
 it was assumed that a portion of livestock was not involved in production activities.
 
 \begin{align}
-animalProdRate_{(a\_liv,cty)} &=
+rAnimalProd_{(a\_liv,cty)} &=
 \frac{nAnimal^{FAO}_{(a\_liv,cty)}}{nAnimalStock^{FAO}_{(a\_liv,cty)}} \\
 nAnimalRes_{(a\_liv,cty)} &=
 nAnimalStock^{FAO}_{(a\_liv,cty)} -
 \frac{nAnimal^{FAO}_{(a\_liv,cty)}}{0.3}
 \nonumber\\[-0.3em]
 &\quad
-\quad (\text{if } animalProdRate_{(a\_liv,cty)} < 0.3)
+\quad (\text{if } rAnimalProd_{(a\_liv,cty)} < 0.3)
 \end{align}
 
 where \( nAnimal^{FAO} \) is the number of slaughtered (or milked) animals from FAO,
@@ -199,46 +199,42 @@ and \( nAnimalStock^{FAO} \) is the total livestock population.
 When non-productive livestock exist, the corresponding unused pasture area was estimated as:
 
 \begin{equation}
-qlPasRes_{(a\_liv,cty)} =
-qlPas^{LUH2}_{(a\_liv,cty)} \cdot
-\frac{nAnimalRes_{(a\_liv,cty)}}{nAnimalStock^{FAO}_{(a\_liv,cty)}}
+qlPasRes_{(bas,cty)} =
+qlPas^{LUH3}_{(bas,cty)} \cdot
+\frac{\sum_{a\_liv\_rum}nAnimalRes_{(a\_liv\_rum,cty)}}
+{\sum_{a\_liv\_rum}nAnimalStock^{FAO}_{(a\_liv\_rum,cty)}}
 \end{equation}
 
 where \( qlPasRes \) denotes the unused pasture area,
-and \( qlPas^{LUH2} \) is the pasture area from LUH2.
+and \( qlPas^{LUH3} \) is the pasture area from LUH3.
 
 Country-level livestock production data from the FBS were disaggregated 
 into production units, climate zones, and production systems 
 using the dataset from Herrero et al. (2018). 
-Similarly, LUH2 pasture area data were disaggregated by livestock type, 
-climate zone, and production system.
+For ruminants, the share of each production unit is its share of the national pasture area. 
+Climate-zone shares are obtained from Herrero et~al.~(2018), and system shares use the GDP-based regression described in \cref{sec:param}.
 
-\begin{align}
-qsSys_{(a\_liv,bas,cty,cz,sys)} &=
-qs^{FAO}_{(a\_liv,cty)} \cdot
-\frac{livWt^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
-{\sum_{(bas,cz,sys)} livWt^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}} \\
-qlSys_{(a\_liv,bas,cty,cz,sys)} &=
-\big(qlPas^{LUH2}_{(cty,bas)} - qlPasRes_{(a\_liv,cty)}\big)
-  \cdot grassUseRate_{(bas,cty)}
-\nonumber\\[-0.3em]
-  &\quad
-\cdot
-\frac{pasArea^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
-{\sum_{(a\_liv,cz,sys)} pasArea^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
-\end{align}
-
-where \( livWt^{HERRERO} \) denotes production data
-and \( pasArea^{HERRERO} \) represents pasture use data
-from Herrero et al. (2018). The grass utilization rate is calculated from
-estimated grass demand and maximum available supply, and capped in calibration
-to avoid overuse.
+\begin{multline}
+qsSys_{(a\_liv,bas,cty,cz,sys)}
+= qs^{FAO}_{(a\_liv,cty)}\cdot shrBas_{(a\_liv,bas,cty)}
+\\[-0.3em]
+\cdot shrCz_{(a\_liv,bas,cty,cz)}\cdot shrSys_{(a\_liv,bas,cty,cz,sys)}.
+\end{multline}
+\begin{multline}
+qlSys_{(a\_liv,bas,cty,cz,sys)}
+=\bigl(qlPas^{LUH3}_{(bas,cty)}-qlPasRes_{(bas,cty)}\bigr)
+\\[-0.3em]
+\cdot rGrassUse_{(bas,cty)}
+\cdot\frac{qGrassSys_{(a\_liv,bas,cty,cz,sys)}}
+{\sum_{a\_liv2,cz2,sys2}qGrassSys_{(a\_liv2,bas,cty,cz2,sys2)}}.
+\end{multline}
+Pasture is allocated in proportion to calibrated grass demand. The grass utilization rate \(rGrassUse\) is calculated from estimated grass demand and available supply.
 
 The grazed and ungrazed pasture areas are then computed as:
 
 \begin{align}
 qlPasGrz_{(bas,cty)} &= \sum_{(a\_liv,cz,sys)} qlSys_{(a\_liv,bas,cty,cz,sys)} \\
-qlPasUng_{(bas,cty)} &= qlPas^{LUH2}_{(cty,bas)} - qlPasGrz_{(bas,cty)}
+qlPasUng_{(bas,cty)} &= qlPas^{LUH3}_{(bas,cty)} - qlPasGrz_{(bas,cty)}
 \end{align}
 
 Next, the feed requirements and concentrate feed share were estimated as follows:
@@ -247,77 +243,33 @@ Next, the feed requirements and concentrate feed share were estimated as follows
 feedReq_{(a\_liv,bas,cty,cz,sys)} &=
 \frac{feedQty^{HERRERO}_{(a\_liv,bas,cty,cz,sys)} + pasArea^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
 {livWt^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}} \\
-feedConcShr_{(a\_liv,bas,cty,cz,sys)} &=
+shrFeedConc_{(a\_liv,bas,cty,cz,sys)} &=
 \frac{feedQty^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
 {feedQty^{HERRERO}_{(a\_liv,bas,cty,cz,sys)} + pasArea^{HERRERO}_{(a\_liv,bas,cty,cz,sys)}}
 \end{align}
 
 where \( feedQty^{HERRERO} \) is the amount of concentrate feed from Herrero et al. (2018).
 
-Using these values and the FBS feed demand data, 
-the quantities of pasture and concentrate feed use were estimated. 
-The amount of concentrate feed input was adjusted with a correction coefficient 
-to ensure consistency with the FBS data. 
-Consequently, the feed requirements and concentrate feed share were also adjusted.
-If the estimated pasture use exceeded the available supply, 
-it was replaced with the available amount.
-
+Using these values and the FBS feed demand data, concentrate feed use was adjusted with a country-level correction coefficient \(feedScale\), based on the ratio of national feed demand to estimated concentrate feed requirements. Feed commodities followed their shares in national feed use:
 \begin{multline}
-qFeedSys^{temp}_{(a\_liv,c\_fed,bas,cty,cz,sys)} =
-\frac{qsSys_{(a\_liv,bas,cty,cz,sys)}}
-     {animalProdRate_{(a\_liv,cty)}} \\
-     \cdot
-feedReq_{(a\_liv,bas,cty,cz,sys)} \cdot
-feedConcShr_{(a\_liv,bas,cty,cz,sys)} \\
-\cdot
-\frac{qdFed^{FAO}_{(c\_fed,cty)}}
-     {\sum_{c\_fed} qdFed^{FAO}_{(c\_fed,cty)}}
+qFeedSys_{(a\_liv,c\_fed,bas,cty,cz,sys)}
+= qsSys_{(a\_liv,bas,cty,cz,sys)}
+\\[-0.3em]
+\cdot feedReq_{(a\_liv,bas,cty,cz,sys)}
+\cdot shrFeedConc_{(a\_liv,bas,cty,cz,sys)}
+\\[-0.3em]
+\cdot feedScale_{cty}\cdot shrFeedGrain_{(c\_fed,cty)}.
 \end{multline}
 
-\begin{align}
-feedScale_{(c\_fed,cty)} &=
-\frac{qdFed^{FAO}_{(c\_fed,cty)}}
-     {\displaystyle
-      \sum_{(a\_liv,bas,cz,sys)}
-      qFeedSys^{temp}_{(a\_liv,c\_fed,bas,cty,cz,sys)}}
-\end{align}
-
+Grass demand is
 \begin{multline}
-qFeedSys_{(a\_liv,c\_fed,bas,cty,cz,sys)} =
-qFeedSys^{temp}_{(a\_liv,c\_fed,bas,cty,cz,sys)} \cdot
-feedScale_{(c\_fed,cty)}
+qGrassSys_{(a\_liv,bas,cty,cz,sys)}
+= qsSys_{(a\_liv,bas,cty,cz,sys)}
+\\[-0.3em]
+\cdot feedReq_{(a\_liv,bas,cty,cz,sys)}
+\cdot\bigl(1-shrFeedConc_{(a\_liv,bas,cty,cz,sys)}\bigr).
 \end{multline}
-
-\begin{multline}
-qGrassSys_{(a\_liv,bas,cty,cz,sys)} =
-\frac{qsSys_{(a\_liv,bas,cty,cz,sys)}}
-     {animalProdRate_{(a\_liv,cty)}} \\
-     \cdot
-feedReq_{(a\_liv,bas,cty,cz,sys)}
-\cdot \bigl(1 - feedConcShr_{(a\_liv,bas,cty,cz,sys)}\bigr)
-\end{multline}
-
-
-If the estimated pasture demand exceeded the available supply, 
-it was replaced with the available amount:
-
-\begin{multline}
-qGrassSys_{(a\_liv,bas,cty,cz,sys)} =
-qlSys_{(a\_liv,bas,cty,cz,sys)} \cdot yGrass_{(bas,cty)} \\
-\text{if }
-qlSys_{(a\_liv,bas,cty,cz,sys)} \cdot yGrass_{(bas,cty)}
-< qGrassSys_{(a\_liv,bas,cty,cz,sys)}
-\end{multline}
-
-
-where:
-\begin{itemize}
-\item \( qFeedSys^{temp} \): estimated feed demand by production system,
-\item \( qdFed^{FAO} \): feed demand data from FAO,
-\item \( feedScale \): adjustment coefficient for consistency with FAO feed demand,
-\item \( qFeedSys \): adjusted feed demand consistent with FAO data,
-\item \( qGrassSys \): pasture demand by production system.
-\end{itemize}
+If estimated grass demand exceeded available supply, it was reduced proportionally. Feed requirements, concentrate feed shares, and grass utilization were recalculated from the adjusted quantities.
 
 
 \subsubsection{Adjustment of food trade}
@@ -353,31 +305,31 @@ classified according to climate, soil, and topographical conditions,
 were obtained.  
 Among these, land classes with strong constraints were selected 
 and considered unsuitable for agricultural use.  
-The area of such constrained land was calculated as follows:
+The cropland upper bound was obtained from the remaining suitable share:
 
 \begin{equation}
 qlCroCap_{(bas,cty)} =
-qlTot^{LUH2}_{(bas,cty)} \cdot
-\frac{\sum_{aezlim} qlGaez_{(aezlim,bas,cty)}}
-{\sum_{aez} qlGaez_{(aez,bas,cty)}}
+qlTot^{LUH3}_{(bas,cty)} \cdot
+\left(1-\frac{\sum_{aezlim} qlGaez_{(aezlim,bas,cty)}}
+{\sum_{aez} qlGaez_{(aez,bas,cty)}}\right)
 \end{equation}
 
 where:
 \begin{itemize}
-\item \( qlTot^{LUH2} \): total land area from LUH2,
+\item \( qlTot^{LUH3} \): total land area from LUH3,
 \item \( qlGaez \): area data by AEZ class from GAEZ,
 \item \( aez \): the set of 57 AEZ classes,
 \item \( aezlim \in aez \): AEZ classes with severe land-use constraints.
 \end{itemize}
 
 In addition, protected-area information was incorporated using the World Database on Protected Areas (WDPA)~\cite{iucnUNEPWCMCWorldDatabase2025}.  
-The WDPA polygons were overlaid with basin-country units and classified into primary forest, secondary forest, other natural land, pasture, and rangeland. These areas form \(\overline{qlProt}_{(bas,cty,lu\_pa)}\), which is imposed as a lower bound on the corresponding land class; pasture and rangeland share the pasture constraint.
+The WDPA polygons were overlaid with basin-country units and classified into primary forest, secondary forest, other natural land, pasture, and rangeland. These areas form \(qlProt_{(bas,cty,lu\_prot)}\), which is imposed as a lower bound on the corresponding land class; pasture and rangeland share the pasture constraint.
 
-Urban land is based on the LUH2-consistent base-year area in the default model configuration.  
+Urban land is based on the LUH3 base-year area in the default model configuration.
 The base-year value is held constant in future years unless the optional SEDAC urban-projection extension is enabled.  
 For this extension, the SEDAC 1-km urban fraction data~\cite{gaoGlobal1kmDownscaled2021,gaoDownscalingSSPconsistent2021} were aggregated to basin-country units and converted to annual SSP-specific series.  
-When the extension is switched on, these SEDAC series are used to update urban land in scenario runs while preserving the LUH2-consistent base-year level.  
-To maintain physical consistency of the land balance, urban area was bounded by zero and by available land after subtracting wat/ice.
+When the extension is switched on, these SEDAC series are used to update urban land in scenario runs while preserving the LUH3-based base-year level.
+To maintain physical consistency of the land balance, urban area was bounded by zero and by available land after subtracting water/ice.
 
 \subsubsection{Estimation of forest carbon data}
 
@@ -391,71 +343,34 @@ for each country and commodity were obtained.
 Since the price data contained many outliers and missing values, 
 appropriate preprocessing was conducted.  
 
-First, outlier values were treated as missing when the producer price 
-was greater than ten times or less than one-tenth of the country-level median.
+First, producer, import, and export prices outside 0.1--10 times the cross-country median were removed. Outlying years within each country price series were also adjusted. Processed-good producer prices were obtained from import and export unit values, weighted by traded quantities where available.
 
-\begin{equation}
-pp_{(c,cty)} \leftarrow \text{NA}
-\quad \text{if }
-\big( pp_{(c,cty)} > 10 \cdot \text{median}_{cty}(pp_{(c,cty)})
-\ \cup \
-pp_{(c,cty)} < 0.1 \cdot \text{median}_{cty}(pp_{(c,cty)}) \big)
-\end{equation}
-
-Next, missing values were complemented.  
-A world average price was calculated from the available country-level producer prices, 
-weighted by production quantities.  
-A country-specific correction coefficient was then derived 
-based on the deviation of each country's prices from the world average.  
-This coefficient was used to impute the missing prices.  
-The same procedure was applied for import and export prices.
-
+Missing producer prices were first filled using the country's relative price in the nearest observed years. Remaining gaps were filled from a quantity-weighted world price and the country's average relative price across commodities:
 \begin{align}
-&pAvg_{c} =
-\frac{\sum_{cty} pp_{(c,cty)} \cdot qs_{(c,cty)}}{\sum_{cty} qs_{(c,cty)}} \\
-&pRelAvg_{cty} =
-\frac{\sum_{c} pp_{(c,cty)}}{pAvg_{c}} \\
-&pp_{(c,cty)} =
-pAvg_{c} \cdot pRelAvg_{cty}
+pAvg_{c,yr}
+&= \frac{\sum_{cty\in\mathcal O_{c,yr}}pp_{(c,cty,yr)}\,qs_{(c,cty,yr)}}
+{\sum_{cty\in\mathcal O_{c,yr}}qs_{(c,cty,yr)}},\\
+pRelAvg_{cty,yr}
+&= \frac{1}{N_{cty,yr}}\sum_{c\in\mathcal O_{cty,yr}}
+\frac{pp_{(c,cty,yr)}}{pAvg_{c,yr}},\\
+pp_{(c,cty,yr)}&=pAvg_{c,yr}\,pRelAvg_{cty,yr}.
 \end{align}
-
-where \( pAvg \) denotes the global average producer price,
-and \( pRelAvg \) denotes the country-specific adjustment coefficient.
+Here, \(\mathcal O\) denotes available observations and \(N\) their number. Import and export prices were filled similarly with the corresponding trade quantities as weights. World-average prices provide the final fallback; remaining producer-price gaps use the import-price level.
 
 \bigskip
 
-Next, using the GTAP10 dataset, exogenous variables related to prices were estimated.  
-The Producer Support Estimate (PSE) represents the monetary transfers 
-from consumers and taxpayers to producers resulting from agricultural policies.  
-In this study, the PSE is expressed as the proportionate impact of 
-subsidies and taxes on producer prices.  
-Similarly, the Consumer Support Estimate (CSE) represents 
-the transfers from or to consumers, 
-expressed as the proportionate impact of subsidies and taxes on consumer prices.
-
+Next, production subsidies, factor employment taxes, and net subsidies on household purchases were calculated from GTAP~10. Production-side rates use output at market prices as their denominator:
 \begin{align}
-pse_{(i,cty)} &=
-\frac{
-OSEP^{GTAP}_{(i,cty)} 
-+ \sum_i ISEP^{GTAP}_{(i,ii,cty)} 
-- \sum_{endw} FTRV^{GTAP}_{(i,endw,cty)} 
-+ \sum_{endw} FBEP^{GTAP}_{(i,endw,cty)}
-}{
-VOA^{GTAP}_{(i,cty)}
-} \\
-cse_{(i,cty)} &=
-\frac{VDPM^{GTAP}_{(i,cty)} - VDPA^{GTAP}_{(i,cty)}}{VDPM^{GTAP}_{(i,cty)}}
+rPpSub_{(i,cty)}
+&= \frac{OSEP^{GTAP}_{(i,cty)}+\sum_{ii}ISEP^{GTAP}_{(ii,i,cty)}
++\sum_{endw}FBEP^{GTAP}_{(endw,i,cty)}}{TVOM^{GTAP}_{(i,cty)}},\\
+rPpTax_{(i,cty)}
+&= \frac{\sum_{endw}FTRV^{GTAP}_{(endw,i,cty)}}{TVOM^{GTAP}_{(i,cty)}},\\
+rPcSub_{(i,cty)}
+&=1-\frac{VDPA^{GTAP}_{(i,cty)}+VIPA^{GTAP}_{(i,cty)}}
+{VDPM^{GTAP}_{(i,cty)}+VIPM^{GTAP}_{(i,cty)}}.
 \end{align}
-
-where:
-\begin{itemize}
-\item \( OSEP^{GTAP} \): subsidies/taxes on production,  
-\item \( ISEP^{GTAP} \): subsidies/taxes on intermediate inputs,  
-\item \( FTRV^{GTAP} \): taxes on factor inputs,  
-\item \( FBEP^{GTAP} \): subsidies on factor inputs,  
-\item \( VOA^{GTAP} \): production value,  
-\item \( VDPM^{GTAP}, VDPA^{GTAP} \): household consumption at market and consumer prices, respectively.
-\end{itemize}
+Here, \(OSEP\), \(ISEP\), and \(FBEP\) are production, intermediate-input, and factor subsidies; \(FTRV\) is factor employment tax; and \(TVOM\) is output at market prices. \(VDPA\), \(VIPA\), \(VDPM\), and \(VIPM\) are domestic and imported household purchases at agent and market prices. Production costs therefore sum to \(PP(1+rPpSub-rPpTax)\), while household demand responds to \((1-rPcSub)PC\).
 
 \textit{Indices:}  
 \( i \): production sector;  
@@ -466,38 +381,8 @@ where:
 
 \bigskip
 
-To link producer (farm-gate) prices with consumer (market) prices, 
-the market margin ratio \( mmj \) was estimated.
-Intermediate inputs and factor inputs corresponding to market margins 
-were identified from the GTAP input–output tables, 
-and their total was divided by the production value to obtain the ratio.  
-Similarly, trade-related costs \( mmm \) and \( mme \) were estimated from GTAP data,
-using the difference between import values at CIF prices and export values at FOB prices.
-
+The marketing margin \(mmj\) is zero in the current calibration. Trade margins \(mmm\) and \(mme\) are estimated from the CIF--FOB value gap:
 \begin{align}
-mmj_{(i,cty)}
-&=
-\frac{
-  \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
-  + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
-  + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
-}{
-  \left(
-  \begin{array}{@{}l@{}}
-    \displaystyle
-    \sum_{ii} VDFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{ii} VIFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{endw} EVFA^{GTAP}_{(i,endw,cty)} \\[0.2em]
-    \displaystyle
-    - \Bigl(
-        \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
-      \Bigr)
-  \end{array}
-  \right)
-}
-\\[0.5em]
 mmm_{(i,ccty)}
 &=
 \frac{
@@ -513,7 +398,7 @@ mme_{(i,cty)}
   \sum_{ccty} VIWS^{GTAP}_{(i,cty,ccty)}
   - \sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}
 }{
-  \sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}
+  \sum_{ccty} VIWS^{GTAP}_{(i,cty,ccty)}
 }
 \end{align}
 
@@ -522,22 +407,18 @@ where:
 \begin{itemize}
 \item \( VDFA^{GTAP}, VIFA^{GTAP}, EVFA^{GTAP} \): intermediate and factor input values at consumer prices,  
 \item \( VIWS^{GTAP}, VXWD^{GTAP} \): import (CIF) and export (FOB) values,  
-\item \( immj \in (i \cup endw) \): goods and factors corresponding to market margins.
 \end{itemize}
 
 \bigskip
 
 The import tariff (\( tm \)) and export tariff (\( te \)) were then calculated.
-The import tariff rate was obtained as the ratio of import value at domestic prices 
-to that at international prices, 
-and the export tariff rate as the ratio of export value at international prices 
-to that at domestic prices.
+Each tariff rate is the corresponding value ratio minus one.
 
 \begin{align}
 &tm_{(i,ccty)} =
-\frac{\sum_{cty} VIMS^{GTAP}_{(i,cty,ccty)}}{\sum_{cty} VIWS^{GTAP}_{(i,cty,ccty)}} \\
+\frac{\sum_{cty} VIMS^{GTAP}_{(i,cty,ccty)}}{\sum_{cty} VIWS^{GTAP}_{(i,cty,ccty)}} - 1 \\
 &te_{(i,cty)} =
-\frac{\sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}}{\sum_{ccty} VXMD^{GTAP}_{(i,cty,ccty)}}
+\frac{\sum_{ccty} VXWD^{GTAP}_{(i,cty,ccty)}}{\sum_{ccty} VXMD^{GTAP}_{(i,cty,ccty)}} - 1
 \end{align}
 
 where:
@@ -548,98 +429,18 @@ where:
 
 \bigskip
 
-Finally, coefficients for decomposing producer prices by input factor 
-were estimated.  
-Each agricultural commodity is produced using land, feed, raw materials, 
-and other production factors.  
-Using the GTAP input–output tables, the cost share of each factor 
-in the producer price was estimated.  
-By multiplying the producer price by these shares, 
-the base-year prices of each factor were obtained.
-
+Finally, GTAP input--output data were used to separate land, feed, processing inputs, and other production costs. The cost shares use total intermediate and factor input costs as their denominator:
 \begin{align}
-landCostShr_{(i,cty)}
-&=
-\frac{
-  \sum_{ilnd} VDFA^{GTAP}_{(i,ilnd,cty)}
-  + \sum_{ilnd} VIFA^{GTAP}_{(i,ilnd,cty)}
-  + \sum_{ilnd} EVFA^{GTAP}_{(i,ilnd,cty)}
-}{
-  \left(
-  \begin{array}{@{}l@{}}
-    \displaystyle
-    \sum_{ii} VDFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{ii} VIFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{endw} EVFA^{GTAP}_{(i,endw,cty)} \\[0.2em]
-    \displaystyle
-    - \Bigl(
-        \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
-      \Bigr)
-  \end{array}
-  \right)
-}
-\\[0.6em]
-feedCostShr_{(i,cty)}
-&=
-\frac{
-  \sum_{ifed} VDFA^{GTAP}_{(i,ifed,cty)}
-  + \sum_{ifed} VIFA^{GTAP}_{(i,ifed,cty)}
-  + \sum_{ifed} EVFA^{GTAP}_{(i,ifed,cty)}
-}{
-  \left(
-  \begin{array}{@{}l@{}}
-    \displaystyle
-    \sum_{ii} VDFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{ii} VIFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{endw} EVFA^{GTAP}_{(i,endw,cty)} \\[0.2em]
-    \displaystyle
-    - \Bigl(
-        \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
-      \Bigr)
-  \end{array}
-  \right)
-}
-\\[0.6em]
-intCostShr_{(i,cty)}
-&=
-\frac{
-  \sum_{iimd} VDFA^{GTAP}_{(i,iimd,cty)}
-  + \sum_{iimd} VIFA^{GTAP}_{(i,iimd,cty)}
-  + \sum_{iimd} EVFA^{GTAP}_{(i,iimd,cty)}
-}{
-  \left(
-  \begin{array}{@{}l@{}}
-    \displaystyle
-    \sum_{ii} VDFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{ii} VIFA^{GTAP}_{(i,ii,cty)}
-    + \sum_{endw} EVFA^{GTAP}_{(i,endw,cty)} \\[0.2em]
-    \displaystyle
-    - \Bigl(
-        \sum_{immj} VDFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} VIFA^{GTAP}_{(i,immj,cty)}
-      + \sum_{immj} EVFA^{GTAP}_{(i,immj,cty)}
-      \Bigr)
-  \end{array}
-  \right)
-}
-\\[0.6em]
-1-ipt2_{(i,cty)}
-&=
-1 - \bigl(landCostShr_{(i,cty)} + feedCostShr_{(i,cty)} + intCostShr_{(i,cty)}\bigr)
+g\_ipt_{(i,cty)}
+&=\sum_{ii}\bigl(VDFA^{GTAP}_{(ii,i,cty)}+VIFA^{GTAP}_{(ii,i,cty)}\bigr)
++\sum_{endw}EVFA^{GTAP}_{(endw,i,cty)},\\
+shrLandCost_{(i,cty)}
+&=\frac{\sum_{ilnd}EVFA^{GTAP}_{(ilnd,i,cty)}}{g\_ipt_{(i,cty)}},\\
+shrFeedCost_{(i,cty)}
+&=\frac{\sum_{ifed}\bigl(VDFA^{GTAP}_{(ifed,i,cty)}+VIFA^{GTAP}_{(ifed,i,cty)}\bigr)}{g\_ipt_{(i,cty)}},\\
+shrIntCost_{(i,cty)}
+&=\frac{\sum_{iimd}\bigl(VDFA^{GTAP}_{(iimd,i,cty)}+VIFA^{GTAP}_{(iimd,i,cty)}\bigr)}{g\_ipt_{(i,cty)}}.
 \end{align}
+The sets \(ilnd\), \(ifed\), and \(iimd\) identify land/natural resources, feed, and processing inputs. Applying these shares to \(pp(1+rPpSub-rPpTax)\) gives the base-year factor costs; other production costs are the remainder.
 
-
-where:
-\begin{itemize}
-\item \( landCostShr \): share of land cost in the producer price,
-\item \( feedCostShr \): share of feed cost in the producer price,
-\item \( intCostShr \): share of raw material cost in the producer price,
-\item \( 1-ipt2 \): share of other production factors in the producer price,
-\item \( ilnd, ifed, iimd \in (i \cup endw) \): goods and factors corresponding to land, feed, and raw materials,  
-\item The denominator represents the total value of domestic and imported intermediate inputs 
-      and factor inputs, excluding those corresponding to market margin sectors.
-\end{itemize}
+Feed prices \(pFeed0\) equal the base-year consumer prices. The additive residual \(feedCostRes\) reconciles the cost of the physical feed inputs with the GTAP feed-cost share. Processing input prices \(pInt0\) are scaled so that the cost of the calibrated input coefficients equals the GTAP intermediate-input cost. These input prices subsequently change in proportion to \(PC/pc0\).

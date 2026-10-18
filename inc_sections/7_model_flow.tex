@@ -17,6 +17,8 @@ Additionally, model results are converted into the submission templates
 of AgMIP (Agricultural Model Intercomparison and Improvement Project) 
 and IAMC (Integrated Assessment Modeling Consortium) 
 to facilitate data exchange and comparison.  
+Quantities in tonnes are reported in primary equivalent: each processed good is converted into the raw materials it was made from with its intermediate input coefficient. 
+The processing of raw materials into processed goods is therefore not reported as a use.  
 When enabled in \texttt{model\_setting.sh}, the AgMIPAssessment submodule is also executed to run vetting and variable-consistency checks, and to generate plots and summary tables.
 
 Optional pre-run bridges convert outputs from AIM-Hub, AFOLUB, and AIM-PLUM into AIM-ALPHA inputs. The switches \texttt{use\_hub\_output}, \texttt{use\_afolu\_output}, and \texttt{use\_plum\_output} control these bridges. When a scenario suffix is specified by \texttt{ModelInt}, the corresponding file in \texttt{setting/modelint} defines the linked-model setting.
@@ -70,7 +72,7 @@ This script processes raw datasets such as FAOSTAT and MAC Curve sources.
 
 \begin{programbox}{0\_grid\_data.R}
 Aggregates gridded datasets by country and production unit, and exports the results in \texttt{gdx} format.  
-It processes geospatial data from sources such as GAEZ, Livestock System, and LUH2.
+It processes geospatial data from sources such as GAEZ, Livestock System, and LUH3.
 \end{programbox}
 
 \begin{programbox}{1\_data\_import.gms}

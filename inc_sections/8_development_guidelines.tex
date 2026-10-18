@@ -48,7 +48,7 @@ The suffix \texttt{\_load} is reserved for data read from an external file befor
 
 \subsubsection{External Data and Output}
 
-Names fixed by an external GDX schema are not changed at the interface. When necessary, the symbol is renamed on the model side of the \texttt{\$load} statement. Established abbreviations in imported databases, including the GTAP parameters \texttt{pse}, \texttt{cse}, \texttt{mmj}, \texttt{mmm}, \texttt{mme}, \texttt{tm}, and \texttt{te}, are retained.
+Names fixed by an external GDX schema are not changed at the interface. When necessary, the symbol is renamed on the model side of the \texttt{\$load} statement. Established abbreviations in imported databases, including the GTAP parameters \texttt{mmj}, \texttt{mmm}, \texttt{mme}, \texttt{tm}, and \texttt{te}, are retained.
 
 Annual GDX outputs use \texttt{<stem>\_result}. Combined time-series values use \texttt{<stem>\_load}, single-year scratch values use \texttt{<stem>Single}, and aggregated values use \texttt{<stem>Agg\_load}. A value derived from an endogenous variable retains the uppercase variable stem; an output derived from a Parameter retains the lowercase Parameter stem.
 
@@ -79,6 +79,8 @@ while a trend may instead be evaluated directly at \texttt{tCur}. This applies t
 \end{equation}
 
 At the final substep, and whenever \texttt{iter\_num=0}, \texttt{xPrev} therefore equals \texttt{xPrev1}. Intermediate solves are used for numerical continuation and are not written as separate annual results; \texttt{3\_result.gms} is evaluated only after the loop has finished.
+
+An adjusted working driver must not overwrite its stored annual state. For example, \texttt{qsPrev1} and \texttt{qsBasPrev1} retain the exact previous-year solutions used to initialize \texttt{QS.L} and \texttt{QSBas.L}. The production floor is applied instead to \texttt{qsDrvPrev1} and \texttt{qsBasDrvPrev1}, which are used with their \texttt{Prev2} counterparts to construct the substep values \texttt{qsPrev} and \texttt{qsBasPrev}.
 
 The order of calculation is important. \texttt{3\_timestep.gms} first restores or constructs the baseline value for the current time point, after which \texttt{3\_scenario.gms} applies the active measures. If a scenario changes a Parameter in place, that Parameter must be restored or rebuilt on the next pass before the measure is applied again. Otherwise the policy effect compounds across substeps. Conversely, an exogenous Parameter that is set only outside the loop remains stale while the model advances toward the target year.
 
