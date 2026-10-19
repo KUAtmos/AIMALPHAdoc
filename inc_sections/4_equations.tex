@@ -343,7 +343,7 @@ The land-cost term applies only to grazing livestock. For livestock without land
 \subsubsection{Fishery Production}
 
 Fishery products are produced at the country level by capture fisheries and aquaculture.
-Capture production is determined by its base-year level and a price elasticity, and aquaculture is produced using feed and other production factors.
+Capture production is bounded by its base-year level and a price elasticity, and aquaculture is produced using feed and other production factors.
 Reduction fish is supplied only by capture fisheries and is used as the raw material of fishmeal and fish oil.
 
 \paragraph{Fishery Production by System}
@@ -356,10 +356,12 @@ Reduction fish is supplied only by capture fisheries and is used as the raw mate
 \paragraph{Capture Fishery Production}
 \begin{align}
   QSFsh_{a\_fsh,cty,\text{"cap"}}
-  &= qsFsh0_{a\_fsh,cty,\text{"cap"}}
+  &\le qsFsh0_{a\_fsh,cty,\text{"cap"}}
      \cdot\left(\frac{PP_{a\_fsh,cty}}{pp0_{a\_fsh,cty}}\right)^{elaCap}
+  \quad\perp\quad PP_{a\_fsh,cty}\ge 0
   \tag{FshCapEq}\label{eq:FshCapEq}
 \end{align}
+When the producer price falls to zero, capture is below its bound and the catch that is not demanded is discarded.
 
 \paragraph{Producer Price of Aquaculture}
 \begin{multline}
