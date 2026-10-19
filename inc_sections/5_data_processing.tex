@@ -56,6 +56,8 @@ Table~\ref{tab:data_sources} lists the datasets used in the model.
   Gao and Pesaresi (2021)~\cite{gaoGlobal1kmDownscaled2021} & Global 1-km Downscaled Urban Land Extent Projection and Base Year Grids by SSP Scenarios, 2000-2100 & \nolinkurl{https://doi.org/10.7927/1z4r-ez63} \\
   Gao and Pesaresi (2021)~\cite{gaoDownscalingSSPconsistent2021} & Downscaling SSP-consistent Global Spatial Urban Land Projections from 1/8-degree to 1-km Resolution, 2000-2100 & \nolinkurl{https://doi.org/10.1038/s41597-021-01052-0} \\
   IUCN and UNEP-WCMC~\cite{iucnUNEPWCMCWorldDatabase2025} & World Database on Protected Areas (WDPA), Dec 2025 release & \nolinkurl{https://www.protectedplanet.net} \\
+  FAO~\cite{faoFishStat2026} & FishStat: Global production, Aquaculture production, and Fisheries commodities production and trade, release 2026.1.0 & \nolinkurl{https://www.fao.org/fishery/en/fishstat} \\
+  Naylor et~al.~(2021)~\cite{naylorRetrospectiveReviewGlobal2021} & Aquaculture feed conversion and feed composition & \nolinkurl{https://doi.org/10.1038/s41586-021-03308-6} \\
 \end{xltabular}
 
 \subsection{Calibration and processing of data}
@@ -66,8 +68,8 @@ In the model, if a country–commodity pair has missing data for the base year 2
 Therefore, for country–commodity pairs without 2015 data in the Food Balance Sheets (FBS), the average value of subsequent years was used as the 2015 consumption level.
 
 \begin{equation}
-qdFood_{(c,cty,2015)} = \frac{\sum_{yr} qdFood^{FAO}_{(c,cty,yr)}}{N_{yr}}
-\quad \text{for } qdFood_{(c,cty,2015)} = \text{NA}
+qdFood_{(c,cty,\text{"2015"})} = \frac{\sum_{yr} qdFood^{FAO}_{(c,cty,yr)}}{N_{yr}}
+\quad \text{for } qdFood_{(c,cty,\text{"2015"})} = \text{NA}
 \end{equation}
 
 where \( qdFood^{FAO} \) is household consumption data from FAO,
@@ -84,6 +86,7 @@ qdFood_{(c,cty)} &= qdFood^{FAO}_{(c,cty)} \cdot (1 - rWaste_{(c,cty)})
 
 For model simplification, the commodities used as livestock feed, processing materials, and biofuel inputs were limited. 
 Wheat, rice, maize, other cereals, roots and tubers, sugar crops, pulses, oil crops, vegetables, and oilseed cakes were used as livestock feed. 
+Fishmeal and fish oil were used as aquaculture feed, and reduction fish was used as the raw material for fishmeal and fish oil. 
 Wheat, rice, maize, other cereals, and fruits were used as raw materials for alcoholic beverages. 
 Sugar crops were used as inputs for sugars, oil crops for vegetable oils and oilseed cakes, and maize, sugar crops, and vegetable oils for biofuels. 
 Feed demand, intermediate input demand, and biofuel demand for other commodities were set to zero.
@@ -101,11 +104,12 @@ Crushing yields vegetable oil and oilseed cake jointly.
 The crushed oil crops were split between the two products in proportion to their output values at world export unit values:
 
 \begin{equation}
-intCoef_{(a,ocr,cty)} = \frac{qdInt_{(ocr,cty)} \cdot peWld_{(a)}}{\sum_{a' \in a_{crush}} \bigl(peWld_{(a')} \cdot qs_{(a',cty)}\bigr)}
+intCoef_{(a,\text{"ocr"},cty)} = \frac{qdInt_{(\text{"ocr"},cty)} \cdot peWld_{(a)}}{\sum_{a' \in a_{crush}} \bigl(peWld_{(a')} \cdot qs_{(a',cty)}\bigr)}
 \quad a \in a_{crush} = \{vol, cak\}
 \end{equation}
 
 where \( peWld \) is the export-weighted world unit value of each product.
+Fish reduction yields fishmeal and fish oil jointly, and the reduction fish was split between them in the same way.
 
 As a result of these adjustments, the total domestic demand changed. 
 If the sum of all demand components was less than the total demand from the data, 
@@ -139,10 +143,10 @@ National harvested and fallow cropland totals were derived from LUH3 cropland an
 \begin{align}
 qlCroCul_{cty}
 &=\sum_{bas}qlCro^{LUH3}_{(bas,cty)}
-\frac{qlCroCul^{FAO}_{cty}}{qlCroCul^{FAO}_{cty}+qlCroFal^{FAO}_{cty}},\\
+\cdot\frac{qlCroCul^{FAO}_{cty}}{qlCroCul^{FAO}_{cty}+qlCroFal^{FAO}_{cty}},\\
 qlWat_{(a\_cro,bas,cty,wat)}
 &=qlCroCul_{cty}
-\frac{qlHarvFao_{(a\_cro,cty)}}{\sum_{a\_cro2}qlHarvFao_{(a\_cro2,cty)}}
+\cdot\frac{qlHarvFao_{(a\_cro,cty)}}{\sum_{a\_cro2}qlHarvFao_{(a\_cro2,cty)}}
 \nonumber\\[-0.3em]
 &\quad\cdot\frac{qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}
 {\sum_{bas,wat}qlGaez^{GAEZ}_{(a\_cro,bas,cty,wat)}}.
@@ -272,6 +276,48 @@ qGrassSys_{(a\_liv,bas,cty,cz,sys)}
 If estimated grass demand exceeded available supply, it was reduced proportionally. Feed requirements, concentrate feed shares, and grass utilization were recalculated from the adjusted quantities.
 
 
+\subsubsection{Adjustment of fishery data}
+
+The fish production in the FBS was split between capture fisheries and aquaculture using the production by system from FishStat:
+\begin{equation}
+qsFsh_{(\text{"sfd"},cty,\text{"aqu"})} = qs^{FAO}_{(\text{"sfd"},cty)} \cdot
+\frac{qsFsh^{FS}_{(cty,\text{"aqu"})}}{\sum_{fsys} qsFsh^{FS}_{(cty,fsys)}}
+\end{equation}
+where \( qsFsh^{FS} \) is the production by system from FishStat. Capture production is the remainder.
+
+The FBS count fishmeal use as feed use of fish and fishmeal trade as fish trade, both in live weight. 
+Reduction fish was therefore separated from fish and aquatic products. 
+Its quantity is the live-weight equivalent of the fishmeal and fish oil produced in each country, bounded by national capture production:
+\begin{equation}
+qs_{(\text{"rdf"},cty)} = \min\bigl(qsFsh_{(\text{"sfd"},cty,\text{"cap"})},\; qsRdf^{FS}_{(cty)}\bigr)
+\end{equation}
+where \( qsRdf^{FS} \) is the live-weight equivalent from FishStat. 
+This quantity was subtracted from the capture production and the trade of fish and aquatic products. 
+Fishmeal production and trade were taken from FishStat, and fish oil from the FBS.
+
+Aquaculture feed was estimated for 11 species groups from the share of production raised on compound feed, the economic feed conversion ratio, and the shares of fishmeal and fish oil in compound feed reported by Naylor et~al.~(2021)~\cite{naylorRetrospectiveReviewGlobal2021}:
+\begin{multline}
+qFeedCty_{(\text{"sfd"},c\_fed\_fsh,cty)}
+= \sum_{fgrp} qsFshGrp_{(fgrp,cty)} \cdot shrFedAqu_{(fgrp)}
+\\[-0.3em]
+\cdot feedReqAqu_{(fgrp)} \cdot shrFeedFsh_{(fgrp,c\_fed\_fsh)}
+\end{multline}
+where \( qsFshGrp \) is aquaculture production by species group. 
+Fishmeal and fish oil fed to aquaculture were bounded by national feed use, and the remainder was counted as other demand. 
+The other compound feed followed the national feed composition with the correction coefficient \(feedScale\) used for livestock feed. 
+The feed input coefficient \(feedCoefCty\) is aquaculture feed per tonne of aquaculture production.
+
+The producer price of fish and aquatic products is the production-weighted average of the aquaculture unit value from FishStat and the trade unit value for capture production. 
+Import and export prices of fishery products are FishStat trade unit values. 
+The price of reduction fish is the raw-material cost of the fishmeal and fish oil made from it. 
+The unit cost of other production factors in aquaculture is the producer receipt less the feed cost:
+\begin{multline}
+coCty_{(\text{"sfd"},cty)} = pp_{(\text{"sfd"},cty)}\cdot(1+rPpSub_{(\text{"sfd"},cty)}-rPpTax_{(\text{"sfd"},cty)})
+\\[-0.3em]
+- \sum_{c\_fed} pc_{(c\_fed,cty)}\cdot feedCoefCty_{(\text{"sfd"},c\_fed,cty)}
+\end{multline}
+
+
 \subsubsection{Adjustment of food trade}
 
 Next, the adjustment of food trade data was conducted. 
@@ -348,12 +394,12 @@ First, producer, import, and export prices outside 0.1--10 times the cross-count
 Missing producer prices were first filled using the country's relative price in the nearest observed years. Remaining gaps were filled from a quantity-weighted world price and the country's average relative price across commodities:
 \begin{align}
 pAvg_{c,yr}
-&= \frac{\sum_{cty\in\mathcal O_{c,yr}}pp_{(c,cty,yr)}\,qs_{(c,cty,yr)}}
+&= \frac{\sum_{cty\in\mathcal O_{c,yr}}pp_{(c,cty,yr)}\cdot qs_{(c,cty,yr)}}
 {\sum_{cty\in\mathcal O_{c,yr}}qs_{(c,cty,yr)}},\\
 pRelAvg_{cty,yr}
 &= \frac{1}{N_{cty,yr}}\sum_{c\in\mathcal O_{cty,yr}}
 \frac{pp_{(c,cty,yr)}}{pAvg_{c,yr}},\\
-pp_{(c,cty,yr)}&=pAvg_{c,yr}\,pRelAvg_{cty,yr}.
+pp_{(c,cty,yr)}&=pAvg_{c,yr}\cdot pRelAvg_{cty,yr}.
 \end{align}
 Here, \(\mathcal O\) denotes available observations and \(N\) their number. Import and export prices were filled similarly with the corresponding trade quantities as weights. World-average prices provide the final fallback; remaining producer-price gaps use the import-price level.
 
@@ -370,7 +416,7 @@ rPcSub_{(i,cty)}
 &=1-\frac{VDPA^{GTAP}_{(i,cty)}+VIPA^{GTAP}_{(i,cty)}}
 {VDPM^{GTAP}_{(i,cty)}+VIPM^{GTAP}_{(i,cty)}}.
 \end{align}
-Here, \(OSEP\), \(ISEP\), and \(FBEP\) are production, intermediate-input, and factor subsidies; \(FTRV\) is factor employment tax; and \(TVOM\) is output at market prices. \(VDPA\), \(VIPA\), \(VDPM\), and \(VIPM\) are domestic and imported household purchases at agent and market prices. Production costs therefore sum to \(PP(1+rPpSub-rPpTax)\), while household demand responds to \((1-rPcSub)PC\).
+Here, \(OSEP\), \(ISEP\), and \(FBEP\) are production, intermediate-input, and factor subsidies; \(FTRV\) is factor employment tax; and \(TVOM\) is output at market prices. \(VDPA\), \(VIPA\), \(VDPM\), and \(VIPM\) are domestic and imported household purchases at agent and market prices. Production costs therefore sum to \(PP\cdot(1+rPpSub-rPpTax)\), while household demand responds to \((1-rPcSub)\cdot PC\).
 
 \textit{Indices:}  
 \( i \): production sector;  
@@ -441,6 +487,6 @@ shrFeedCost_{(i,cty)}
 shrIntCost_{(i,cty)}
 &=\frac{\sum_{iimd}\bigl(VDFA^{GTAP}_{(iimd,i,cty)}+VIFA^{GTAP}_{(iimd,i,cty)}\bigr)}{g\_ipt_{(i,cty)}}.
 \end{align}
-The sets \(ilnd\), \(ifed\), and \(iimd\) identify land/natural resources, feed, and processing inputs. Applying these shares to \(pp(1+rPpSub-rPpTax)\) gives the base-year factor costs; other production costs are the remainder.
+The sets \(ilnd\), \(ifed\), and \(iimd\) identify land/natural resources, feed, and processing inputs. Applying these shares to \(pp\cdot(1+rPpSub-rPpTax)\) gives the base-year factor costs; other production costs are the remainder.
 
 Feed prices \(pFeed0\) equal the base-year consumer prices. The additive residual \(feedCostRes\) reconciles the cost of the physical feed inputs with the GTAP feed-cost share. Processing input prices \(pInt0\) are scaled so that the cost of the calibrated input coefficients equals the GTAP intermediate-input cost. These input prices subsequently change in proportion to \(PC/pc0\).

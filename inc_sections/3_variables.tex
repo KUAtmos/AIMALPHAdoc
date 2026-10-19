@@ -27,19 +27,22 @@ Table~\ref{tab:indices} lists the indices used in the model.
   \texttt{cty}    & Country & 166 & \\
   \texttt{bas}    & Production unit & 400 & Unique country--river-basin unit \\
   \texttt{reg}    & Macro region     & 17  & Same as the regional classification in AIM-Hub~\cite{fujimoriSSP3AIMImplementation2017}. See \cref{sec:appendix_b} \\
-  \texttt{c(a)}   & Commodities (production activities) & 25 & 24 food commodities (Table~\ref{tab:commodities}) and dedicated energy crops \\
+  \texttt{c(a)}   & Commodities (production activities) & 29 & 28 food commodities (Table~\ref{tab:commodities}) and dedicated energy crops \\
   \texttt{a\_bas} & Basin-level production activities & 20 & Crops and livestock \\
   \texttt{a\_cro} & Primary crops    & 14  & Including dedicated energy crops \\
   \texttt{a\_liv} & Livestock products & 6 & \\
   \texttt{a\_liv\_rum} & Ruminant livestock products & 3 & Cattle meat, other ruminant meat, raw milk \\
-  \texttt{a\_pro} & Processed products & 5 & \\
+  \texttt{a\_fsh} & Fishery products & 2 & Fish and aquatic products, reduction fish \\
+  \texttt{a\_pro} & Processed products & 7 & \\
   \texttt{c\_trd}, \texttt{c\_ntrd} & Traded / non-traded commodities & & \\
-  \texttt{c\_fed} & Feed inputs      & 10  & \\
-  \texttt{c\_int} & Intermediate inputs & 8 & \\
+  \texttt{c\_fed} & Feed inputs      & 14  & \\
+  \texttt{c\_fed\_fsh} & Feed inputs from fish & 2 & Fishmeal, fish oil \\
+  \texttt{c\_int} & Intermediate inputs & 9 & \\
   \texttt{c\_bio} & Biofuel crops    & 3   & \\
   \texttt{wat}    & Crop production technology & 2 & Irrigated / rainfed \\
   \texttt{cz}     & Climate zone     & 4 & Tropical, temperate, arid, hyper-arid \\
   \texttt{sys}    & Livestock production system & 3 & Pasture-based, mixed farming, aggregate non-ruminants \\
+  \texttt{fsys}   & Fishery production system & 2 & Capture, aquaculture \\
   \texttt{lu}     & Land-use class & 7 & \texttt{cro}, \texttt{pas}, \texttt{primf}, \texttt{secdf}, \texttt{gra}, \texttt{pastr}, \texttt{range} \\
   \texttt{lu\_prot} & Protected land-use class & 5 & \texttt{primf}, \texttt{secdf}, \texttt{gra}, \texttt{pastr}, \texttt{range} \\
   \texttt{lu\_pas} & Protected pasture class & 2 & \texttt{pastr}, \texttt{range} \\
@@ -93,6 +96,8 @@ Table~\ref{tab:endovars} lists the endogenous variables used in the model.
   \texttt{QSBas} & Production by river basin & 1000t \\
   \texttt{QSWat} & Crop production by technology & 1000t \\
   \texttt{QSSys} & Livestock production by system & 1000t \\
+  \texttt{QSFsh} & Fishery production by system & 1000t \\
+  \texttt{FeedCoefCty} & Aquaculture feed input per unit of output & t/t \\
   \texttt{QM} & Imports & 1000t \\
   \texttt{QE} & Exports & 1000t \\
   \texttt{NT} & Net trade & 1000t \\
@@ -141,6 +146,7 @@ Table~\ref{tab:endovars} lists the endogenous variables used in the model.
   \texttt{CAbt} & Abatement cost & \$/t \\
   \texttt{CEmis} & Unit residual-emission charge & \$/t \\
   \texttt{MuBasMin} & Complementary variable for basin production & - \\
+  \texttt{MuFshMin} & Complementary variable for minimum aquaculture production & - \\
   \texttt{MuImpMin} & Complementary variable for imports & - \\
   \texttt{MuExpMax} & Complementary variable for the export limit & - \\
   \texttt{MuNtrdMin} & Complementary variable for minimum non-traded production & - \\
@@ -186,6 +192,7 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model. For dat
   \texttt{qdOth0} & Other demand in the base year & FAOSTAT \\
   \texttt{qs0} & Domestic production in the base year & FAOSTAT \\
   \texttt{qsBas0} & Basin production in the base year & FAOSTAT, GAEZ v4 \\
+  \texttt{qsFsh0} & Fishery production by system in the base year & FAOSTAT, FishStat \\
   \texttt{ql0}, \texttt{pl0} & Activity land area and rent in the base year & Model calibration \\
   \texttt{qdEne} & Demand for dedicated energy crops & AIM-Hub \\
   \texttt{qStock} & Stock change plus the base-year statistical calibration adjustment & FAOSTAT FBS \\
@@ -219,10 +226,11 @@ Table~\ref{tab:exovars} lists the exogenous variables used in the model. For dat
   \texttt{shrFeedGrain} & Composition of concentrate feed & FAOSTAT \\
   \texttt{shrSys} & Annual livestock system share & Model calculation \\
   \texttt{feedCoef} & Annual feed input coefficient & Model calculation \\
+  \texttt{feedCoefCty0} & Aquaculture feed input coefficient in the base year & FishStat, Naylor et~al.~(2021), FAOSTAT \\
   \texttt{animalWt} & Livestock body weight & FAOSTAT \\
   \texttt{nAnimalRes} & Number of non-productive livestock & FAOSTAT \\
   \texttt{coBas0} & Unit cost of other production inputs by basin in the base year & FAOSTAT, GTAP~10 \\
-  \texttt{coCty0} & Unit cost of other production inputs by country in the base year & FAOSTAT, GTAP~10 \\
+  \texttt{coCty0} & Unit cost of other production inputs by country in the base year & FAOSTAT, FishStat, GTAP~10 \\
   \texttt{qlTot} & Total land area & LUH3 \\
   \texttt{qlOth} & Ice/water area & LUH3 \\
   \texttt{qlUrb} & Urban area & LUH3; optional SEDAC extension \\
@@ -280,6 +288,8 @@ Table~\ref{tab:params} lists the parameters used in the model.
   \texttt{intCoef} & Intermediate input coefficient & \\
   \texttt{elaCO} & Elasticity of other production factors & \\
   \texttt{elaYldPL} & Elasticity of crop yield to land rent & \\
+  \texttt{elaCap} & Elasticity of capture fishery production to the producer price & \\
+  \texttt{elaFeedFsh} & Elasticity of substitution between fishmeal or fish oil and oilseed cake in aquaculture feed & \\
   $\delta$ & Coefficient parameter of the logit function & \\
   $\rho$ & Exponent parameter of the logit function & Land-use exponents (\texttt{ela*}) follow the nested-logit structure of GCAM~\cite{calvinGCAMV51Representing2019}; production-system exponents are estimated from Herrero et~al.~(2018) \\
   \texttt{resElaP} & Price-elasticity regression residual & \\

@@ -21,8 +21,8 @@ In the demand block, food demand is determined by factors such as prices, popula
 \paragraph{Consumer Price Index}
 \begin{align}
   PCIdx_{c,cty}
-  &= \frac{(1-rPcSub_{c,cty})\,PC_{c,cty}}
-           {(1-rPcSub0_{c,cty})\,pc0_{c,cty}}
+  &= \frac{(1-rPcSub_{c,cty})\cdot PC_{c,cty}}
+           {(1-rPcSub0_{c,cty})\cdot pc0_{c,cty}}
   \tag{PCIdxEq}\label{eq:PCIdxEq}
 \end{align}
 
@@ -45,6 +45,8 @@ In the demand block, food demand is determined by factors such as prices, popula
 \begin{align}
   QDFed_{c\_fed,cty}
   &= \sum_{bas}\sum_{a\_liv} QFeed_{a\_liv,c\_fed,bas,cty}
+     \nonumber\\[-0.3em]
+  &\quad + \sum_{a\_fsh} QSFsh_{a\_fsh,cty,\text{"aqu"}}\cdot FeedCoefCty_{a\_fsh,c\_fed,cty}
   \tag{QDFedEq}\label{eq:QDFedEq}
 \end{align}
 
@@ -126,11 +128,11 @@ Crop yields, livestock system shares, and feed input coefficients are calculated
   &\quad
      \cdot yldChg_{a\_cro,bas,cty,wat}
      \cdot yldPlum_{a\_cro,bas,cty},\\
-  shrSys_{a\_liv\_rum,bas,cty,cz,\mathrm{LG}}
-  &= \frac{1}{1+\delta^{sys}_{a\_liv\_rum,bas,cty,cz,\mathrm{LG}}
-     \cdot gdpPc_{cty}^{-\rho^{sys}_{a\_liv\_rum,\mathrm{LG}}}},\\
-  shrSys_{a\_liv\_rum,bas,cty,cz,\mathrm{MX}}
-  &= 1-shrSys_{a\_liv\_rum,bas,cty,cz,\mathrm{LG}},\\
+  shrSys_{a\_liv\_rum,bas,cty,cz,\text{"LG"}}
+  &= \frac{1}{1+\delta^{sys}_{a\_liv\_rum,bas,cty,cz,\text{"LG"}}
+     \cdot gdpPc_{cty}^{-\rho^{sys}_{a\_liv\_rum,\text{"LG"}}}},\\
+  shrSys_{a\_liv\_rum,bas,cty,cz,\text{"MX"}}
+  &= 1-shrSys_{a\_liv\_rum,bas,cty,cz,\text{"LG"}},\\
   feedCoef_{a\_liv,c\_fed,bas,cty,cz,sys}
   &= feedReq_{a\_liv,bas,cty,cz,sys}
      \cdot shrFeedConc_{a\_liv,bas,cty,cz,sys}
@@ -162,7 +164,7 @@ Yield improvements due to technological progress and climate impacts are conside
 
 \paragraph{Producer Price of Crops}
 \begin{multline}
-  PP_{a\_cro,cty}\,(1+rPpSub_{a\_cro,cty}-rPpTax_{a\_cro,cty}) \\
+  PP_{a\_cro,cty}\cdot(1+rPpSub_{a\_cro,cty}-rPpTax_{a\_cro,cty}) \\
   = \Bigl(
       PL_{a\_cro,bas,cty}
       \cdot
@@ -233,17 +235,17 @@ Feed use and production efficiency depend on feed composition, feed requirements
 
 \paragraph{Producer Price of Livestock}
 \begin{multline}
-  PP_{a\_liv,cty}\,(1+rPpSub_{a\_liv,cty}-rPpTax_{a\_liv,cty}) \\
+  PP_{a\_liv,cty}\cdot(1+rPpSub_{a\_liv,cty}-rPpTax_{a\_liv,cty}) \\
   = \Biggl(\frac{PL_{a\_liv,bas,cty}}{YLiv_{a\_liv,bas,cty}}
        + COBas_{a\_liv,bas,cty}
        + feedCostRes_{a\_liv,bas,cty}
        \\[-0.3em]
   \quad + \sum_{c\_fed}pFeed0_{a\_liv,c\_fed,cty}
-       \frac{PC_{c\_fed,cty}}{pc0_{c\_fed,cty}}
+       \cdot\frac{PC_{c\_fed,cty}}{pc0_{c\_fed,cty}}
        \\[-0.3em]
   \quad \cdot \sum_{cz,sys}\Bigl(
-       shrCz_{a\_liv,bas,cty,cz}\,
-       shrSys_{a\_liv,bas,cty,cz,sys}\,
+       shrCz_{a\_liv,bas,cty,cz}\cdot
+       shrSys_{a\_liv,bas,cty,cz,sys}\cdot
        feedCoef_{a\_liv,c\_fed,bas,cty,cz,sys}\Bigr)\Biggr)
        \\[-0.3em]
   \quad / (1+MuBasMin_{a\_liv,bas,cty})
@@ -317,7 +319,7 @@ Feed use and production efficiency depend on feed composition, feed requirements
 \begin{align}
   COBas_{a\_liv,bas,cty}
   &= coBas0_{a\_liv,bas,cty}
-     \left(\frac{QL_{a\_liv,bas,cty}}{ql0_{a\_liv,bas,cty}}\right)^{elaCO_{a\_liv,cty}}
+     \cdot\left(\frac{QL_{a\_liv,bas,cty}}{ql0_{a\_liv,bas,cty}}\right)^{elaCO_{a\_liv,cty}}
   \tag{COLivEq}\label{eq:COLivEq}
 \end{align}
 The land-cost term applies only to grazing livestock. For livestock without land input, the cost ratio in Eq.~\eqref{eq:COLivEq} is \(QSBas/qsBas0\).
@@ -338,6 +340,67 @@ The land-cost term applies only to grazing livestock. For livestock without land
   \tag{NAnimalEq}\label{eq:NAnimalEq}
 \end{align}
 
+\subsubsection{Fishery Production}
+
+Fishery products are produced at the country level by capture fisheries and aquaculture.
+Capture production is determined by its base-year level and a price elasticity, and aquaculture is produced using feed and other production factors.
+Reduction fish is supplied only by capture fisheries and is used as the raw material of fishmeal and fish oil.
+
+\paragraph{Fishery Production by System}
+\begin{align}
+  QS_{a\_fsh,cty}
+  &= \sum_{fsys} QSFsh_{a\_fsh,cty,fsys}
+  \tag{QSFshEq}\label{eq:QSFshEq}
+\end{align}
+
+\paragraph{Capture Fishery Production}
+\begin{align}
+  QSFsh_{a\_fsh,cty,\text{"cap"}}
+  &= qsFsh0_{a\_fsh,cty,\text{"cap"}}
+     \cdot\left(\frac{PP_{a\_fsh,cty}}{pp0_{a\_fsh,cty}}\right)^{elaCap}
+  \tag{FshCapEq}\label{eq:FshCapEq}
+\end{align}
+
+\paragraph{Producer Price of Aquaculture}
+\begin{multline}
+  PP_{a\_fsh,cty}\cdot(1+rPpSub_{a\_fsh,cty}-rPpTax_{a\_fsh,cty}) \\
+  = \Biggl(COCty_{a\_fsh,cty}
+     \\[-0.3em]
+  \quad + \sum_{c\_fed}pFeed0_{a\_fsh,c\_fed,cty}
+       \cdot\frac{PC_{c\_fed,cty}}{pc0_{c\_fed,cty}}\cdot
+       FeedCoefCty_{a\_fsh,c\_fed,cty}\Biggr)
+     \\[-0.3em]
+  \quad / (1+MuFshMin_{a\_fsh,cty})
+  \tag{FshZeroProfitEq}\label{eq:FshZeroProfitEq}
+\end{multline}
+Aquaculture whose base-year feed cost exceeds its producer revenue keeps its base-year output.
+
+\paragraph{Other Production Factor Price (Aquaculture)}
+\begin{align}
+  COCty_{a\_fsh,cty}
+  &= coCty0_{a\_fsh,cty}
+     \cdot\left(\frac{QSFsh_{a\_fsh,cty,\text{"aqu"}}}{qsFsh0_{a\_fsh,cty,\text{"aqu"}}}\right)^{elaCO_{a\_fsh,cty}}
+  \tag{COFshEq}\label{eq:COFshEq}
+\end{align}
+
+\paragraph{Aquaculture Feed Input}
+When fishmeal or fish oil becomes more expensive relative to oilseed cake, aquaculture replaces it with the same weight of oilseed cake. The other feed inputs keep their base-year coefficients.
+\begin{align}
+  FeedCoefCty_{a\_fsh,c\_fed\_fsh,cty}
+  &= feedCoefCty0_{a\_fsh,c\_fed\_fsh,cty}
+     \nonumber\\[-0.3em]
+  &\quad \cdot \left(\frac{PC_{c\_fed\_fsh,cty}/pc0_{c\_fed\_fsh,cty}}
+                {PC_{\text{"cak"},cty}/pc0_{\text{"cak"},cty}}\right)^{-elaFeedFsh}
+  \tag{FeedCoefFshEq}\label{eq:FeedCoefFshEq}\\[0.4em]
+  FeedCoefCty_{a\_fsh,\text{"cak"},cty}
+  &= feedCoefCty0_{a\_fsh,\text{"cak"},cty}
+     \nonumber\\[-0.3em]
+  &\quad + \sum_{c\_fed\_fsh} feedCoefCty0_{a\_fsh,c\_fed\_fsh,cty}
+     \nonumber\\[-0.3em]
+  &\quad - \sum_{c\_fed\_fsh} FeedCoefCty_{a\_fsh,c\_fed\_fsh,cty}
+  \tag{FeedCoefCakEq}\label{eq:FeedCoefCakEq}
+\end{align}
+
 \subsubsection{Processed Goods Production}
 
 This section describes the production equations for processed agricultural products.  
@@ -345,11 +408,11 @@ Processed products are produced using intermediate inputs and other production f
 
 \paragraph{Producer Price of Processed Products}
 \begin{multline}
-  PP_{a\_pro,cty}\,(1+rPpSub_{a\_pro,cty}-rPpTax_{a\_pro,cty}) \\
+  PP_{a\_pro,cty}\cdot(1+rPpSub_{a\_pro,cty}-rPpTax_{a\_pro,cty}) \\
   = COCty_{a\_pro,cty}
      \\[-0.3em]
   \quad + \sum_{c\_int}pInt0_{a\_pro,c\_int,cty}
-       \frac{PC_{c\_int,cty}}{pc0_{c\_int,cty}}\,
+       \cdot\frac{PC_{c\_int,cty}}{pc0_{c\_int,cty}}\cdot
        intCoef_{a\_pro,c\_int,cty}
   \tag{ProZeroProfitEq}\label{eq:ProZeroProfitEq}
 \end{multline}
@@ -386,24 +449,24 @@ Energy crop production is determined from regional totals provided exogenously b
 \begin{align}
   qdEne_{reg}
   &= \sum_{bas,cty \in reg}
-     QSBas_{\mathrm{ecr},bas,cty}
+     QSBas_{\text{"ecr"},bas,cty}
   \tag{EneBalEq}\label{eq:EneBalEq}
 \end{align}
 
 \paragraph{Land Input for Energy Crops}
 \begin{align}
-  QL_{\mathrm{ecr},bas,cty}
+  QL_{\text{"ecr"},bas,cty}
   &= \frac{
-       QSBas_{\mathrm{ecr},bas,cty}
+       QSBas_{\text{"ecr"},bas,cty}
      }{
-       yld_{\mathrm{ecr},bas,cty,\mathrm{Rainfed}}
+       yld_{\text{"ecr"},bas,cty,\text{"Rainfed"}}
      }
   \tag{EneLandEq}\label{eq:EneLandEq}
 \end{align}
 
 \paragraph{Land Price for Energy Crops}
 \begin{align}
-  PL_{\mathrm{ecr},bas,cty}
+  PL_{\text{"ecr"},bas,cty}
   &= PLEne_{reg}
   \tag{PLEneEq}\label{eq:PLEneEq}
 \end{align}
@@ -419,15 +482,15 @@ Prices are linked through fixed coefficients so that the price used in the deman
 For non-traded goods,
 \begin{align}
   PC_{c,cty}
-  &= \frac{(1+mmj_{c,cty})\,PP_{c,cty}
+  &= \frac{(1+mmj_{c,cty})\cdot PP_{c,cty}
        + CAbt_{c,cty}+CEmis_{c,cty}}
        {1+MuNtrdMin_{c,cty}}
   \tag{PCNtrdEq}\label{eq:PCNtrdEq}
 \end{align}
 For traded goods, the domestic-good price satisfies
 \begin{align}
-  PB_{c,cty}\,(1+pbRes_{c,cty})
-  &= (1+mmj_{c,cty})\,PP_{c,cty}
+  PB_{c,cty}\cdot(1+pbRes_{c,cty})
+  &= (1+mmj_{c,cty})\cdot PP_{c,cty}
      \nonumber\\[-0.3em]
   &\quad + CAbt_{c,cty}+CEmis_{c,cty}
   \tag{PBEq}\label{eq:PBEq}
@@ -437,10 +500,10 @@ For traded goods, the domestic-good price satisfies
 Under the price-parity trade formulation, the consumer price is weighted by base-year domestic supply and imports:
 \begin{align}
   PC_{c,cty}
-  &= PB_{c,cty}\,(1+pbRes_{c,cty})
+  &= PB_{c,cty}\cdot(1+pbRes_{c,cty})
      \nonumber\\[-0.3em]
-  &\quad + \Bigl[PM_{c,cty}-PB_{c,cty}\,(1+pbRes_{c,cty})\Bigr]
-       \frac{qm0_{c,cty}}
+  &\quad + \Bigl[PM_{c,cty}-PB_{c,cty}\cdot(1+pbRes_{c,cty})\Bigr]
+       \cdot\frac{qm0_{c,cty}}
        {qs0_{c,cty}-qe0_{c,cty}+qm0_{c,cty}}
   \tag{PCTrdEq}\label{eq:PCTrdEq}
 \end{align}
@@ -449,10 +512,10 @@ The import term is zero where base-year imports are zero.
 \paragraph{Import Price}
 \begin{align}
   PM_{c,cty}
-  &= (PW_c+frtM_{c,cty})\,exr_{cty}
+  &= (PW_c+frtM_{c,cty})\cdot exr_{cty}
      \nonumber\\[-0.3em]
   &\quad \cdot (1+tm_{c,cty}+MuImpMin_{c,cty})
-     (1+pmRes_{c,cty})
+     \cdot (1+pmRes_{c,cty})
   \tag{PMEq}\label{eq:PMEq}
 \end{align}
 
@@ -460,8 +523,8 @@ The import term is zero where base-year imports are zero.
 For the price-parity trade formulation,
 \begin{align}
   PE_{c,cty}
-  &= \frac{(PW_c-frtE_{c,cty})\,
-       (1+peRes_{c,cty})\,exr_{cty}}
+  &= \frac{(PW_c-frtE_{c,cty})\cdot
+       (1+peRes_{c,cty})\cdot exr_{cty}}
        {1+te_{c,cty}+MuExpMax_{c,cty}}
   \tag{PEEq}\label{eq:PEEq}
 \end{align}
@@ -558,13 +621,13 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   &\quad\cdot
     \frac{
       \delta^{\text{npas}}_{bas,cty}
-      \, PLNpas_{bas,cty}^{\,\rho^{\text{npas}}_{bas,cty}}
+      \cdot PLNpas_{bas,cty}^{\,\rho^{\text{npas}}_{bas,cty}}
     }{
       \delta^{\text{pas}}_{bas,cty}
-      \, PLPas_{bas,cty}^{\,\rho^{\text{pas}}_{bas,cty}}
+      \cdot PLPas_{bas,cty}^{\,\rho^{\text{pas}}_{bas,cty}}
       +
       \delta^{\text{npas}}_{bas,cty}
-      \, PLNpas_{bas,cty}^{\,\rho^{\text{npas}}_{bas,cty}}
+      \cdot PLNpas_{bas,cty}^{\,\rho^{\text{npas}}_{bas,cty}}
     }
   \tag{NpasLogitEq}\label{eq:NpasLogitEq}
 \end{align}
@@ -574,12 +637,12 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLCro_{bas,cty} = QLNpas_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{cro}}_{bas,cty} PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    \delta^{\text{cro}}_{bas,cty} \cdot PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
   }{
-    \delta^{\text{cro}}_{bas,cty} PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty} PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{nat}}_{bas,cty} PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
-    + \delta^{\text{afr}}_{bas,cty} PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+    \splitfrac{\delta^{\text{cro}}_{bas,cty} \cdot PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty} \cdot PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}}
+    {+ \delta^{\text{nat}}_{bas,cty} \cdot PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty} \cdot PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}}
   }
   \tag{CroLogitEq}\label{eq:CroLogitEq}
 \end{multline}
@@ -589,12 +652,12 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLFrs_{bas,cty} = QLNpas_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{frs}}_{bas,cty} PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
+    \delta^{\text{frs}}_{bas,cty} \cdot PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
   }{
-    \delta^{\text{cro}}_{bas,cty} PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty} PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{nat}}_{bas,cty} PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
-    + \delta^{\text{afr}}_{bas,cty} PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+    \splitfrac{\delta^{\text{cro}}_{bas,cty} \cdot PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty} \cdot PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}}
+    {+ \delta^{\text{nat}}_{bas,cty} \cdot PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty} \cdot PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}}
   }
   \tag{FrsLogitEq}\label{eq:FrsLogitEq}
 \end{multline}
@@ -605,22 +668,22 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   &= QLFrs_{bas,cty}
      \cdot
      \frac{
-       \delta^{\text{primf}}_{bas,cty}\, PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
+       \delta^{\text{primf}}_{bas,cty}\cdot PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
      }{
-       \delta^{\text{primf}}_{bas,cty}\, PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
+       \delta^{\text{primf}}_{bas,cty}\cdot PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
        +
-       \delta^{\text{secdf}}_{bas,cty}\, PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
+       \delta^{\text{secdf}}_{bas,cty}\cdot PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
      }
   \tag{PrimfLogitEq}\label{eq:PrimfLogitEq}\\[0.4em]
   QLSecdf_{bas,cty}
   &= QLFrs_{bas,cty}
      \cdot
      \frac{
-       \delta^{\text{secdf}}_{bas,cty}\, PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
+       \delta^{\text{secdf}}_{bas,cty}\cdot PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
      }{
-       \delta^{\text{primf}}_{bas,cty}\, PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
+       \delta^{\text{primf}}_{bas,cty}\cdot PLPrimf_{bas,cty}^{\,\rho^{\text{primf}}_{bas,cty}}
        +
-       \delta^{\text{secdf}}_{bas,cty}\, PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
+       \delta^{\text{secdf}}_{bas,cty}\cdot PLSecdf_{bas,cty}^{\,\rho^{\text{secdf}}_{bas,cty}}
      }
   \tag{SecdfLogitEq}\label{eq:SecdfLogitEq}
 \end{align}
@@ -630,12 +693,12 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLNat_{bas,cty} = QLNpas_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{nat}}_{bas,cty} PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
+    \delta^{\text{nat}}_{bas,cty} \cdot PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
   }{
-    \delta^{\text{cro}}_{bas,cty} PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty} PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{nat}}_{bas,cty} PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
-    + \delta^{\text{afr}}_{bas,cty} PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+    \splitfrac{\delta^{\text{cro}}_{bas,cty} \cdot PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty} \cdot PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}}
+    {+ \delta^{\text{nat}}_{bas,cty} \cdot PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty} \cdot PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}}
   }
   \tag{NatLogitEq}\label{eq:NatLogitEq}
 \end{multline}
@@ -645,12 +708,12 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLAfr_{bas,cty} = QLNpas_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{afr}}_{bas,cty} PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+    \delta^{\text{afr}}_{bas,cty} \cdot PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
   }{
-    \delta^{\text{cro}}_{bas,cty} PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
-    + \delta^{\text{frs}}_{bas,cty} PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
-    + \delta^{\text{nat}}_{bas,cty} PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
-    + \delta^{\text{afr}}_{bas,cty} PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}
+    \splitfrac{\delta^{\text{cro}}_{bas,cty} \cdot PLCro_{bas,cty}^{\,\rho^{\text{cro}}_{bas,cty}}
+    + \delta^{\text{frs}}_{bas,cty} \cdot PLFrs_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}}
+    {+ \delta^{\text{nat}}_{bas,cty} \cdot PLNat_{bas,cty}^{\,\rho^{\text{nat}}_{bas,cty}}
+    + \delta^{\text{afr}}_{bas,cty} \cdot PLAfr_{bas,cty}^{\,\rho^{\text{afr}}_{bas,cty}}}
   }
   \tag{AfrLogitEq}\label{eq:AfrLogitEq}
 \end{multline}
@@ -660,10 +723,10 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLCroCul_{bas,cty} = QLCro_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{crocul}}_{bas,cty}\, PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
+    \delta^{\text{crocul}}_{bas,cty}\cdot PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
   }{
-    \delta^{\text{crocul}}_{bas,cty}\, PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
-    + \delta^{\text{crofal}}_{bas,cty}\, PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
+    \delta^{\text{crocul}}_{bas,cty}\cdot PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
+    + \delta^{\text{crofal}}_{bas,cty}\cdot PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }
   \tag{CroCulLogitEq}\label{eq:CroCulLogitEq}
 \end{multline}
@@ -673,10 +736,10 @@ Urban land is assigned exogenously. In the default configuration, the LUH3-based
   QLCroFal_{bas,cty} = QLCro_{bas,cty}\\
   \cdot
   \frac{
-    \delta^{\text{crofal}}_{bas,cty}\, PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
+    \delta^{\text{crofal}}_{bas,cty}\cdot PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }{
-    \delta^{\text{crocul}}_{bas,cty}\, PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
-    + \delta^{\text{crofal}}_{bas,cty}\, PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
+    \delta^{\text{crocul}}_{bas,cty}\cdot PLCroCul_{bas,cty}^{\,\rho^{\text{crocul}}_{bas,cty}}
+    + \delta^{\text{crofal}}_{bas,cty}\cdot PLCroFal_{bas,cty}^{\,\rho^{\text{crofal}}_{bas,cty}}
   }
   \tag{CroFalLogitEq}\label{eq:CroFalLogitEq}
 \end{multline}
@@ -739,10 +802,10 @@ The price drivers for forest, other natural land, and afforestation include thei
   = plNpas0_{bas,cty}^{\,\rho^{\text{npas}}_{bas,cty}}
   \\
   \cdot \left(
-    \delta^{\text{cro}} PLCro^{\rho^{\text{cro}}}
-    + \delta^{\text{frs}} PLFrs^{\rho^{\text{frs}}}
-    + \delta^{\text{nat}} PLNat^{\rho^{\text{nat}}}
-    + \delta^{\text{afr}} PLAfr^{\rho^{\text{afr}}}
+    \delta^{\text{cro}} \cdot PLCro^{\rho^{\text{cro}}}
+    + \delta^{\text{frs}} \cdot PLFrs^{\rho^{\text{frs}}}
+    + \delta^{\text{nat}} \cdot PLNat^{\rho^{\text{nat}}}
+    + \delta^{\text{afr}} \cdot PLAfr^{\rho^{\text{afr}}}
   \right)_{bas,cty}
   \tag{PLNpasEq}\label{eq:PLNpasEq}
 \end{multline}
@@ -780,8 +843,8 @@ The price drivers for forest, other natural land, and afforestation include thei
   = plFrs0_{bas,cty}^{\,\rho^{\text{frs}}_{bas,cty}}
   \\
   \cdot \left(
-    \delta^{\text{primf}} PLPrimf^{\rho^{\text{primf}}}
-    + \delta^{\text{secdf}} PLSecdf^{\rho^{\text{secdf}}}
+    \delta^{\text{primf}} \cdot PLPrimf^{\rho^{\text{primf}}}
+    + \delta^{\text{secdf}} \cdot PLSecdf^{\rho^{\text{secdf}}}
   \right)_{bas,cty}
   \tag{PLFrsEq}\label{eq:PLFrsEq}
 \end{multline}
@@ -802,10 +865,12 @@ The price drivers for forest, other natural land, and afforestation include thei
 The annualized carbon credit for primary forest is
 \begin{align*}
   plPrimfCar_{bas,cty}
-  &=\min\!\Bigl\{rFrsCarbonMax\,plPrimf0_{bas,cty},
+  &=\min\!\Bigl\{rFrsCarbonMax\cdot plPrimf0_{bas,cty},
   \nonumber\\[-0.3em]
-  &\quad\max\!\Bigl[0,\bigl(carbonStock_{bas,cty}\tfrac{44}{12}
-  pCarLand_{bas,cty}-afrCost_{cty}\bigr)dcffrs_{cty}\Bigr]\Bigr\}.
+  &\quad\max\!\Bigl[0,\bigl(carbonStock_{bas,cty}\cdot\tfrac{44}{12}
+  \cdot pCarLand_{bas,cty}
+  \nonumber\\[-0.3em]
+  &\quad-afrCost_{cty}\bigr)\cdot dcffrs_{cty}\Bigr]\Bigr\}.
 \end{align*}
 Secondary forest uses the same formula with \(plSecdf0\). A credit is zero after the protected-area floor of that class has bound.
 
@@ -861,13 +926,13 @@ The rent driver \(plAfrRaw\) is annualized carbon revenue over the forest rotati
 \paragraph{Protected-Area Constraints}
 Protected areas are floors within the corresponding gross land areas; pasture and rangeland share one pasture floor.
 \begin{align}
-  QLPrimf_{bas,cty} &\ge qlProt_{bas,cty,\mathrm{primf}}
+  QLPrimf_{bas,cty} &\ge qlProt_{bas,cty,\text{"primf"}}
   \quad\perp\quad MuPrimfProt_{bas,cty}\ge0,
   \tag{PrimfProtEq}\label{eq:PrimfProtEq}\\
-  QLSecdf_{bas,cty} &\ge qlProt_{bas,cty,\mathrm{secdf}}
+  QLSecdf_{bas,cty} &\ge qlProt_{bas,cty,\text{"secdf"}}
   \quad\perp\quad MuSecdfProt_{bas,cty}\ge0,
   \tag{SecdfProtEq}\label{eq:SecdfProtEq}\\
-  QLNat_{bas,cty} &\ge qlProt_{bas,cty,\mathrm{gra}}
+  QLNat_{bas,cty} &\ge qlProt_{bas,cty,\text{"gra"}}
   \quad\perp\quad MuNatProt_{bas,cty}\ge0,
   \tag{NatProtEq}\label{eq:NatProtEq}\\
   QLPas_{bas,cty} &\ge \sum_{lu\_pas}qlProt_{bas,cty,lu\_pas}
@@ -963,7 +1028,7 @@ Emissions from the land-use sector are calculated according to each land area.
   \tag{GHGLUEq}\label{eq:GHGLUEq}
 \end{multline}
 \begin{align}
-  GHGLU_{"afr","CO_2",cty}
+  GHGLU_{\text{"afr"},\text{"CO\textsubscript{2}"},cty}
   &=
   - \sum_{bas}\sum_{age}
       qlAfrAge_{bas,cty,age}
@@ -1016,7 +1081,7 @@ Emissions from the land-use sector are calculated according to each land area.
 The factor \(shrCEmis\) limits the charge relative to the previous consumer price.
 \begin{align}
   CEmis_{a,cty}
-  &= shrCEmis_{a,cty}\sum_{src,gas}
+  &= shrCEmis_{a,cty}\cdot\sum_{src,gas}
      pCar_{cty}
      \cdot
      ef_{a,src,gas,cty}
@@ -1048,4 +1113,13 @@ Therefore, a minimum positive value is imposed to ensure that production quantit
   \quad \perp \quad
   MuBasMin_{a,bas,cty} \ge 0
   \tag{QSBasMinEq}\label{eq:QSBasMinEq}
+\end{align}
+
+\paragraph{Minimum Aquaculture Production}
+\begin{align}
+  \frac{QSFsh_{a\_fsh,cty,\text{"aqu"}}}{qsFsh0_{a\_fsh,cty,\text{"aqu"}}}
+  &\ge 0.01
+  \quad \perp \quad
+  MuFshMin_{a\_fsh,cty} \ge 0
+  \tag{QSFshMinEq}\label{eq:QSFshMinEq}
 \end{align}
